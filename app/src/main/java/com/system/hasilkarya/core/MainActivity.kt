@@ -9,9 +9,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.system.hasilkarya.core.dashboard.presentation.DashboardScreen
 import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.ui.theme.HasilKaryaTheme
+import com.system.hasilkarya.dashboard.presentation.DashboardScreen
+import com.system.hasilkarya.dashboard.presentation.DashboardScreenViewModel
 import com.system.hasilkarya.login.presentation.LoginScreen
 import com.system.hasilkarya.login.presentation.LoginScreenViewModel
 import com.system.hasilkarya.splash.presentation.SplashScreen
@@ -65,7 +66,11 @@ class MainActivity : ComponentActivity() {
                         composable(
                             route = Destination.DashboardScreen.name,
                             content = {
-                                DashboardScreen()
+                                val viewModel: DashboardScreenViewModel = viewModel()
+                                DashboardScreen(
+                                    state = viewModel.state.collectAsState().value,
+                                    viewModel::onEvent
+                                )
                             }
                         )
                     }
