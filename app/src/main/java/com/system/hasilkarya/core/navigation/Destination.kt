@@ -2,5 +2,6 @@ package com.system.hasilkarya.core.navigation
 
 enum class Destination {
     SplashScreen,
-    LoginScreen
+    LoginScreen,
+    DashboardScreen
 }
