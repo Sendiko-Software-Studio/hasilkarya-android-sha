@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.system.hasilkarya.core.dashboard.presentation.DashboardScreen
 import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.ui.theme.HasilKaryaTheme
 import com.system.hasilkarya.login.presentation.LoginScreen
@@ -48,8 +49,23 @@ class MainActivity : ComponentActivity() {
                                 val viewModel: LoginScreenViewModel = viewModel()
                                 LoginScreen(
                                     state = viewModel.state.collectAsState().value,
-                                    onEvent = viewModel::onEvent
+                                    onEvent = viewModel::onEvent,
+                                    onNavigate = { route ->
+                                        navController.navigate(
+                                            route = route
+                                        ) {
+                                            popUpTo(
+                                                route,
+                                            ) { inclusive = true }
+                                        }
+                                    }
                                 )
+                            }
+                        )
+                        composable(
+                            route = Destination.DashboardScreen.name,
+                            content = {
+                                DashboardScreen()
                             }
                         )
                     }
