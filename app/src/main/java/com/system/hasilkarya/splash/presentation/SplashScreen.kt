@@ -9,14 +9,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.system.hasilkarya.R
+import com.system.hasilkarya.core.navigation.Destination
+import kotlinx.coroutines.delay
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun SplashScreen() {
+fun SplashScreen(onNavigate: (String) -> Unit) {
+    LaunchedEffect(
+        key1 = null,
+        block = {
+            delay(1000)
+            onNavigate(Destination.LoginScreen.name)
+        }
+    )
     Scaffold {
         Box(
             modifier = Modifier
