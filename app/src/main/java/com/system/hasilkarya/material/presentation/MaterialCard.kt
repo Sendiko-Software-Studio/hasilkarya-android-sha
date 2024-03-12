@@ -1,4 +1,4 @@
-package com.system.hasilkarya.core.material.presentation
+package com.system.hasilkarya.material.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
