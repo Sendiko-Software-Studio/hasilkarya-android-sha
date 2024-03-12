@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.ui.components.NormalTextField
 import com.system.hasilkarya.core.ui.components.PasswordTextField
 
@@ -26,7 +27,8 @@ import com.system.hasilkarya.core.ui.components.PasswordTextField
 @Composable
 fun LoginScreen(
     state: LoginScreenState,
-    onEvent: (LoginScreenEvent) -> Unit
+    onEvent: (LoginScreenEvent) -> Unit,
+    onNavigate: (String) -> Unit
 ) {
     Scaffold {
         Column(
@@ -65,7 +67,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.size(4.dp))
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { onEvent(LoginScreenEvent.OnLoginClick) },
+                onClick = { onNavigate(Destination.DashboardScreen.name) },
                 content = {
                     Text(text = "Login")
                 }
