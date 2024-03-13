@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
                         composable(
                             route = Destination.LoginScreen.name,
                             content = {
-                                val viewModel: LoginScreenViewModel = viewModel()
+                                val viewModel = hiltViewModel<LoginScreenViewModel>()
                                 LoginScreen(
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
