@@ -19,12 +19,17 @@ import kotlinx.coroutines.delay
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun SplashScreen(onNavigate: (String) -> Unit) {
+fun SplashScreen(
+    state: SplashScreenState,
+    onNavigate: (String) -> Unit
+) {
     LaunchedEffect(
-        key1 = null,
+        key1 = state.token,
         block = {
             delay(1000)
-            onNavigate(Destination.LoginScreen.name)
+            if (state.token.isNotBlank())
+                onNavigate(Destination.DashboardScreen.name)
+            else onNavigate(Destination.LoginScreen.name)
         }
     )
     Scaffold {
