@@ -12,6 +12,7 @@ class AppPreferences @Inject constructor(private val dataStore: DataStore<Prefer
 
     private val tokenKey = stringPreferencesKey("token")
     private val nameKey = stringPreferencesKey("name")
+    private val userIdKey = stringPreferencesKey("user_id")
 
     suspend fun setToken(token: String) {
         dataStore.edit {
@@ -34,6 +35,18 @@ class AppPreferences @Inject constructor(private val dataStore: DataStore<Prefer
     fun getName(): Flow<String> {
         return dataStore.data.map {
             it[nameKey]?:""
+        }
+    }
+
+    suspend fun setUserId(userId: String) {
+        dataStore.edit {
+            it[this.userIdKey] = userId
+        }
+    }
+
+    fun getUserId(): Flow<String> {
+        return dataStore.data.map {
+            it[userIdKey]?:""
         }
     }
 }
