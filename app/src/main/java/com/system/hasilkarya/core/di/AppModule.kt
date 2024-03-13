@@ -1,9 +1,14 @@
 package com.system.hasilkarya.core.di
 
 import android.content.Context
+import androidx.room.Room
 import com.system.hasilkarya.core.network.ApiServices
+import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.preferences.AppPreferences
 import com.system.hasilkarya.core.preferences.dataStore
+import com.system.hasilkarya.dashboard.domain.MaterialDao
+import com.system.hasilkarya.dashboard.domain.MaterialDatabase
+import com.system.hasilkarya.dashboard.domain.MaterialRepository
 import com.system.hasilkarya.login.domain.LoginRepository
 import dagger.Module
 import dagger.Provides
@@ -62,6 +67,31 @@ object AppModule {
     @Provides
     fun provideLoginRepository(apiServices: ApiServices): LoginRepository {
         return LoginRepository(apiServices)
+    }
+
+    @Singleton
+    @Provides
+    fun provideDatabase(@ApplicationContext context: Context): MaterialDatabase {
+        return Room.databaseBuilder(context, MaterialDatabase::class.java, "material_db")
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideDao(database: MaterialDatabase): MaterialDao {
+        return database.dao
+    }
+
+    @Singleton
+    @Provides
+    fun provideMaterialRepository(dao: MaterialDao, apiServices: ApiServices): MaterialRepository {
+        return MaterialRepository(dao, apiServices)
+    }
+
+    @Provides
+    @Singleton
+    fun provideConnectivityObserver(@ApplicationContext context: Context): NetworkConnectivityObserver {
+        return NetworkConnectivityObserver(context)
     }
 
 }
