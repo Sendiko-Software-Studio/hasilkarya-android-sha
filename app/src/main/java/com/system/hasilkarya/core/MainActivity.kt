@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.collectAsState
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,7 +17,10 @@ import com.system.hasilkarya.dashboard.presentation.DashboardScreenViewModel
 import com.system.hasilkarya.login.presentation.LoginScreen
 import com.system.hasilkarya.login.presentation.LoginScreenViewModel
 import com.system.hasilkarya.splash.presentation.SplashScreen
+import com.system.hasilkarya.splash.presentation.SplashScreenViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +35,9 @@ class MainActivity : ComponentActivity() {
                         composable(
                             route = Destination.SplashScreen.name,
                             content = {
+                                val viewModel = hiltViewModel<SplashScreenViewModel>()
                                 SplashScreen(
+                                    state = viewModel.state.collectAsState().value,
                                     onNavigate = { route ->
                                         navController.navigate(
                                             route = route
