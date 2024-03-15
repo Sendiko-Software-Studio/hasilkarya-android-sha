@@ -6,6 +6,7 @@ import com.system.hasilkarya.dashboard.data.MaterialEntity
 
 data class DashboardScreenState(
     val name: String = "",
+    val token: String = "",
     val connectionStatus: Status = Status.UnAvailable,
     val isPostSuccessful: Boolean = false,
     val isLoading: Boolean = false,

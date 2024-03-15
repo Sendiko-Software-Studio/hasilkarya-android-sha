@@ -30,18 +30,23 @@ class DashboardScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DashboardScreenState())
+    private val _token = preferences.getToken()
     private val _name = preferences.getName()
     private val _materials = repository.getMaterials()
     private val _connectionStatus = connectionObserver.observe()
+    val _user = combine(_token, _name, _state) { token, name, state ->
+        state.copy(token = token,  name = name)
+    }
     val state = combine(
         _connectionStatus,
         _materials,
-        _name,
+        _user,
         _state
-    ) { connectionStatus, materials, name, state ->
+    ) { connectionStatus, materials, user, state ->
         state.copy(
+            token = user.token,
             connectionStatus = connectionStatus,
-            name = name,
+            name = user.name,
             materials = materials
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), DashboardScreenState())
