@@ -16,7 +16,7 @@ interface ApiServices {
         @Body request: LoginRequest
     ): Call<LoginResponse>
 
-    @POST("checker/store/material-movement")
+    @POST("checker/material-movement/store")
     fun postMaterial(
         @Header("Authorization") token: String,
         @Body request: PostMaterialRequest
