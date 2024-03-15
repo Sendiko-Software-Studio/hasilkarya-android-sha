@@ -67,6 +67,7 @@ class LoginScreenViewModel @Inject constructor(
                         201 -> viewModelScope.launch {
                             preferences.setName(response.body()!!.user.checker.name)
                             preferences.setToken(response.body()!!.token)
+                            preferences.setUserId(response.body()!!.user.checker.id)
                             _state.update {
                                 it.copy(isLoginSuccessful = true)
                             }
