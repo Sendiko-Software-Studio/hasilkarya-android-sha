@@ -150,6 +150,10 @@ class QrScreenViewModel @Inject constructor(
             is QrScreenEvent.OnClearRemarks -> _state.update {
                 it.copy(remarks = "")
             }
+
+            is QrScreenEvent.OnNavigateForm -> _state.update {
+                it.copy(currentlyScanning = event.scanOptions)
+            }
         }
     }
 }

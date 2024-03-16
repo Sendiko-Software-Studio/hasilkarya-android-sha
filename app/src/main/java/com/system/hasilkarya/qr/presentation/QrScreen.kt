@@ -15,16 +15,19 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -33,12 +36,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,25 +50,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.google.common.util.concurrent.ListenableFuture
+import com.system.hasilkarya.R
 import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
-import com.system.hasilkarya.core.ui.components.NormalTextField
+import com.system.hasilkarya.core.ui.theme.poppinsFont
 import com.system.hasilkarya.dashboard.presentation.ScanOptions
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.Driver
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.None
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.Pos
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.Truck
+import com.system.hasilkarya.qr.data.ratioData
 import com.system.hasilkarya.qr.domain.BarcodeAnalyzer
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -99,8 +101,8 @@ fun QrScreen(
                     .fillMaxSize()
                     .padding(
                         top = paddingValues.calculateTopPadding(),
-                        start = 16.dp,
-                        end = 16.dp
+                        start = 8.dp,
+                        end = 8.dp
                     )
             ) {
                 AnimatedVisibility(
@@ -108,7 +110,12 @@ fun QrScreen(
                     enter = slideInHorizontally(),
                     exit = slideOutHorizontally(),
                     content = {
-                        ScanDriverForm(onResult = { onEvent(QrScreenEvent.OnDriverIdRegistered(it)) })
+                        ScanDriverForm(
+                            onResult = { onEvent(QrScreenEvent.OnDriverIdRegistered(it)) },
+                            navigateBack = {
+                                onNavigateBack(it)
+                            }
+                        )
                     }
                 )
                 AnimatedVisibility(
@@ -116,7 +123,12 @@ fun QrScreen(
                     enter = slideInHorizontally(),
                     exit = slideOutHorizontally(),
                     content = {
-                        ScanTruckForm(onResult = { onEvent(QrScreenEvent.OnTruckIdRegistered(it)) })
+                        ScanTruckForm(
+                            onResult = { onEvent(QrScreenEvent.OnTruckIdRegistered(it)) },
+                            prevForm = {
+                                onEvent(QrScreenEvent.OnNavigateForm(Driver))
+                            }
+                        )
                     }
                 )
                 AnimatedVisibility(
@@ -124,14 +136,25 @@ fun QrScreen(
                     enter = slideInHorizontally(),
                     exit = slideOutHorizontally(),
                     content = {
-                        ScanPostForm(onResult = { onEvent(QrScreenEvent.OnPosIdRegistered(it)) })
+                        ScanPostForm(
+                            onResult = { onEvent(QrScreenEvent.OnPosIdRegistered(it)) },
+                            prevForm = {
+                                onEvent(QrScreenEvent.OnNavigateForm(Truck))
+                            }
+                        )
                     }
                 )
                 AnimatedVisibility(visible = state.currentlyScanning == None) {
-                    val listRatio = listOf(0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
-                    var isExpanded by remember {
-                        mutableStateOf(false)
-                    }
+                    val listRatio = listOf(
+                        ratioData(ratio = 0.3, ratioText = "30%"),
+                        ratioData(ratio = 0.4, ratioText = "40%"),
+                        ratioData(ratio = 0.5, ratioText = "50%"),
+                        ratioData(ratio = 0.6, ratioText = "60%"),
+                        ratioData(ratio = 0.7, ratioText = "70%"),
+                        ratioData(ratio = 0.8, ratioText = "80%"),
+                        ratioData(ratio = 0.9, ratioText = "90%"),
+                        ratioData(ratio = 1.0, ratioText = "100%"),
+                    )
                     var ratio by remember {
                         mutableDoubleStateOf(0.0)
                     }
@@ -140,53 +163,56 @@ fun QrScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.padding(16.dp)
                     ) {
-                        LargeTopAppBar(title = { Text(text = "Isi data dibawah") })
-                        OutlinedButton(
-                            onClick = { isExpanded = true },
+                        Row(
                             modifier = Modifier.fillMaxWidth(),
-                            content = {
-                                Text(
-                                    text = if (ratio == 0.0) "Masukkan persentase rasio pengamatan"
-                                    else "Presentase rasio pengamatan: $ratio",
-                                    fontSize = 16.sp,
-                                    modifier = Modifier.padding(vertical = 4.dp)
-                                )
-                            }
-                        )
-
-                        AnimatedVisibility(visible = isExpanded) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(RoundedCornerShape(16.dp))
-                                    .background(MaterialTheme.colorScheme.background)
-                            ) {
-                                listRatio.forEach {
-                                    Text(
-                                        text = it.toString(),
-                                        modifier = Modifier
-                                            .padding(vertical = 8.dp, horizontal = 8.dp)
-                                            .clickable {
-                                                ratio = it
-                                            }
-                                            .fillMaxWidth(),
-                                        textAlign = TextAlign.Start,
-                                        fontSize = 18.sp,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    onEvent(QrScreenEvent.OnNavigateForm(Pos))
+                                },
+                                content = {
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowBack,
+                                        contentDescription = "kembali"
                                     )
                                 }
-                            }
+                            )
                         }
 
+                        Text(
+                            text = "Pilih observasi rasio presentasi",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp),
+                            fontFamily = poppinsFont
+                        )
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(4),
+                            content = {
+                                items(listRatio) {
+                                    InputChip(
+                                        selected = ratio == it.ratio,
+                                        onClick = { ratio = it.ratio },
+                                        label = { Text(text = it.ratioText, fontFamily = poppinsFont, fontSize = 16.sp) },
+                                        modifier = Modifier.padding(4.dp)
+                                    )
+                                }
+                            },
+                        )
+
                         Spacer(modifier = Modifier.size(16.dp))
-                        NormalTextField(
-                            modifier = Modifier.fillMaxWidth(),
+                        OutlinedTextField(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(128.dp),
                             value = state.remarks,
-                            onNewValue = {
+                            onValueChange = {
                                 onEvent(QrScreenEvent.OnNewRemarks(it))
                             },
-                            hint = "keterangan",
-                            leadingIcon = Icons.Default.TextSnippet,
-                            onClearText = { onEvent(QrScreenEvent.OnClearRemarks()) }
+                            placeholder = { Text(text = "keterangan")},
+                            leadingIcon = { Icon(imageVector = Icons.Default.TextSnippet, contentDescription = "keterangan")},
+                            shape = RoundedCornerShape(16.dp)
                         )
                         Button(
                             modifier = Modifier.fillMaxWidth(),
@@ -204,7 +230,6 @@ fun QrScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScanDriverForm(
     onResult: (String) -> Unit,
@@ -218,22 +243,6 @@ fun ScanDriverForm(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        TopAppBar(
-            title = {
-                Text(text = "kembali")
-            },
-            navigationIcon = {
-                IconButton(
-                    onClick = { navigateBack(Destination.DashboardScreen.name) },
-                    content = {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "kembali"
-                        )
-                    }
-                )
-            }
-        )
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.weight(3f),
@@ -295,14 +304,11 @@ fun ScanDriverForm(
                     )
                 }
             )
-            Box(
-                modifier = Modifier
-                    .background(Color.Transparent)
-                    .border(
-                        width = 3.dp,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                    .size(200.dp),
+            Icon(
+                painter = painterResource(id = R.drawable.scanning),
+                contentDescription = "scan",
+                modifier = Modifier.size(200.dp),
+                tint = Color.White
             )
         }
 
@@ -310,21 +316,8 @@ fun ScanDriverForm(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)
                 .weight(1f),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                modifier = Modifier
-                    .padding(
-                        vertical = 24.dp,
-                        horizontal = 24.dp
-                    )
-                    .fillMaxWidth(),
-                text = if (result.isNotBlank()) "Scan QR berhasil!" else "Scan QR Driver!",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-            )
+            QrFormHeader(navigateBack = { navigateBack(Destination.DashboardScreen.name) }, result = result, currentlyScanning = Driver)
             Spacer(modifier = Modifier.size(16.dp))
             AnimatedVisibility(
                 visible = result.isNotBlank(),
@@ -337,7 +330,7 @@ fun ScanDriverForm(
                             onResult(result)
                         },
                         content = {
-                            Text(text = "Lanjut scan Truk")
+                            Text(text = "Lanjut scan Truk", fontFamily = poppinsFont)
                         }
                     )
                 }
@@ -346,7 +339,6 @@ fun ScanDriverForm(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScanTruckForm(
     onResult: (String) -> Unit,
@@ -360,22 +352,6 @@ fun ScanTruckForm(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        TopAppBar(
-            title = {
-                Text(text = "kembali")
-            },
-            navigationIcon = {
-                IconButton(
-                    onClick = { prevForm(Driver) },
-                    content = {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "kembali"
-                        )
-                    }
-                )
-            }
-        )
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.weight(3f),
@@ -435,14 +411,11 @@ fun ScanTruckForm(
                     }, ContextCompat.getMainExecutor(context))
                 }
             )
-            Box(
-                modifier = Modifier
-                    .background(Color.Transparent)
-                    .border(
-                        width = 3.dp,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                    .size(200.dp),
+            Icon(
+                painter = painterResource(id = R.drawable.scanning),
+                contentDescription = "scan",
+                modifier = Modifier.size(200.dp),
+                tint = Color.White
             )
         }
 
@@ -450,21 +423,15 @@ fun ScanTruckForm(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)
                 .weight(1f),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                modifier = Modifier
-                    .padding(
-                        vertical = 24.dp,
-                        horizontal = 24.dp
-                    )
-                    .fillMaxWidth(),
-                text = if (result.isNotBlank()) "Scan QR berhasil!" else "Scan QR Truk!",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
+            QrFormHeader(
+                result = result,
+                currentlyScanning = Truck,
+                navigateBack = {
+                    prevForm(Driver)
+                },
             )
+
             Spacer(modifier = Modifier.size(16.dp))
             AnimatedVisibility(
                 visible = result.isNotBlank(),
@@ -477,7 +444,7 @@ fun ScanTruckForm(
                             onResult(result)
                         },
                         content = {
-                            Text(text = "Lanjut scan Pos")
+                            Text(text = "Lanjut scan Pos", fontFamily = poppinsFont)
                         }
                     )
                 }
@@ -558,14 +525,11 @@ fun ScanPostForm(
                     }, ContextCompat.getMainExecutor(context))
                 }
             )
-            Box(
-                modifier = Modifier
-                    .background(Color.Transparent)
-                    .border(
-                        width = 3.dp,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                    .size(200.dp),
+            Icon(
+                painter = painterResource(id = R.drawable.scanning),
+                contentDescription = "scan",
+                modifier = Modifier.size(200.dp),
+                tint = Color.White
             )
         }
 
@@ -573,21 +537,9 @@ fun ScanPostForm(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)
                 .weight(1f),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                modifier = Modifier
-                    .padding(
-                        vertical = 24.dp,
-                        horizontal = 24.dp
-                    )
-                    .fillMaxWidth(),
-                text = if (result.isNotBlank()) "Scan QR berhasil!" else "Scan QR Pos!",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-            )
+            QrFormHeader(navigateBack = { prevForm(Truck) }, result = result, currentlyScanning = Pos)
+
             Spacer(modifier = Modifier.size(16.dp))
             AnimatedVisibility(
                 visible = result.isNotBlank(),
@@ -600,7 +552,7 @@ fun ScanPostForm(
                             onResult(result)
                         },
                         content = {
-                            Text(text = "Lanjut isi data")
+                            Text(text = "Lanjut isi data", fontFamily = poppinsFont)
                         }
                     )
                 }
