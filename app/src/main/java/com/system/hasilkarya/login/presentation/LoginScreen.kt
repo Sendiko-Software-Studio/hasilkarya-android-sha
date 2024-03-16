@@ -25,6 +25,7 @@ import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
 import com.system.hasilkarya.core.ui.components.NormalTextField
 import com.system.hasilkarya.core.ui.components.PasswordTextField
+import com.system.hasilkarya.core.ui.theme.poppinsFont
 import kotlinx.coroutines.delay
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -63,12 +64,14 @@ fun LoginScreen(
                    text = "Login",
                    fontSize = 24.sp,
                    modifier = Modifier.padding(vertical = 8.dp),
-                   fontWeight = FontWeight.Bold
+                   fontWeight = FontWeight.Bold,
+                   fontFamily = poppinsFont
                )
                Text(
                    text = "Silahkan login menggunakan email dan password.",
                    fontSize = 16.sp,
-                   modifier = Modifier.padding(vertical = 8.dp)
+                   modifier = Modifier.padding(vertical = 8.dp),
+                   fontFamily = poppinsFont
                )
                Spacer(modifier = Modifier.size(8.dp))
                NormalTextField(
@@ -104,7 +107,7 @@ fun LoginScreen(
                    modifier = Modifier.fillMaxWidth(),
                    onClick = { onEvent(LoginScreenEvent.OnLoginClick) },
                    content = {
-                       Text(text = "Login")
+                       Text(text = "Login", fontFamily = poppinsFont)
                    }
                )
            }
