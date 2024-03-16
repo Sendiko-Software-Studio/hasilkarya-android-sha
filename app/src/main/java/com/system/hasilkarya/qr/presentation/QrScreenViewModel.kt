@@ -141,6 +141,10 @@ class QrScreenViewModel @Inject constructor(
             QrScreenEvent.OnClearNotification -> _state.update {
                 it.copy(notificationMessage = "")
             }
+
+            is QrScreenEvent.OnClearRemarks -> _state.update {
+                it.copy(remarks = "")
+            }
         }
     }
 }

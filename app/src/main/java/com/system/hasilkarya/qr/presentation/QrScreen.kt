@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.system.hasilkarya.qr.presentation
 
 import android.util.Log
@@ -25,14 +27,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.TextSnippet
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -56,6 +62,7 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
 import com.system.hasilkarya.core.ui.components.NormalTextField
+import com.system.hasilkarya.dashboard.presentation.ScanOptions
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.Driver
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.None
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.Pos
@@ -64,6 +71,7 @@ import com.system.hasilkarya.qr.domain.BarcodeAnalyzer
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QrScreen(
     state: QrScreenState,
@@ -85,7 +93,7 @@ fun QrScreen(
         isLoading = state.isLoading,
         isErrorNotification = state.isRequestFailed.isFailed
     ) {
-        Scaffold{ paddingValues ->
+        Scaffold { paddingValues ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -120,23 +128,87 @@ fun QrScreen(
                     }
                 )
                 AnimatedVisibility(visible = state.currentlyScanning == None) {
-                    AdditionalDataForm(
-                        onResult = { ratio, remarks ->
-                            onEvent(QrScreenEvent.OnSelectedRatio(ratio))
-                            Log.i("QR_SUBMIT", "QrScreen: QrSubmit")
-                            onEvent(QrScreenEvent.OnNewRemarks(remarks))
-                            onEvent(QrScreenEvent.SaveMaterial)
+                    val listRatio = listOf(0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
+                    var isExpanded by remember {
+                        mutableStateOf(false)
+                    }
+                    var ratio by remember {
+                        mutableDoubleStateOf(0.0)
+                    }
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        LargeTopAppBar(title = { Text(text = "Isi data dibawah") })
+                        OutlinedButton(
+                            onClick = { isExpanded = true },
+                            modifier = Modifier.fillMaxWidth(),
+                            content = {
+                                Text(
+                                    text = if (ratio == 0.0) "Masukkan persentase rasio pengamatan"
+                                    else "Presentase rasio pengamatan: $ratio",
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                )
+                            }
+                        )
+
+                        AnimatedVisibility(visible = isExpanded) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(MaterialTheme.colorScheme.background)
+                            ) {
+                                listRatio.forEach {
+                                    Text(
+                                        text = it.toString(),
+                                        modifier = Modifier
+                                            .padding(vertical = 8.dp, horizontal = 8.dp)
+                                            .clickable {
+                                                ratio = it
+                                            }
+                                            .fillMaxWidth(),
+                                        textAlign = TextAlign.Start,
+                                        fontSize = 18.sp,
+                                    )
+                                }
+                            }
                         }
-                    )
+
+                        Spacer(modifier = Modifier.size(16.dp))
+                        NormalTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = state.remarks,
+                            onNewValue = {
+                                onEvent(QrScreenEvent.OnNewRemarks(it))
+                            },
+                            hint = "keterangan",
+                            leadingIcon = Icons.Default.TextSnippet,
+                            onClearText = { onEvent(QrScreenEvent.OnClearRemarks()) }
+                        )
+                        Button(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                onEvent(QrScreenEvent.OnSelectedRatio(ratio))
+                                onEvent(QrScreenEvent.SaveMaterial)
+                            }
+                        ) {
+                            Text(text = "Simpan data")
+                        }
+                    }
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScanDriverForm(
-    onResult: (String) -> Unit
+    onResult: (String) -> Unit,
+    navigateBack: (String) -> Unit,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -146,6 +218,22 @@ fun ScanDriverForm(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
+        TopAppBar(
+            title = {
+                Text(text = "kembali")
+            },
+            navigationIcon = {
+                IconButton(
+                    onClick = { navigateBack(Destination.DashboardScreen.name) },
+                    content = {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "kembali"
+                        )
+                    }
+                )
+            }
+        )
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.weight(3f),
@@ -171,38 +259,40 @@ fun ScanDriverForm(
                     val cameraProviderFuture: ListenableFuture<ProcessCameraProvider> =
                         ProcessCameraProvider.getInstance(context)
 
-                    cameraProviderFuture.addListener({
-                        preview = Preview.Builder().build().also {
-                            it.setSurfaceProvider(previewView.surfaceProvider)
-                        }
-                        val cameraProvider: ProcessCameraProvider =
-                            cameraProviderFuture.get()
-                        val barcodeAnalyser = BarcodeAnalyzer { barcodes ->
-                            barcodes.forEach { barcode ->
-                                barcode.rawValue?.let { barcodeValue ->
-                                    result = barcodeValue
+                    cameraProviderFuture.addListener(
+                        {
+                            preview = Preview.Builder().build().also {
+                                it.setSurfaceProvider(previewView.surfaceProvider)
+                            }
+                            val cameraProvider: ProcessCameraProvider =
+                                cameraProviderFuture.get()
+                            val barcodeAnalyser = BarcodeAnalyzer { barcodes ->
+                                barcodes.forEach { barcode ->
+                                    barcode.rawValue?.let { barcodeValue ->
+                                        result = barcodeValue
+                                    }
                                 }
                             }
-                        }
-                        val imageAnalysis: ImageAnalysis = ImageAnalysis.Builder()
-                            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                            .build()
-                            .also {
-                                it.setAnalyzer(cameraExecutor, barcodeAnalyser)
-                            }
+                            val imageAnalysis: ImageAnalysis = ImageAnalysis.Builder()
+                                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                                .build()
+                                .also {
+                                    it.setAnalyzer(cameraExecutor, barcodeAnalyser)
+                                }
 
-                        try {
-                            cameraProvider.unbindAll()
-                            cameraProvider.bindToLifecycle(
-                                lifecycleOwner,
-                                cameraSelector,
-                                preview,
-                                imageAnalysis
-                            )
-                        } catch (e: Exception) {
-                            Log.d("TAG", "CameraPreview: ${e.localizedMessage}")
-                        }
-                    }, ContextCompat.getMainExecutor(context))
+                            try {
+                                cameraProvider.unbindAll()
+                                cameraProvider.bindToLifecycle(
+                                    lifecycleOwner,
+                                    cameraSelector,
+                                    preview,
+                                    imageAnalysis
+                                )
+                            } catch (e: Exception) {
+                                Log.d("TAG", "CameraPreview: ${e.localizedMessage}")
+                            }
+                        }, ContextCompat.getMainExecutor(context)
+                    )
                 }
             )
             Box(
@@ -242,6 +332,7 @@ fun ScanDriverForm(
                 exit = fadeOut(),
                 content = {
                     Button(
+                        modifier = Modifier.fillMaxWidth(),
                         onClick = {
                             onResult(result)
                         },
@@ -255,9 +346,11 @@ fun ScanDriverForm(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScanTruckForm(
-    onResult: (String) -> Unit
+    onResult: (String) -> Unit,
+    prevForm: (ScanOptions) -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -267,6 +360,22 @@ fun ScanTruckForm(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
+        TopAppBar(
+            title = {
+                Text(text = "kembali")
+            },
+            navigationIcon = {
+                IconButton(
+                    onClick = { prevForm(Driver) },
+                    content = {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "kembali"
+                        )
+                    }
+                )
+            }
+        )
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.weight(3f),
@@ -363,6 +472,7 @@ fun ScanTruckForm(
                 exit = fadeOut(),
                 content = {
                     Button(
+                        modifier = Modifier.fillMaxWidth(),
                         onClick = {
                             onResult(result)
                         },
@@ -378,7 +488,8 @@ fun ScanTruckForm(
 
 @Composable
 fun ScanPostForm(
-    onResult: (String) -> Unit
+    onResult: (String) -> Unit,
+    prevForm: (ScanOptions) -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -484,6 +595,7 @@ fun ScanPostForm(
                 exit = fadeOut(),
                 content = {
                     Button(
+                        modifier = Modifier.fillMaxWidth(),
                         onClick = {
                             onResult(result)
                         },
@@ -493,80 +605,6 @@ fun ScanPostForm(
                     )
                 }
             )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AdditionalDataForm(
-    onResult: (Double, String) -> Unit
-) {
-    val listRatio = listOf(0.3, 0.4, 0.5, 0.6, 0.7, 0.9, 1.0)
-    var remarks by remember {
-        mutableStateOf("")
-    }
-    var isExpanded by remember {
-        mutableStateOf(false)
-    }
-    var ratio by remember {
-        mutableDoubleStateOf(0.0)
-    }
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(16.dp)
-    ) {
-        LargeTopAppBar(title = { Text(text = "Isi data dibawah") })
-        OutlinedButton(
-            onClick = { isExpanded = true },
-            modifier = Modifier.fillMaxWidth(),
-            content = {
-                Text(
-                    text = if (ratio == 0.0) "Masukkan persentase rasio pengamatan"
-                    else "Presentase rasio pengamatan: $ratio",
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(vertical = 4.dp)
-                )
-            }
-        )
-
-        AnimatedVisibility(visible = isExpanded) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-            ) {
-                listRatio.forEach {
-                    Text(
-                        text = it.toString(),
-                        modifier = Modifier
-                            .padding(vertical = 8.dp, horizontal = 8.dp)
-                            .clickable {
-                                ratio = it
-                            }
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Start,
-                        fontSize = 18.sp,
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.size(16.dp))
-        NormalTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = remarks,
-            onNewValue = {
-                remarks = it
-            },
-            hint = "keterangan",
-            leadingIcon = Icons.Default.TextSnippet,
-            onClearText = { remarks = "" }
-        )
-        Button(onClick = { onResult(ratio, remarks) }) {
-            Text(text = "Simpan data")
         }
     }
 }
