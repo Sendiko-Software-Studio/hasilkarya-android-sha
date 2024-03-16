@@ -13,9 +13,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import com.system.hasilkarya.core.ui.theme.poppinsFont
 import com.system.hasilkarya.core.ui.utils.ErrorTextField
 
 @Composable
@@ -32,10 +34,11 @@ fun PasswordTextField(
     OutlinedTextField(
         modifier = modifier,
         value = value,
+        textStyle = TextStyle(fontFamily = poppinsFont),
         onValueChange = { onNewValue(it) },
         shape = CircleShape,
         placeholder = {
-            Text(text = hint)
+            Text(text = hint, fontFamily = poppinsFont)
         },
         leadingIcon = {
             Icon(imageVector = leadingIcon, contentDescription = null)
@@ -58,7 +61,7 @@ fun PasswordTextField(
         },
         visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
         supportingText = {
-            Text(text = errorState.errorMessage)
+            Text(text = errorState.errorMessage, fontFamily = poppinsFont)
         },
         isError = errorState.isError,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
