@@ -1,7 +1,9 @@
 package com.system.hasilkarya.qr.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.preferences.AppPreferences
 import com.system.hasilkarya.core.ui.utils.FailedRequest
@@ -26,17 +28,20 @@ import javax.inject.Inject
 class QrScreenViewModel @Inject constructor(
     private val repository: MaterialRepository,
     preferences: AppPreferences,
+    connectionObserver: NetworkConnectivityObserver
 ): ViewModel() {
 
     private val _state = MutableStateFlow(QrScreenState())
     private val _token = preferences.getToken()
     private val _userId = preferences.getUserId()
+    private val _connectionStatus = connectionObserver.observe()
     val state = combine(
-        _token, _userId, _state
-    ){ token, userId, state ->
+        _token, _userId, _connectionStatus, _state
+    ){ token, userId, connectionStatus, state ->
         state.copy(
             token = token,
             userId = userId,
+            connectionStatus = connectionStatus
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), QrScreenState())
 
@@ -59,6 +64,7 @@ class QrScreenViewModel @Inject constructor(
                         call: Call<PostMaterialResponse>,
                         response: Response<PostMaterialResponse>
                     ) {
+                        Log.i("POST_FROM_QR", "postMaterial: ${state.value.connectionStatus}")
                         _state.update { it.copy(isLoading = false) }
                         when (response.code()) {
                             201 -> {
@@ -68,13 +74,11 @@ class QrScreenViewModel @Inject constructor(
                                         notificationMessage = "Data tersimpan!",
                                     )
                                 }
-                                viewModelScope.launch {
-                                    repository.deleteMaterial(materialEntity)
-                                }
                             }
 
                             else -> {
                                 _state.update {
+                                    Log.i("INVALID_REQUEST", "onResponse: Invalid data")
                                     it.copy(
                                         notificationMessage = "Duh, ada yang salah",
                                         isRequestFailed = FailedRequest(isFailed = true),
@@ -98,6 +102,7 @@ class QrScreenViewModel @Inject constructor(
                 }
             )
         } else {
+            Log.i("ROOM", "postMaterial: Saved to Room")
             viewModelScope.launch { repository.saveMaterial(materialEntity) }
             _state.update {
                 it.copy(
@@ -144,6 +149,10 @@ class QrScreenViewModel @Inject constructor(
 
             is QrScreenEvent.OnClearRemarks -> _state.update {
                 it.copy(remarks = "")
+            }
+
+            is QrScreenEvent.OnNavigateForm -> _state.update {
+                it.copy(currentlyScanning = event.scanOptions)
             }
         }
     }

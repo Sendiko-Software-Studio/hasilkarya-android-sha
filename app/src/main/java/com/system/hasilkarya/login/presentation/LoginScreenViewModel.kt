@@ -73,10 +73,10 @@ class LoginScreenViewModel @Inject constructor(
                             }
                         }
 
-                        404 -> _state.update {
+                        401 -> _state.update {
                             it.copy(
                                 isRequestFailed = FailedRequest(isFailed = true),
-                                notificationMessage = "Mohon cek kembali email dan password."
+                                notificationMessage = "Email atau password salah."
                             )
                         }
                     }
