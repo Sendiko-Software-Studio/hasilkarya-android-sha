@@ -2,7 +2,10 @@ package com.system.hasilkarya.dashboard.presentation
 
 import android.Manifest
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -91,6 +94,12 @@ fun DashboardScreen(
                             onNavigate(Destination.QrScreen.name)
                         }
                     )
+                }
+                item { 
+                    AnimatedVisibility(visible = state.materials.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(text = "Data yang belum terupload", fontFamily = poppinsFont)
+                    }
                 }
                 items(state.materials) {
                     MaterialListItem(materialEntity = it)
