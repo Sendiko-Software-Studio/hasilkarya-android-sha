@@ -1,8 +1,7 @@
-package com.system.hasilkarya.dashboard.presentation
+package com.system.hasilkarya.qr.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.preferences.AppPreferences
 import com.system.hasilkarya.core.ui.utils.FailedRequest
@@ -10,6 +9,7 @@ import com.system.hasilkarya.dashboard.data.MaterialEntity
 import com.system.hasilkarya.dashboard.data.PostMaterialRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialResponse
 import com.system.hasilkarya.dashboard.domain.MaterialRepository
+import com.system.hasilkarya.dashboard.presentation.ScanOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,40 +23,22 @@ import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
-class DashboardScreenViewModel @Inject constructor(
+class QrScreenViewModel @Inject constructor(
     private val repository: MaterialRepository,
     preferences: AppPreferences,
-    connectionObserver: NetworkConnectivityObserver
-) : ViewModel() {
+): ViewModel() {
 
-    private val _state = MutableStateFlow(DashboardScreenState())
+    private val _state = MutableStateFlow(QrScreenState())
     private val _token = preferences.getToken()
-    private val _name = preferences.getName()
-    private val _materials = repository.getMaterials()
-    private val _connectionStatus = connectionObserver.observe()
-    val _user = combine(_token, _name, _state) { token, name, state ->
-        state.copy(token = token,  name = name)
-    }
+    private val _userId = preferences.getUserId()
     val state = combine(
-        _connectionStatus,
-        _materials,
-        _user,
-        _state
-    ) { connectionStatus, materials, user, state ->
+        _token, _userId, _state
+    ){ token, userId, state ->
         state.copy(
-            token = user.token,
-            connectionStatus = connectionStatus,
-            name = user.name,
-            materials = materials
+            token = token,
+            userId = userId,
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), DashboardScreenState())
-
-    private fun checkAndPost() {
-        val datas = state.value.materials
-        datas.forEach {
-            postMaterial(it)
-        }
-    }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), QrScreenState())
 
     private fun postMaterial(materialEntity: MaterialEntity) {
         _state.update { it.copy(isLoading = true) }
@@ -84,7 +66,6 @@ class DashboardScreenViewModel @Inject constructor(
                                     it.copy(
                                         isPostSuccessful = true,
                                         notificationMessage = "Data tersimpan!",
-                                        showingForm = false
                                     )
                                 }
                                 viewModelScope.launch {
@@ -92,16 +73,11 @@ class DashboardScreenViewModel @Inject constructor(
                                 }
                             }
 
-                            422 -> {
-
-                            }
-
                             else -> {
                                 _state.update {
                                     it.copy(
                                         notificationMessage = "Duh, ada yang salah",
                                         isRequestFailed = FailedRequest(isFailed = true),
-                                        showingForm = false
                                     )
                                 }
                             }
@@ -114,7 +90,7 @@ class DashboardScreenViewModel @Inject constructor(
                             it.copy(
                                 isLoading = false,
                                 notificationMessage = "Data berhasil tersimpan!",
-                                showingForm = false
+                                isPostSuccessful = true
                             )
                         }
                     }
@@ -127,22 +103,48 @@ class DashboardScreenViewModel @Inject constructor(
                 it.copy(
                     notificationMessage = "Data berhasil tersimpan!",
                     isLoading = false,
-                    showingForm = false
+                    isPostSuccessful = true
                 )
             }
         }
     }
 
-    fun onEvent(event: DashboardScreenEvent) {
-        when (event) {
-            DashboardScreenEvent.ClearNotificationState -> _state.update {
-                it.copy(
-                    notificationMessage = "",
-                    isRequestFailed = FailedRequest()
+    fun onEvent(event: QrScreenEvent) {
+        when(event){
+            is QrScreenEvent.OnDriverIdRegistered -> _state.update {
+                it.copy(driverId = event.driverId, currentlyScanning = ScanOptions.Truck)
+            }
+            is QrScreenEvent.OnTruckIdRegistered -> _state.update {
+                it.copy(truckId = event.truckId, currentlyScanning = ScanOptions.Pos)
+            }
+            is QrScreenEvent.OnPosIdRegistered -> _state.update {
+                it.copy(posId = event.posId, currentlyScanning = ScanOptions.None)
+            }
+            is QrScreenEvent.OnSelectedRatio -> _state.update {
+                it.copy(observationRatioPercentage = event.ratio)
+            }
+            is QrScreenEvent.OnNewRemarks -> _state.update {
+                it.copy(remarks = event.remarks)
+            }
+            QrScreenEvent.SaveMaterial -> {
+                val data = MaterialEntity(
+                    driverId = state.value.driverId,
+                    truckId = state.value.truckId,
+                    stationId = state.value.posId,
+                    ratio = state.value.observationRatioPercentage,
+                    remarks = state.value.remarks,
+                    checkerId = state.value.userId,
                 )
+                postMaterial(data)
             }
 
-            DashboardScreenEvent.CheckDataAndPost -> checkAndPost()
+            QrScreenEvent.OnClearNotification -> _state.update {
+                it.copy(notificationMessage = "")
+            }
+
+            is QrScreenEvent.OnClearRemarks -> _state.update {
+                it.copy(remarks = "")
+            }
         }
     }
 }

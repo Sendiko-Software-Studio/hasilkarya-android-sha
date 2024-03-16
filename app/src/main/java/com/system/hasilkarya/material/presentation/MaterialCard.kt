@@ -41,7 +41,7 @@ fun MaterialCard(
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(24.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.QrCodeScanner,

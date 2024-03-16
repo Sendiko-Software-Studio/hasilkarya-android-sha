@@ -41,9 +41,10 @@ fun LoginScreen(
             if (state.isLoginSuccessful)
                 onNavigate(Destination.DashboardScreen.name)
 
-            if (state.isRequestFailed.isFailed)
+            if (state.isRequestFailed.isFailed){
                 delay(1000)
                 onEvent(LoginScreenEvent.OnClearNotification)
+            }
         }
     )
    ContentBoxWithNotification(
