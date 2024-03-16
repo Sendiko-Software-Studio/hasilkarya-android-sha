@@ -34,19 +34,17 @@ class DashboardScreenViewModel @Inject constructor(
     private val _name = preferences.getName()
     private val _materials = repository.getMaterials()
     private val _connectionStatus = connectionObserver.observe()
-    val _user = combine(_token, _name, _state) { token, name, state ->
-        state.copy(token = token,  name = name)
-    }
     val state = combine(
         _connectionStatus,
         _materials,
-        _user,
+        _token,
+        _name,
         _state
-    ) { connectionStatus, materials, user, state ->
+    ) { connectionStatus, materials, token, name, state ->
         state.copy(
-            token = user.token,
+            token = token,
+            name = name,
             connectionStatus = connectionStatus,
-            name = user.name,
             materials = materials
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), DashboardScreenState())
@@ -92,8 +90,13 @@ class DashboardScreenViewModel @Inject constructor(
                                 }
                             }
 
-                            422 -> {
+                            405 -> viewModelScope.launch {
+                                repository.deleteMaterial(materialEntity)
+                            }
 
+
+                            422 -> viewModelScope.launch {
+                                repository.deleteMaterial(materialEntity)
                             }
 
                             else -> {
