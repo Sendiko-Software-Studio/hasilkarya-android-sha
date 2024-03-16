@@ -1,6 +1,5 @@
 package com.system.hasilkarya.qr.presentation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.system.hasilkarya.core.network.NetworkConnectivityObserver
@@ -196,7 +195,6 @@ class QrScreenViewModel @Inject constructor(
 
                             else -> {
                                 _state.update {
-                                    Log.i("INVALID_REQUEST", "onResponse: Invalid data")
                                     it.copy(
                                         notificationMessage = "Duh, ada yang salah",
                                         isRequestFailed = FailedRequest(isFailed = true),
@@ -233,11 +231,17 @@ class QrScreenViewModel @Inject constructor(
 
     fun onEvent(event: QrScreenEvent) {
         when (event) {
-            is QrScreenEvent.OnDriverIdRegistered -> checkDriverId(event.driverId)
+            is QrScreenEvent.OnDriverIdRegistered -> if (state.value.connectionStatus == Status.Available)
+                checkDriverId(event.driverId)
+            else _state.update { it.copy(driverId = event.driverId, currentlyScanning = Truck) }
 
-            is QrScreenEvent.OnTruckIdRegistered -> checkTruckId(event.truckId)
+            is QrScreenEvent.OnTruckIdRegistered -> if (state.value.connectionStatus == Status.Available)
+                checkTruckId(event.truckId)
+            else _state.update { it.copy(truckId = event.truckId, currentlyScanning = Pos) }
 
-            is QrScreenEvent.OnPosIdRegistered -> checkStationId(event.posId)
+            is QrScreenEvent.OnPosIdRegistered -> if (state.value.connectionStatus == Status.Available)
+                checkStationId(event.posId)
+            else _state.update { it.copy(posId = event.posId, currentlyScanning = None) }
 
             is QrScreenEvent.OnSelectedRatio -> _state.update {
                 it.copy(observationRatioPercentage = event.ratio)

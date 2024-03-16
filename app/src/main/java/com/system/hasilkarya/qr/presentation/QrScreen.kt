@@ -2,6 +2,7 @@
 
 package com.system.hasilkarya.qr.presentation
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.ViewGroup
 import androidx.camera.core.CameraSelector
@@ -74,6 +75,7 @@ import kotlinx.coroutines.delay
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QrScreen(
@@ -84,9 +86,10 @@ fun QrScreen(
     LaunchedEffect(
         key1 = state,
         block = {
-            if (state.isPostSuccessful)
+            if (state.isPostSuccessful) {
                 delay(1000)
                 onNavigateBack(Destination.DashboardScreen.name)
+            }
 
             if (state.notificationMessage.isNotBlank())
                 onEvent(QrScreenEvent.OnClearNotification)
@@ -97,12 +100,11 @@ fun QrScreen(
         isLoading = state.isLoading,
         isErrorNotification = state.isRequestFailed.isFailed
     ) {
-        Scaffold { paddingValues ->
+        Scaffold { _ ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(
-                        top = paddingValues.calculateTopPadding(),
                         start = 8.dp,
                         end = 8.dp
                     )
