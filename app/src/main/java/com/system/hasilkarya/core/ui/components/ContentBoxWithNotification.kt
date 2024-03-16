@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.system.hasilkarya.core.ui.theme.poppinsFont
 
 /**
  * Sendiko's custom notification composables!.
@@ -75,6 +76,7 @@ fun Notification(
                     text = message,
                     modifier = Modifier.padding(top = 28.dp + 8.dp, end = 8.dp, start = 8.dp, bottom = 16.dp),
                     color = if (isErrorNotification) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontFamily = poppinsFont
                 )
             }
         )
@@ -109,6 +111,7 @@ fun LoadingIndicator(
                     Text(
                         text = "Loading",
                         color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        fontFamily = poppinsFont
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 1.dp)
