@@ -92,6 +92,10 @@ class DashboardScreenViewModel @Inject constructor(
                                 }
                             }
 
+                            422 -> {
+
+                            }
+
                             else -> {
                                 _state.update {
                                     it.copy(

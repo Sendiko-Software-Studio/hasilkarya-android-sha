@@ -2,8 +2,7 @@ package com.system.hasilkarya.dashboard.presentation
 
 import android.Manifest
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LargeTopAppBar
@@ -15,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
@@ -58,7 +58,9 @@ fun DashboardScreen(
     ) {
         Scaffold(
             topBar = {
-                     LargeTopAppBar(title = { Text(text = "Halo, ${state.name}") })
+                LargeTopAppBar(
+                    title = { Text(text = "Halo, ${state.name}", fontWeight = FontWeight.Bold) }
+                )
             },
         ) {
             LazyColumn(
@@ -70,15 +72,12 @@ fun DashboardScreen(
                 ),
                 content = {
                     item {
-                        Row {
-                            MaterialCard(
-                                modifier = Modifier.weight(1f),
-                                onClickAction = {
-                                    onNavigate(Destination.QrScreen.name)
-                                }
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                        }
+                        MaterialCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClickAction = {
+                                onNavigate(Destination.QrScreen.name)
+                            }
+                        )
                     }
                 }
             )
