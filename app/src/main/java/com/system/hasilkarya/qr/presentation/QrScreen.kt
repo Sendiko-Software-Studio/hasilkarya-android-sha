@@ -70,6 +70,7 @@ import com.system.hasilkarya.dashboard.presentation.ScanOptions.Pos
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.Truck
 import com.system.hasilkarya.qr.data.ratioData
 import com.system.hasilkarya.qr.domain.BarcodeAnalyzer
+import kotlinx.coroutines.delay
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -84,6 +85,7 @@ fun QrScreen(
         key1 = state,
         block = {
             if (state.isPostSuccessful)
+                delay(1000)
                 onNavigateBack(Destination.DashboardScreen.name)
 
             if (state.notificationMessage.isNotBlank())
