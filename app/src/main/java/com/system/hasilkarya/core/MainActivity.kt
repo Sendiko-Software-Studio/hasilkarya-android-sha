@@ -74,9 +74,11 @@ class MainActivity : ComponentActivity() {
                             route = Destination.DashboardScreen.name,
                             content = {
                                 val viewModel = hiltViewModel<DashboardScreenViewModel>()
+                                val connectionStatus = viewModel.connectionStatus.collectAsState().value.connectionStatus
                                 DashboardScreen(
                                     state = viewModel.state.collectAsState().value,
-                                    viewModel::onEvent,
+                                    onEvent = viewModel::onEvent,
+                                    connectionStatus = connectionStatus,
                                     onNavigate = { route ->
                                         navController.navigate(route = route)
                                     }
