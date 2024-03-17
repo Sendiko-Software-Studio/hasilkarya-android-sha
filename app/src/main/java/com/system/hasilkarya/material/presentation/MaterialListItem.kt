@@ -27,7 +27,7 @@ fun MaterialListItem(
         verticalArrangement = Arrangement.spacedBy(space = 8.dp, alignment = Alignment.Top),
         horizontalAlignment = Alignment.End,
     ) {
-        AssistChip(onClick = {  }, label = { Text(text = "Menunggu jaringan") })
+        AssistChip(onClick = {  }, label = { Text(text = "Menunggu jaringan", fontFamily = poppinsFont) })
         Text(
             text = "driverId: ${materialEntity.driverId.take(8)}...",
             fontFamily = poppinsFont,
@@ -59,7 +59,7 @@ fun MaterialListItem(
             textAlign = TextAlign.Start
         )
         Text(
-            text = "keterangan: ${materialEntity.remarks}...",
+            text = "keterangan: ${materialEntity.remarks}",
             fontFamily = poppinsFont,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Start

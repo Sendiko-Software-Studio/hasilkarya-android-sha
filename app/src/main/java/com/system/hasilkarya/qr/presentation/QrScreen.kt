@@ -225,7 +225,7 @@ fun QrScreen(
                                 onEvent(QrScreenEvent.SaveMaterial)
                             }
                         ) {
-                            Text(text = "Simpan data")
+                            Text(text = "Simpan data", fontFamily = poppinsFont)
                         }
                     }
                 }

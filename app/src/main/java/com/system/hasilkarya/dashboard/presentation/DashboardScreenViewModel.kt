@@ -1,5 +1,6 @@
 package com.system.hasilkarya.dashboard.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.system.hasilkarya.core.network.NetworkConnectivityObserver
@@ -33,23 +34,24 @@ class DashboardScreenViewModel @Inject constructor(
     private val _token = preferences.getToken()
     private val _name = preferences.getName()
     private val _materials = repository.getMaterials()
-    private val _connectionStatus = connectionObserver.observe()
+    val connectionStatus = combine(connectionObserver.observe(), _state) { connectionStatus, state ->
+        state.copy(connectionStatus = connectionStatus)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), DashboardScreenState())
     val state = combine(
-        _connectionStatus,
         _materials,
         _token,
         _name,
         _state
-    ) { connectionStatus, materials, token, name, state ->
+    ) { materials, token, name, state ->
         state.copy(
             token = token,
             name = name,
-            connectionStatus = connectionStatus,
-            materials = materials
+            materials = materials,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), DashboardScreenState())
 
     private fun checkAndPost() {
+        Log.i("STATUS", "checkAndPost: try")
         val datas = state.value.materials
         datas.forEach {
             postMaterial(it)
@@ -57,6 +59,7 @@ class DashboardScreenViewModel @Inject constructor(
     }
 
     private fun postMaterial(materialEntity: MaterialEntity) {
+        Log.i("STATUS", "postMaterial: try")
         _state.update { it.copy(isLoading = true) }
         val token = "Bearer ${state.value.token}"
         val data = PostMaterialRequest(
@@ -67,7 +70,7 @@ class DashboardScreenViewModel @Inject constructor(
             ratio = materialEntity.ratio,
             remarks = materialEntity.remarks,
         )
-        if (state.value.connectionStatus == Status.Available) {
+        if (connectionStatus.value.connectionStatus == Status.Available) {
             val request = repository.postMaterial(token, data)
             request.enqueue(
                 object : Callback<PostMaterialResponse> {
@@ -75,14 +78,13 @@ class DashboardScreenViewModel @Inject constructor(
                         call: Call<PostMaterialResponse>,
                         response: Response<PostMaterialResponse>
                     ) {
+                        Log.i("STATUS", "onResponse: try")
                         _state.update { it.copy(isLoading = false) }
                         when (response.code()) {
                             201 -> {
                                 _state.update {
                                     it.copy(
-                                        isPostSuccessful = true,
-                                        notificationMessage = "Data tersimpan!",
-                                        showingForm = false
+                                        isPostSuccessful = true
                                     )
                                 }
                                 viewModelScope.launch {
@@ -102,9 +104,7 @@ class DashboardScreenViewModel @Inject constructor(
                             else -> {
                                 _state.update {
                                     it.copy(
-                                        notificationMessage = "Duh, ada yang salah",
-                                        isRequestFailed = FailedRequest(isFailed = true),
-                                        showingForm = false
+                                        isRequestFailed = FailedRequest(isFailed = true)
                                     )
                                 }
                             }
@@ -115,9 +115,7 @@ class DashboardScreenViewModel @Inject constructor(
                         viewModelScope.launch { repository.saveMaterial(materialEntity) }
                         _state.update {
                             it.copy(
-                                isLoading = false,
-                                notificationMessage = "Data berhasil tersimpan!",
-                                showingForm = false
+                                isLoading = false
                             )
                         }
                     }
@@ -128,9 +126,7 @@ class DashboardScreenViewModel @Inject constructor(
             viewModelScope.launch { repository.saveMaterial(materialEntity) }
             _state.update {
                 it.copy(
-                    notificationMessage = "Data berhasil tersimpan!",
                     isLoading = false,
-                    showingForm = false
                 )
             }
         }
@@ -140,7 +136,6 @@ class DashboardScreenViewModel @Inject constructor(
         when (event) {
             DashboardScreenEvent.ClearNotificationState -> _state.update {
                 it.copy(
-                    notificationMessage = "",
                     isRequestFailed = FailedRequest()
                 )
             }
