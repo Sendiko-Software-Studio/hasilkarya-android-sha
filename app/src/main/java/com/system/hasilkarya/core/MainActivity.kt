@@ -15,6 +15,8 @@ import com.system.hasilkarya.dashboard.presentation.DashboardScreen
 import com.system.hasilkarya.dashboard.presentation.DashboardScreenViewModel
 import com.system.hasilkarya.login.presentation.LoginScreen
 import com.system.hasilkarya.login.presentation.LoginScreenViewModel
+import com.system.hasilkarya.profile.presentation.ProfileScreen
+import com.system.hasilkarya.profile.presentation.ProfileScreenViewModel
 import com.system.hasilkarya.qr.presentation.QrScreen
 import com.system.hasilkarya.qr.presentation.QrScreenViewModel
 import com.system.hasilkarya.splash.presentation.SplashScreen
@@ -25,10 +27,10 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
             HasilKaryaTheme {
                 val navController = rememberNavController()
-                enableEdgeToEdge()
                 NavHost(
                     navController = navController,
                     startDestination = Destination.SplashScreen.name,
@@ -99,6 +101,21 @@ class MainActivity : ComponentActivity() {
                                             popUpTo(
                                                 route,
                                             ) { inclusive = true }
+                                        }
+                                    }
+                                )
+                            }
+                        )
+                        composable(
+                            route = Destination.ProfileScreen.name,
+                            content = {
+                                val viewModel = hiltViewModel<ProfileScreenViewModel>()
+                                ProfileScreen(
+                                    state = viewModel.state.collectAsState().value,
+                                    onEvent = viewModel::onEvent,
+                                    onNavigateBack = {
+                                        navController.navigate(it.name){
+                                            popUpTo(it.name) { inclusive = true }
                                         }
                                     }
                                 )
