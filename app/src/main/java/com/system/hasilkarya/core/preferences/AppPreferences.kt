@@ -13,6 +13,27 @@ class AppPreferences @Inject constructor(private val dataStore: DataStore<Prefer
     private val tokenKey = stringPreferencesKey("token")
     private val nameKey = stringPreferencesKey("name")
     private val userIdKey = stringPreferencesKey("user_id")
+    private val emailKey = stringPreferencesKey("email")
+
+    suspend fun setEmail(email: String) {
+        dataStore.edit {
+            it[emailKey] = email
+        }
+    }
+
+    fun getEmail(): Flow<String> {
+        return dataStore.data.map {
+            it[emailKey]?:""
+        }
+    }
+
+    suspend fun clearData() {
+        dataStore.edit {
+            it[tokenKey] = ""
+            it[nameKey] = ""
+            it[userIdKey] = ""
+        }
+    }
 
     suspend fun setToken(token: String) {
         dataStore.edit {

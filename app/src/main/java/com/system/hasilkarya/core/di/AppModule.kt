@@ -10,6 +10,7 @@ import com.system.hasilkarya.dashboard.domain.MaterialDao
 import com.system.hasilkarya.dashboard.domain.MaterialDatabase
 import com.system.hasilkarya.dashboard.domain.MaterialRepository
 import com.system.hasilkarya.login.domain.LoginRepository
+import com.system.hasilkarya.profile.domain.ProfileRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -92,6 +93,12 @@ object AppModule {
     @Singleton
     fun provideConnectivityObserver(@ApplicationContext context: Context): NetworkConnectivityObserver {
         return NetworkConnectivityObserver(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProfileRepository(appPreferences: AppPreferences, apiServices: ApiServices): ProfileRepository {
+        return ProfileRepository(appPreferences, apiServices)
     }
 
 }
