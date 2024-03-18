@@ -4,6 +4,7 @@ import com.system.hasilkarya.dashboard.data.PostMaterialRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialResponse
 import com.system.hasilkarya.login.data.LoginRequest
 import com.system.hasilkarya.login.data.LoginResponse
+import com.system.hasilkarya.profile.data.LogoutResponse
 import com.system.hasilkarya.qr.data.CheckDriverIdResponse
 import com.system.hasilkarya.qr.data.CheckStationIdResponse
 import com.system.hasilkarya.qr.data.CheckTruckIdResponse
@@ -44,5 +45,10 @@ interface ApiServices {
         @Path("id") stationId: String,
         @Header("Authorization") token: String
     ): Call<CheckStationIdResponse>
+
+    @POST("logout")
+    fun logout(
+        @Header("Authorization") token: String
+    ): Call<LogoutResponse>
 
 }
