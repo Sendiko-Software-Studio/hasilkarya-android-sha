@@ -91,8 +91,10 @@ fun QrScreen(
                 onNavigateBack(Destination.DashboardScreen.name)
             }
 
-            if (state.notificationMessage.isNotBlank())
+            if (state.notificationMessage.isNotBlank()){
+                delay(2000)
                 onEvent(QrScreenEvent.OnClearNotification)
+            }
         }
     )
     ContentBoxWithNotification(
@@ -110,27 +112,27 @@ fun QrScreen(
                     )
             ) {
                 AnimatedVisibility(
-                    visible = state.currentlyScanning == Driver,
-                    enter = slideInHorizontally(),
-                    exit = slideOutHorizontally(),
-                    content = {
-                        ScanDriverForm(
-                            onResult = { onEvent(QrScreenEvent.OnDriverIdRegistered(it)) },
-                            navigateBack = {
-                                onNavigateBack(it)
-                            }
-                        )
-                    }
-                )
-                AnimatedVisibility(
                     visible = state.currentlyScanning == Truck,
                     enter = slideInHorizontally(),
                     exit = slideOutHorizontally(),
                     content = {
                         ScanTruckForm(
                             onResult = { onEvent(QrScreenEvent.OnTruckIdRegistered(it)) },
+                            navigateBack = {
+                                onNavigateBack(it.name)
+                            }
+                        )
+                    }
+                )
+                AnimatedVisibility(
+                    visible = state.currentlyScanning == Driver,
+                    enter = slideInHorizontally(),
+                    exit = slideOutHorizontally(),
+                    content = {
+                        ScanDriverForm(
+                            onResult = { onEvent(QrScreenEvent.OnDriverIdRegistered(it)) },
                             prevForm = {
-                                onEvent(QrScreenEvent.OnNavigateForm(Driver))
+                                onEvent(QrScreenEvent.OnNavigateForm(it))
                             }
                         )
                     }
@@ -237,7 +239,7 @@ fun QrScreen(
 @Composable
 fun ScanDriverForm(
     onResult: (String) -> Unit,
-    navigateBack: (String) -> Unit,
+    prevForm: (ScanOptions) -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -311,7 +313,7 @@ fun ScanDriverForm(
             Icon(
                 painter = painterResource(id = R.drawable.scanning),
                 contentDescription = "scan",
-                modifier = Modifier.size(200.dp),
+                modifier = Modifier.size(256.dp),
                 tint = Color.White
             )
         }
@@ -321,7 +323,7 @@ fun ScanDriverForm(
                 .background(MaterialTheme.colorScheme.background)
                 .weight(1f),
         ) {
-            QrFormHeader(navigateBack = { navigateBack(Destination.DashboardScreen.name) }, result = result, currentlyScanning = Driver)
+            QrFormHeader(navigateBack = { prevForm(Truck) }, result = result, currentlyScanning = Driver)
             Spacer(modifier = Modifier.size(16.dp))
             AnimatedVisibility(
                 visible = result.isNotBlank(),
@@ -334,11 +336,11 @@ fun ScanDriverForm(
                             onResult(result)
                         },
                         content = {
-                            Text(text = "Lanjut scan Truk", fontFamily = poppinsFont)
+                            Text(text = "Lanjut scan Pos", fontFamily = poppinsFont)
                         }
                     )
                 }
-            )
+            ) 
         }
     }
 }
@@ -346,7 +348,7 @@ fun ScanDriverForm(
 @Composable
 fun ScanTruckForm(
     onResult: (String) -> Unit,
-    prevForm: (ScanOptions) -> Unit
+    navigateBack: (Destination) -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -418,7 +420,7 @@ fun ScanTruckForm(
             Icon(
                 painter = painterResource(id = R.drawable.scanning),
                 contentDescription = "scan",
-                modifier = Modifier.size(200.dp),
+                modifier = Modifier.size(256.dp),
                 tint = Color.White
             )
         }
@@ -432,7 +434,7 @@ fun ScanTruckForm(
                 result = result,
                 currentlyScanning = Truck,
                 navigateBack = {
-                    prevForm(Driver)
+                    navigateBack(Destination.DashboardScreen)
                 },
             )
 
@@ -448,7 +450,7 @@ fun ScanTruckForm(
                             onResult(result)
                         },
                         content = {
-                            Text(text = "Lanjut scan Pos", fontFamily = poppinsFont)
+                            Text(text = "Lanjut scan Driver", fontFamily = poppinsFont)
                         }
                     )
                 }
@@ -532,7 +534,7 @@ fun ScanPostForm(
             Icon(
                 painter = painterResource(id = R.drawable.scanning),
                 contentDescription = "scan",
-                modifier = Modifier.size(200.dp),
+                modifier = Modifier.size(256.dp),
                 tint = Color.White
             )
         }
@@ -542,7 +544,7 @@ fun ScanPostForm(
                 .background(MaterialTheme.colorScheme.background)
                 .weight(1f),
         ) {
-            QrFormHeader(navigateBack = { prevForm(Truck) }, result = result, currentlyScanning = Pos)
+            QrFormHeader(navigateBack = { prevForm(Driver) }, result = result, currentlyScanning = Pos)
 
             Spacer(modifier = Modifier.size(16.dp))
             AnimatedVisibility(
@@ -563,4 +565,10 @@ fun ScanPostForm(
             )
         }
     }
+}
+
+@androidx.compose.ui.tooling.preview.Preview
+@Composable
+fun QRPrev() {
+    ScanDriverForm(onResult = {}, prevForm = {})
 }

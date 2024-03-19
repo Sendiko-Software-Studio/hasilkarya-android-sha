@@ -10,9 +10,9 @@ import com.system.hasilkarya.dashboard.data.MaterialEntity
 import com.system.hasilkarya.dashboard.data.PostMaterialRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialResponse
 import com.system.hasilkarya.dashboard.domain.MaterialRepository
+import com.system.hasilkarya.dashboard.presentation.ScanOptions.Driver
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.None
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.Pos
-import com.system.hasilkarya.dashboard.presentation.ScanOptions.Truck
 import com.system.hasilkarya.qr.data.CheckDriverIdResponse
 import com.system.hasilkarya.qr.data.CheckStationIdResponse
 import com.system.hasilkarya.qr.data.CheckTruckIdResponse
@@ -62,7 +62,7 @@ class QrScreenViewModel @Inject constructor(
                     _state.update { it.copy(isLoading = false) }
                     when (response.code()) {
                         200 -> _state.update {
-                            it.copy(driverId = driverId, currentlyScanning = Truck)
+                            it.copy(driverId = driverId, currentlyScanning = Pos)
                         }
 
                         else -> _state.update {
@@ -100,7 +100,7 @@ class QrScreenViewModel @Inject constructor(
                     _state.update { it.copy(isLoading = false) }
                     when (response.code()) {
                         200 -> _state.update {
-                            it.copy(truckId = truckId, currentlyScanning = Pos)
+                            it.copy(truckId = truckId, currentlyScanning = Driver)
                         }
 
                         else -> _state.update {
@@ -233,11 +233,11 @@ class QrScreenViewModel @Inject constructor(
         when (event) {
             is QrScreenEvent.OnDriverIdRegistered -> if (state.value.connectionStatus == Status.Available)
                 checkDriverId(event.driverId)
-            else _state.update { it.copy(driverId = event.driverId, currentlyScanning = Truck) }
+            else _state.update { it.copy(driverId = event.driverId, currentlyScanning = Pos) }
 
             is QrScreenEvent.OnTruckIdRegistered -> if (state.value.connectionStatus == Status.Available)
                 checkTruckId(event.truckId)
-            else _state.update { it.copy(truckId = event.truckId, currentlyScanning = Pos) }
+            else _state.update { it.copy(truckId = event.truckId, currentlyScanning = Driver) }
 
             is QrScreenEvent.OnPosIdRegistered -> if (state.value.connectionStatus == Status.Available)
                 checkStationId(event.posId)
