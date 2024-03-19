@@ -51,15 +51,14 @@ class DashboardScreenViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), DashboardScreenState())
 
     private fun checkAndPost() {
-        Log.i("STATUS", "checkAndPost: try")
         val datas = state.value.materials
+        Log.i("MATERIALS", "checkAndPost: $datas")
         datas.forEach {
             postMaterial(it)
         }
     }
 
     private fun postMaterial(materialEntity: MaterialEntity) {
-        Log.i("STATUS", "postMaterial: try")
         _state.update { it.copy(isLoading = true) }
         val token = "Bearer ${state.value.token}"
         val data = PostMaterialRequest(
@@ -84,7 +83,8 @@ class DashboardScreenViewModel @Inject constructor(
                             201 -> {
                                 _state.update {
                                     it.copy(
-                                        isPostSuccessful = true
+                                        isPostSuccessful = true,
+                                        materials = state.value.materials - materialEntity
                                     )
                                 }
                                 viewModelScope.launch {
