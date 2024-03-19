@@ -36,14 +36,18 @@ fun LoginScreen(
     onNavigate: (String) -> Unit
 ) {
     LaunchedEffect(
-        key1 = state.isLoginSuccessful,
-        key2 = state.isRequestFailed,
+        key1 = state,
         block = {
             if (state.isLoginSuccessful)
                 onNavigate(Destination.DashboardScreen.name)
 
             if (state.isRequestFailed.isFailed){
                 delay(1000)
+                onEvent(LoginScreenEvent.OnClearNotification)
+            }
+
+            if (state.notificationMessage.isNotBlank()){
+                delay(2000)
                 onEvent(LoginScreenEvent.OnClearNotification)
             }
         }
