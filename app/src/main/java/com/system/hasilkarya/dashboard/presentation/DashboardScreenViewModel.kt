@@ -10,6 +10,7 @@ import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.data.MaterialEntity
 import com.system.hasilkarya.dashboard.data.PostMaterialRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialResponse
+import com.system.hasilkarya.dashboard.data.PostToLogRequest
 import com.system.hasilkarya.dashboard.domain.MaterialRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,6 +51,40 @@ class DashboardScreenViewModel @Inject constructor(
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), DashboardScreenState())
 
+    private fun postToLog(token: String, material: PostMaterialRequest) {
+        _state.update { it.copy(isLoading = true) }
+        val data = PostToLogRequest(
+            driverId = material.driverId,
+            truckId = material.truckId,
+            stationId = material.stationId,
+            checkerId = material.checkerId,
+            errorLog = material.remarks
+        )
+        val request = repository.postToLog(token, data)
+
+        request.enqueue(
+            object : Callback<PostMaterialResponse> {
+                override fun onResponse(
+                    call: Call<PostMaterialResponse>,
+                    response: Response<PostMaterialResponse>
+                ) {
+                    _state.update { it.copy(
+                        isLoading = false,
+                        isPostSuccessful = true,
+                    ) }
+                }
+
+                override fun onFailure(call: Call<PostMaterialResponse>, t: Throwable) {
+                    _state.update { it.copy(
+                        isLoading = false,
+                        isRequestFailed = FailedRequest(true),
+                    ) }
+                }
+
+            }
+        )
+    }
+
     private fun checkAndPost() {
         val datas = state.value.materials
         Log.i("MATERIALS", "checkAndPost: $datas")
@@ -87,21 +122,21 @@ class DashboardScreenViewModel @Inject constructor(
                                         materials = state.value.materials - materialEntity
                                     )
                                 }
-                                viewModelScope.launch {
-                                    repository.deleteMaterial(materialEntity)
-                                }
                             }
 
                             405 -> viewModelScope.launch {
+                                postToLog(token, data)
                                 repository.deleteMaterial(materialEntity)
                             }
 
 
                             422 -> viewModelScope.launch {
+                                postToLog(token, data)
                                 repository.deleteMaterial(materialEntity)
                             }
 
                             else -> {
+                                postToLog(token, data)
                                 _state.update {
                                     it.copy(
                                         isRequestFailed = FailedRequest(isFailed = true)
