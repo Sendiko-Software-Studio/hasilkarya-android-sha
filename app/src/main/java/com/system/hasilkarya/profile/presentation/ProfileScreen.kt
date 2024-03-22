@@ -1,5 +1,6 @@
 package com.system.hasilkarya.profile.presentation
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +26,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
@@ -79,7 +82,7 @@ fun ProfileScreen(
                 content = {
                     item {
                         Card(
-                            modifier = androidx.compose.ui.Modifier.padding(16.dp)
+                            modifier = Modifier.padding(16.dp)
                         ) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -125,6 +128,18 @@ fun ProfileScreen(
                                 )
                             }
                         }
+                    }
+                    item {
+                        val uriHandler = LocalUriHandler.current
+                        Text(
+                            text = "v1.0",
+                            fontFamily = poppinsFont,
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth()
+                                .clickable { uriHandler.openUri("https://github.com/Sendiko-Software-Studio") },
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
             )

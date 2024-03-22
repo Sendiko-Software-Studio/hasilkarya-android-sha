@@ -31,8 +31,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.TextSnippet
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.TextSnippet
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -55,6 +55,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -216,9 +217,10 @@ fun QrScreen(
                             onValueChange = {
                                 onEvent(QrScreenEvent.OnNewRemarks(it))
                             },
-                            placeholder = { Text(text = "keterangan")},
-                            leadingIcon = { Icon(imageVector = Icons.Default.TextSnippet, contentDescription = "keterangan")},
-                            shape = RoundedCornerShape(16.dp)
+                            placeholder = { Text(text = "keterangan", fontFamily = poppinsFont)},
+                            leadingIcon = { Icon(imageVector = Icons.AutoMirrored.Filled.TextSnippet, contentDescription = "keterangan")},
+                            shape = RoundedCornerShape(16.dp),
+                            textStyle = TextStyle(fontFamily = poppinsFont)
                         )
                         Button(
                             modifier = Modifier.fillMaxWidth(),
