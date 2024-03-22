@@ -1,6 +1,7 @@
 package com.system.hasilkarya.dashboard.presentation
 
 import android.Manifest
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.expandVertically
@@ -50,7 +51,7 @@ fun DashboardScreen(
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     LaunchedEffect(
         key1 = cameraPermissionState.hasPermission,
-        key2 = state,
+        key2 = state.materials,
         key3 = connectionStatus,
         block = {
 
@@ -58,6 +59,7 @@ fun DashboardScreen(
                 cameraPermissionState.launchPermissionRequest()
 
             if (connectionStatus == Status.Available && state.materials.isNotEmpty()){
+                Log.i("MATERIALS", "DashboardScreen: ${state.materials}")
                 onEvent(DashboardScreenEvent.CheckDataAndPost)
             }
         }

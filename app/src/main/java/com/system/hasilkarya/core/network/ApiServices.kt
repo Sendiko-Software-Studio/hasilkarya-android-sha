@@ -2,6 +2,8 @@ package com.system.hasilkarya.core.network
 
 import com.system.hasilkarya.dashboard.data.PostMaterialRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialResponse
+import com.system.hasilkarya.dashboard.data.PostToLogRequest
+import com.system.hasilkarya.dashboard.data.PostToLogResponse
 import com.system.hasilkarya.login.data.LoginRequest
 import com.system.hasilkarya.login.data.LoginResponse
 import com.system.hasilkarya.profile.data.LogoutResponse
@@ -50,5 +52,11 @@ interface ApiServices {
     fun logout(
         @Header("Authorization") token: String
     ): Call<LogoutResponse>
+
+    @POST("checker/material-movement-error-log/store")
+    fun postToLog(
+        @Header("Authorization") token: String,
+        @Body request: PostToLogRequest
+    ): Call<PostToLogResponse>
 
 }

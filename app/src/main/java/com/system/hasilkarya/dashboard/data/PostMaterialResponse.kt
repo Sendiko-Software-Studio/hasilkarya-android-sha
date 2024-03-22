@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class PostMaterialResponse(
 
 	@field:SerializedName("data")
-	val data: Data,
+	val data: Data1,
 
 	@field:SerializedName("success")
 	val success: Boolean,
@@ -14,7 +14,7 @@ data class PostMaterialResponse(
 	val message: String
 )
 
-data class Data(
+data class Data1(
 
 	@field:SerializedName("date")
 	val date: String,

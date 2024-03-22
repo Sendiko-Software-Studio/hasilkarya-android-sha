@@ -5,7 +5,7 @@ import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.presentation.ScanOptions
 
 data class QrScreenState(
-    val currentlyScanning: ScanOptions = ScanOptions.Driver,
+    val currentlyScanning: ScanOptions = ScanOptions.Truck,
     val driverId: String = "",
     val truckId: String = "",
     val posId: String = "",
