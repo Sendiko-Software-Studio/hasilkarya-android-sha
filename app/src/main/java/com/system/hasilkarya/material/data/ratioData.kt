@@ -1,4 +1,4 @@
-package com.system.hasilkarya.qr.data
+package com.system.hasilkarya.material.data
 
 data class ratioData(
     val ratio: Double,

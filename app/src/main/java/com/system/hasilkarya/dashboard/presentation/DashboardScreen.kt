@@ -35,8 +35,8 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.theme.poppinsFont
-import com.system.hasilkarya.material.presentation.MaterialCard
-import com.system.hasilkarya.material.presentation.MaterialListItem
+import com.system.hasilkarya.material.presentation.component.MaterialCard
+import com.system.hasilkarya.material.presentation.component.MaterialListItem
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable

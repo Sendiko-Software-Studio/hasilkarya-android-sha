@@ -1,8 +1,8 @@
-package com.system.hasilkarya.qr.data
+package com.system.hasilkarya.material.data
 
 import com.google.gson.annotations.SerializedName
 
-data class CheckStationIdResponse(
+data class CheckTruckIdResponse(
 
 	@field:SerializedName("data")
 	val data: Any,

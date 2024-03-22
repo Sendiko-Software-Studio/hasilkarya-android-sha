@@ -1,10 +1,10 @@
-package com.system.hasilkarya.qr.presentation
+package com.system.hasilkarya.material.presentation
 
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.presentation.ScanOptions
 
-data class QrScreenState(
+data class MaterialQrScreenState(
     val currentlyScanning: ScanOptions = ScanOptions.Truck,
     val driverId: String = "",
     val truckId: String = "",

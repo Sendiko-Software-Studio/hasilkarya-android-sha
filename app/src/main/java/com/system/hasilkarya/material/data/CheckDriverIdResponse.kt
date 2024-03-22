@@ -1,4 +1,4 @@
-package com.system.hasilkarya.qr.data
+package com.system.hasilkarya.material.data
 
 import com.google.gson.annotations.SerializedName
 

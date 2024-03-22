@@ -17,8 +17,8 @@ import com.system.hasilkarya.login.presentation.LoginScreen
 import com.system.hasilkarya.login.presentation.LoginScreenViewModel
 import com.system.hasilkarya.profile.presentation.ProfileScreen
 import com.system.hasilkarya.profile.presentation.ProfileScreenViewModel
-import com.system.hasilkarya.qr.presentation.QrScreen
-import com.system.hasilkarya.qr.presentation.QrScreenViewModel
+import com.system.hasilkarya.material.presentation.MaterialQrScreen
+import com.system.hasilkarya.material.presentation.MaterialQrScreenViewModel
 import com.system.hasilkarya.splash.presentation.SplashScreen
 import com.system.hasilkarya.splash.presentation.SplashScreenViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -90,8 +90,8 @@ class MainActivity : ComponentActivity() {
                         composable(
                             route = Destination.QrScreen.name,
                             content = {
-                                val viewModel = hiltViewModel<QrScreenViewModel>()
-                                QrScreen(
+                                val viewModel = hiltViewModel<MaterialQrScreenViewModel>()
+                                MaterialQrScreen(
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
                                     onNavigateBack = { route ->

@@ -79,7 +79,7 @@ class DashboardScreenViewModel @Inject constructor(
                 message += "Driver ID is not valid, "
 
             if (!isStationValid(token, material.stationId))
-                message += "Station ID is not valid, "
+                message += "Station ID is not valid."
 
             val data = PostToLogRequest(
                 driverId = material.driverId,

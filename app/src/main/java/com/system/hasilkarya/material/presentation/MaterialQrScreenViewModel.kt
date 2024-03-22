@@ -1,4 +1,4 @@
-package com.system.hasilkarya.qr.presentation
+package com.system.hasilkarya.material.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,9 +13,9 @@ import com.system.hasilkarya.dashboard.domain.MaterialRepository
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.Driver
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.None
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.Pos
-import com.system.hasilkarya.qr.data.CheckDriverIdResponse
-import com.system.hasilkarya.qr.data.CheckStationIdResponse
-import com.system.hasilkarya.qr.data.CheckTruckIdResponse
+import com.system.hasilkarya.material.data.CheckDriverIdResponse
+import com.system.hasilkarya.material.data.CheckStationIdResponse
+import com.system.hasilkarya.material.data.CheckTruckIdResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,13 +29,13 @@ import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
-class QrScreenViewModel @Inject constructor(
+class MaterialQrScreenViewModel @Inject constructor(
     private val repository: MaterialRepository,
     preferences: AppPreferences,
     connectionObserver: NetworkConnectivityObserver
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(QrScreenState())
+    private val _state = MutableStateFlow(MaterialQrScreenState())
     private val _token = preferences.getToken()
     private val _userId = preferences.getUserId()
     private val _connectionStatus = connectionObserver.observe()
@@ -47,7 +47,7 @@ class QrScreenViewModel @Inject constructor(
             userId = userId,
             connectionStatus = connectionStatus
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), QrScreenState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), MaterialQrScreenState())
 
     private fun checkDriverId(driverId: String) {
         _state.update { it.copy(isLoading = true) }
@@ -229,29 +229,29 @@ class QrScreenViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: QrScreenEvent) {
+    fun onEvent(event: MaterialQrScreenEvent) {
         when (event) {
-            is QrScreenEvent.OnDriverIdRegistered -> if (state.value.connectionStatus == Status.Available)
+            is MaterialQrScreenEvent.OnDriverIdRegistered -> if (state.value.connectionStatus == Status.Available)
                 checkDriverId(event.driverId)
             else _state.update { it.copy(driverId = event.driverId, currentlyScanning = Pos) }
 
-            is QrScreenEvent.OnTruckIdRegistered -> if (state.value.connectionStatus == Status.Available)
+            is MaterialQrScreenEvent.OnTruckIdRegistered -> if (state.value.connectionStatus == Status.Available)
                 checkTruckId(event.truckId)
             else _state.update { it.copy(truckId = event.truckId, currentlyScanning = Driver) }
 
-            is QrScreenEvent.OnPosIdRegistered -> if (state.value.connectionStatus == Status.Available)
+            is MaterialQrScreenEvent.OnPosIdRegistered -> if (state.value.connectionStatus == Status.Available)
                 checkStationId(event.posId)
             else _state.update { it.copy(posId = event.posId, currentlyScanning = None) }
 
-            is QrScreenEvent.OnSelectedRatio -> _state.update {
+            is MaterialQrScreenEvent.OnSelectedRatio -> _state.update {
                 it.copy(observationRatioPercentage = event.ratio)
             }
 
-            is QrScreenEvent.OnNewRemarks -> _state.update {
+            is MaterialQrScreenEvent.OnNewRemarks -> _state.update {
                 it.copy(remarks = event.remarks)
             }
 
-            QrScreenEvent.SaveMaterial -> {
+            MaterialQrScreenEvent.SaveMaterial -> {
                 val data = MaterialEntity(
                     driverId = state.value.driverId,
                     truckId = state.value.truckId,
@@ -263,15 +263,15 @@ class QrScreenViewModel @Inject constructor(
                 postMaterial(data)
             }
 
-            QrScreenEvent.OnClearNotification -> _state.update {
+            MaterialQrScreenEvent.OnClearNotification -> _state.update {
                 it.copy(notificationMessage = "")
             }
 
-            is QrScreenEvent.OnClearRemarks -> _state.update {
+            is MaterialQrScreenEvent.OnClearRemarks -> _state.update {
                 it.copy(remarks = "")
             }
 
-            is QrScreenEvent.OnNavigateForm -> _state.update {
+            is MaterialQrScreenEvent.OnNavigateForm -> _state.update {
                 it.copy(currentlyScanning = event.scanOptions)
             }
         }

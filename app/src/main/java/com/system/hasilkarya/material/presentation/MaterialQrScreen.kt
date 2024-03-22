@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.system.hasilkarya.qr.presentation
+package com.system.hasilkarya.material.presentation
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -70,8 +70,10 @@ import com.system.hasilkarya.dashboard.presentation.ScanOptions.Driver
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.None
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.Pos
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.Truck
-import com.system.hasilkarya.qr.data.ratioData
+import com.system.hasilkarya.material.data.ratioData
 import com.system.hasilkarya.qr.domain.BarcodeAnalyzer
+import com.system.hasilkarya.qr.presentation.QrFormHeader
+import com.system.hasilkarya.qr.presentation.QrScanComponent
 import kotlinx.coroutines.delay
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -79,9 +81,9 @@ import java.util.concurrent.Executors
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QrScreen(
-    state: QrScreenState,
-    onEvent: (QrScreenEvent) -> Unit,
+fun MaterialQrScreen(
+    state: MaterialQrScreenState,
+    onEvent: (MaterialQrScreenEvent) -> Unit,
     onNavigateBack: (String) -> Unit,
 ) {
     LaunchedEffect(
@@ -92,9 +94,9 @@ fun QrScreen(
                 onNavigateBack(Destination.DashboardScreen.name)
             }
 
-            if (state.notificationMessage.isNotBlank()){
+            if (state.notificationMessage.isNotBlank()) {
                 delay(2000)
-                onEvent(QrScreenEvent.OnClearNotification)
+                onEvent(MaterialQrScreenEvent.OnClearNotification)
             }
         }
     )
@@ -117,11 +119,15 @@ fun QrScreen(
                     enter = slideInHorizontally(),
                     exit = slideOutHorizontally(),
                     content = {
-                        ScanTruckForm(
-                            onResult = { onEvent(QrScreenEvent.OnTruckIdRegistered(it)) },
+                        QrScanComponent(
+                            onResult = {
+                                onEvent(MaterialQrScreenEvent.OnTruckIdRegistered(it))
+                            },
                             navigateBack = {
-                                onNavigateBack(it.name)
-                            }
+                                onNavigateBack(Destination.DashboardScreen.name)
+                            },
+                            title = "Truck",
+                            textButton = "Lanjut scan driver"
                         )
                     }
                 )
@@ -130,11 +136,15 @@ fun QrScreen(
                     enter = slideInHorizontally(),
                     exit = slideOutHorizontally(),
                     content = {
-                        ScanDriverForm(
-                            onResult = { onEvent(QrScreenEvent.OnDriverIdRegistered(it)) },
-                            prevForm = {
-                                onEvent(QrScreenEvent.OnNavigateForm(it))
-                            }
+                        QrScanComponent(
+                            onResult = {
+                                onEvent(MaterialQrScreenEvent.OnDriverIdRegistered(it))
+                            },
+                            navigateBack = {
+                                onEvent(MaterialQrScreenEvent.OnNavigateForm(Truck))
+                            },
+                            title = "Driver",
+                            textButton = "Lanjut scan pos"
                         )
                     }
                 )
@@ -143,11 +153,15 @@ fun QrScreen(
                     enter = slideInHorizontally(),
                     exit = slideOutHorizontally(),
                     content = {
-                        ScanPostForm(
-                            onResult = { onEvent(QrScreenEvent.OnPosIdRegistered(it)) },
-                            prevForm = {
-                                onEvent(QrScreenEvent.OnNavigateForm(Truck))
-                            }
+                        QrScanComponent(
+                            onResult = {
+                                onEvent(MaterialQrScreenEvent.OnPosIdRegistered(it))
+                            },
+                            navigateBack = {
+                                onEvent(MaterialQrScreenEvent.OnNavigateForm(Truck))
+                            },
+                            title = "Pos",
+                            textButton = "Lanjut isi data"
                         )
                     }
                 )
@@ -176,7 +190,7 @@ fun QrScreen(
                         ) {
                             IconButton(
                                 onClick = {
-                                    onEvent(QrScreenEvent.OnNavigateForm(Pos))
+                                    onEvent(MaterialQrScreenEvent.OnNavigateForm(Pos))
                                 },
                                 content = {
                                     Icon(
@@ -201,7 +215,13 @@ fun QrScreen(
                                     InputChip(
                                         selected = ratio == it.ratio,
                                         onClick = { ratio = it.ratio },
-                                        label = { Text(text = it.ratioText, fontFamily = poppinsFont, fontSize = 16.sp) },
+                                        label = {
+                                            Text(
+                                                text = it.ratioText,
+                                                fontFamily = poppinsFont,
+                                                fontSize = 16.sp
+                                            )
+                                        },
                                         modifier = Modifier.padding(4.dp)
                                     )
                                 }
@@ -215,18 +235,23 @@ fun QrScreen(
                                 .height(128.dp),
                             value = state.remarks,
                             onValueChange = {
-                                onEvent(QrScreenEvent.OnNewRemarks(it))
+                                onEvent(MaterialQrScreenEvent.OnNewRemarks(it))
                             },
-                            placeholder = { Text(text = "keterangan", fontFamily = poppinsFont)},
-                            leadingIcon = { Icon(imageVector = Icons.AutoMirrored.Filled.TextSnippet, contentDescription = "keterangan")},
+                            placeholder = { Text(text = "keterangan", fontFamily = poppinsFont) },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.TextSnippet,
+                                    contentDescription = "keterangan"
+                                )
+                            },
                             shape = RoundedCornerShape(16.dp),
                             textStyle = TextStyle(fontFamily = poppinsFont)
                         )
                         Button(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {
-                                onEvent(QrScreenEvent.OnSelectedRatio(ratio))
-                                onEvent(QrScreenEvent.SaveMaterial)
+                                onEvent(MaterialQrScreenEvent.OnSelectedRatio(ratio))
+                                onEvent(MaterialQrScreenEvent.SaveMaterial)
                             }
                         ) {
                             Text(text = "Simpan data", fontFamily = poppinsFont)
@@ -325,7 +350,11 @@ fun ScanDriverForm(
                 .background(MaterialTheme.colorScheme.background)
                 .weight(1f),
         ) {
-            QrFormHeader(navigateBack = { prevForm(Truck) }, result = result, currentlyScanning = Driver)
+            QrFormHeader(
+                navigateBack = { prevForm(Truck) },
+                result = result,
+                message = "Scan QR Driver!"
+            )
             Spacer(modifier = Modifier.size(16.dp))
             AnimatedVisibility(
                 visible = result.isNotBlank(),
@@ -342,7 +371,7 @@ fun ScanDriverForm(
                         }
                     )
                 }
-            ) 
+            )
         }
     }
 }
@@ -434,7 +463,7 @@ fun ScanTruckForm(
         ) {
             QrFormHeader(
                 result = result,
-                currentlyScanning = Truck,
+                message = "Scan QR Truck!",
                 navigateBack = {
                     navigateBack(Destination.DashboardScreen)
                 },
@@ -546,7 +575,11 @@ fun ScanPostForm(
                 .background(MaterialTheme.colorScheme.background)
                 .weight(1f),
         ) {
-            QrFormHeader(navigateBack = { prevForm(Driver) }, result = result, currentlyScanning = Pos)
+            QrFormHeader(
+                navigateBack = { prevForm(Driver) },
+                result = result,
+                message = "Scan QR Pos!"
+            )
 
             Spacer(modifier = Modifier.size(16.dp))
             AnimatedVisibility(
