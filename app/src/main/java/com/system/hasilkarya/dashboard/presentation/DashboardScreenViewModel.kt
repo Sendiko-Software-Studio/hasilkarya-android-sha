@@ -11,8 +11,10 @@ import com.system.hasilkarya.dashboard.data.MaterialEntity
 import com.system.hasilkarya.dashboard.data.PostMaterialRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialResponse
 import com.system.hasilkarya.dashboard.data.PostToLogRequest
+import com.system.hasilkarya.dashboard.data.PostToLogResponse
 import com.system.hasilkarya.dashboard.domain.MaterialRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -51,43 +53,81 @@ class DashboardScreenViewModel @Inject constructor(
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), DashboardScreenState())
 
-    private fun postToLog(token: String, material: PostMaterialRequest) {
+    private fun isTruckValid(token: String, truckId: String): Boolean {
+        val request = repository.checkTruckId(token, truckId)
+        return request.execute().code() == 200
+    }
+
+    private fun isDriverValid(token: String, driverId: String): Boolean {
+        val request = repository.checkDriverId(token, driverId)
+        return request.execute().code() == 200
+    }
+
+    private fun isStationValid(token: String, stationId: String): Boolean {
+        val request = repository.checkStationId(token, stationId)
+        return request.execute().code() == 200
+    }
+
+    private fun postToLog(token: String, material: MaterialEntity) {
         _state.update { it.copy(isLoading = true) }
-        val data = PostToLogRequest(
-            driverId = material.driverId,
-            truckId = material.truckId,
-            stationId = material.stationId,
-            checkerId = material.checkerId,
-            errorLog = material.remarks
-        )
-        val request = repository.postToLog(token, data)
+        var message = ""
+        viewModelScope.launch(Dispatchers.IO) {
+            if (!isTruckValid(token, material.truckId))
+                message += "Truck ID is not valid, "
 
-        request.enqueue(
-            object : Callback<PostMaterialResponse> {
-                override fun onResponse(
-                    call: Call<PostMaterialResponse>,
-                    response: Response<PostMaterialResponse>
-                ) {
-                    _state.update { it.copy(
-                        isLoading = false,
-                        isPostSuccessful = true,
-                    ) }
+            if (!isDriverValid(token, material.driverId))
+                message += "Driver ID is not valid, "
+
+            if (!isStationValid(token, material.stationId))
+                message += "Station ID is not valid, "
+
+            val data = PostToLogRequest(
+                driverId = material.driverId,
+                truckId = material.truckId,
+                stationId = material.stationId,
+                checkerId = material.checkerId,
+                errorLog = message
+            )
+
+            val request = repository.postToLog(token, data)
+
+            repository.checkDriverId(token, driverId = material.driverId)
+
+            request.enqueue(
+                object : Callback<PostToLogResponse> {
+                    override fun onResponse(
+                        call: Call<PostToLogResponse>,
+                        response: Response<PostToLogResponse>
+                    ) {
+                        Log.i("RESPONSE_MESSAGE", "onResponse: $message")
+                        _state.update { it.copy(isLoading = false) }
+                        when(response.code()) {
+                            200 -> viewModelScope.launch {
+                                repository.deleteMaterial(material)
+                                _state.update { it.copy(isPostSuccessful = true) }
+                            }
+
+                            else -> viewModelScope.launch {
+                                repository.saveMaterial(material)
+                            }
+                        }
+                    }
+
+                    override fun onFailure(call: Call<PostToLogResponse>, t: Throwable) {
+                        viewModelScope.launch { repository.saveMaterial(material) }
+                        _state.update { it.copy(
+                            isLoading = false,
+                            isRequestFailed = FailedRequest(true),
+                        ) }
+                    }
+
                 }
-
-                override fun onFailure(call: Call<PostMaterialResponse>, t: Throwable) {
-                    _state.update { it.copy(
-                        isLoading = false,
-                        isRequestFailed = FailedRequest(true),
-                    ) }
-                }
-
-            }
-        )
+            )
+        }
     }
 
     private fun checkAndPost() {
         val datas = state.value.materials
-        Log.i("MATERIALS", "checkAndPost: $datas")
         datas.forEach {
             postMaterial(it)
         }
@@ -112,10 +152,12 @@ class DashboardScreenViewModel @Inject constructor(
                         call: Call<PostMaterialResponse>,
                         response: Response<PostMaterialResponse>
                     ) {
-                        Log.i("STATUS", "onResponse: try")
                         _state.update { it.copy(isLoading = false) }
                         when (response.code()) {
                             201 -> {
+                                viewModelScope.launch {
+                                    repository.deleteMaterial(materialEntity)
+                                }
                                 _state.update {
                                     it.copy(
                                         isPostSuccessful = true,
@@ -124,19 +166,12 @@ class DashboardScreenViewModel @Inject constructor(
                                 }
                             }
 
-                            405 -> viewModelScope.launch {
-                                postToLog(token, data)
-                                repository.deleteMaterial(materialEntity)
-                            }
-
-
                             422 -> viewModelScope.launch {
-                                postToLog(token, data)
-                                repository.deleteMaterial(materialEntity)
+                                postToLog(token, materialEntity)
                             }
 
                             else -> {
-                                postToLog(token, data)
+                                postToLog(token, materialEntity)
                                 _state.update {
                                     it.copy(
                                         isRequestFailed = FailedRequest(isFailed = true)
