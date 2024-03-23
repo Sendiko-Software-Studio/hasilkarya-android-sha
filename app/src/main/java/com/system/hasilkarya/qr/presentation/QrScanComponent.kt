@@ -119,7 +119,7 @@ fun QrScanComponent(
                 }
             )
             Icon(
-                painter = painterResource(id = R.drawable.scanning),
+                painter = painterResource(id = R.drawable.scan_rectangle),
                 contentDescription = "scan",
                 modifier = Modifier.size(256.dp),
                 tint = Color.White
