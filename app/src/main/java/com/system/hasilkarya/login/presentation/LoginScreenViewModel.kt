@@ -4,7 +4,6 @@ import android.text.TextUtils
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.system.hasilkarya.core.preferences.AppPreferences
 import com.system.hasilkarya.core.ui.utils.ErrorTextField
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.login.data.LoginRequest
@@ -23,7 +22,6 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginScreenViewModel @Inject constructor(
     private val repository: LoginRepository,
-    private val preferences: AppPreferences
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginScreenState())
@@ -65,10 +63,11 @@ class LoginScreenViewModel @Inject constructor(
                     _state.update { it.copy(isLoading = false) }
                     when (response.code()) {
                         201 -> viewModelScope.launch {
-                            preferences.setName("Nama")
-                            preferences.setToken(response.body()!!.token)
-                            preferences.setUserId(response.body()!!.userData.id)
-                            preferences.setEmail(response.body()!!.userData.email)
+                            repository.setName("name")
+                            repository.setEmail(response.body()!!.userData.email)
+                            repository.setToken(response.body()!!.token)
+                            repository.setUserId(response.body()!!.userData.id)
+                            repository.setRole(response.body()!!.userData.roles[0])
                             _state.update {
                                 it.copy(isLoginSuccessful = true)
                             }
