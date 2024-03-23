@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.preferences.AppPreferences
+import com.system.hasilkarya.core.repositories.MaterialRepository
 import com.system.hasilkarya.core.ui.utils.FailedRequest
-import com.system.hasilkarya.dashboard.data.MaterialEntity
+import com.system.hasilkarya.core.entities.MaterialEntity
 import com.system.hasilkarya.dashboard.data.PostMaterialRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialResponse
-import com.system.hasilkarya.dashboard.domain.MaterialRepository
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.Driver
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.None
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.Pos
