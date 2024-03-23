@@ -1,4 +1,4 @@
-package com.system.hasilkarya.material.presentation.component
+package com.system.hasilkarya.dashboard.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,9 +27,11 @@ import com.system.hasilkarya.core.ui.theme.poppinsFont
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MaterialCard(
+fun MenuCard(
     modifier: Modifier = Modifier,
-    onClickAction: () -> Unit
+    onClickAction: () -> Unit,
+    text: String,
+    icon: Painter,
 ) {
     Card(
         modifier = modifier,
@@ -43,14 +46,14 @@ fun MaterialCard(
                         modifier = Modifier.padding(24.dp)
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.scanner),
-                            contentDescription = "scan",
+                            painter = icon,
+                            contentDescription = text,
                             modifier = Modifier.size(86.dp)
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             modifier = Modifier.width(128.dp),
-                            text = "Scan Material Movement",
+                            text = text,
                             fontSize = 16.sp,
                             textAlign = TextAlign.Center,
                             fontFamily = poppinsFont
@@ -66,8 +69,11 @@ fun MaterialCard(
 @Composable
 fun MaterialCardPrev() {
     Surface {
-        MaterialCard {
-
-        }
+        MenuCard(
+            text = "Scan Transaksi BBM",
+            onClickAction = {},
+            icon = painterResource(id = R.drawable.scan_gas),
+            modifier = Modifier.padding(16.dp),
+        )
     }
 }

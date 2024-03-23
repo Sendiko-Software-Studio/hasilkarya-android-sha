@@ -1,4 +1,4 @@
-package com.system.hasilkarya.dashboard.data
+package com.system.hasilkarya.core.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -14,8 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.system.hasilkarya.core.entities.MaterialEntity
 import com.system.hasilkarya.core.ui.theme.poppinsFont
-import com.system.hasilkarya.dashboard.data.MaterialEntity
 
 @Composable
 fun MaterialListItem(
