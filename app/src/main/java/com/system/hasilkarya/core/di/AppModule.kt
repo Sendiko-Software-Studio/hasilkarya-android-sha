@@ -6,9 +6,11 @@ import com.system.hasilkarya.core.network.ApiServices
 import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.preferences.AppPreferences
 import com.system.hasilkarya.core.preferences.dataStore
-import com.system.hasilkarya.dashboard.domain.MaterialDao
-import com.system.hasilkarya.dashboard.domain.MaterialDatabase
-import com.system.hasilkarya.dashboard.domain.MaterialRepository
+import com.system.hasilkarya.core.repositories.AppDatabase
+import com.system.hasilkarya.core.repositories.GasRepository
+import com.system.hasilkarya.core.repositories.MaterialRepository
+import com.system.hasilkarya.dashboard.domain.GasDao
+import com.system.hasilkarya.gas.domain.MaterialDao
 import com.system.hasilkarya.login.domain.LoginRepository
 import com.system.hasilkarya.profile.domain.ProfileRepository
 import dagger.Module
@@ -66,27 +68,39 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideLoginRepository(apiServices: ApiServices): LoginRepository {
-        return LoginRepository(apiServices)
+    fun provideLoginRepository(apiServices: ApiServices, preferences: AppPreferences): LoginRepository {
+        return LoginRepository(apiServices, preferences)
     }
 
     @Singleton
     @Provides
-    fun provideDatabase(@ApplicationContext context: Context): MaterialDatabase {
-        return Room.databaseBuilder(context, MaterialDatabase::class.java, "material_db")
+    fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
+        return Room.databaseBuilder(context, AppDatabase::class.java, "material_db")
             .build()
     }
 
     @Singleton
     @Provides
-    fun provideDao(database: MaterialDatabase): MaterialDao {
-        return database.dao
+    fun provideMaterialDao(database: AppDatabase): MaterialDao {
+        return database.materialDao
     }
 
     @Singleton
     @Provides
-    fun provideMaterialRepository(dao: MaterialDao, apiServices: ApiServices): MaterialRepository {
-        return MaterialRepository(dao, apiServices)
+    fun provideGasDao(database: AppDatabase): GasDao {
+        return database.gasDao
+    }
+
+    @Singleton
+    @Provides
+    fun provideMaterialRepository(dao: MaterialDao, apiServices: ApiServices, preferences: AppPreferences): MaterialRepository {
+        return MaterialRepository(dao, apiServices, preferences)
+    }
+
+    @Singleton
+    @Provides
+    fun provideGasRepository(apiServices: ApiServices, preferences: AppPreferences, dao: GasDao): GasRepository {
+        return GasRepository(apiServices, preferences, dao)
     }
 
     @Provides
