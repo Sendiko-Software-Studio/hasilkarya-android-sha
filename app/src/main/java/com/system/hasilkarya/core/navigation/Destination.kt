@@ -4,6 +4,7 @@ enum class Destination {
     SplashScreen,
     LoginScreen,
     DashboardScreen,
-    QrScreen,
-    ProfileScreen
+    MaterialQrScreen,
+    ProfileScreen,
+    GasQrScreen,
 }
