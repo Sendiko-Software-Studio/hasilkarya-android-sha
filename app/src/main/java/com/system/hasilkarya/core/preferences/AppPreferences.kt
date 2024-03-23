@@ -14,6 +14,19 @@ class AppPreferences @Inject constructor(private val dataStore: DataStore<Prefer
     private val nameKey = stringPreferencesKey("name")
     private val userIdKey = stringPreferencesKey("user_id")
     private val emailKey = stringPreferencesKey("email")
+    private val roleKey = stringPreferencesKey("role")
+
+    suspend fun setRole(role: String) {
+        dataStore.edit {
+            it[roleKey] = role
+        }
+    }
+
+    fun getRole(): Flow<String> {
+        return dataStore.data.map {
+            it[roleKey]?:""
+        }
+    }
 
     suspend fun setEmail(email: String) {
         dataStore.edit {
