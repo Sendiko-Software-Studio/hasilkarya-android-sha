@@ -32,13 +32,13 @@ import kotlinx.coroutines.delay
 fun LoginScreen(
     state: LoginScreenState,
     onEvent: (LoginScreenEvent) -> Unit,
-    onNavigate: (String) -> Unit
+    onNavigate: (Destination) -> Unit
 ) {
     LaunchedEffect(
         key1 = state,
         block = {
             if (state.isLoginSuccessful)
-                onNavigate(Destination.DashboardScreen.name)
+                onNavigate(Destination.DashboardScreen)
 
             if (state.isRequestFailed.isFailed){
                 delay(1000)

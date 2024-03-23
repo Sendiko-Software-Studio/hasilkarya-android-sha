@@ -84,14 +84,14 @@ import java.util.concurrent.Executors
 fun MaterialQrScreen(
     state: MaterialQrScreenState,
     onEvent: (MaterialQrScreenEvent) -> Unit,
-    onNavigateBack: (String) -> Unit,
+    onNavigateBack: (Destination) -> Unit,
 ) {
     LaunchedEffect(
         key1 = state,
         block = {
             if (state.isPostSuccessful) {
                 delay(1000)
-                onNavigateBack(Destination.DashboardScreen.name)
+                onNavigateBack(Destination.DashboardScreen)
             }
 
             if (state.notificationMessage.isNotBlank()) {
@@ -124,7 +124,7 @@ fun MaterialQrScreen(
                                 onEvent(MaterialQrScreenEvent.OnTruckIdRegistered(it))
                             },
                             navigateBack = {
-                                onNavigateBack(Destination.DashboardScreen.name)
+                                onNavigateBack(Destination.DashboardScreen)
                             },
                             title = "Truck",
                             textButton = "Lanjut scan driver"
