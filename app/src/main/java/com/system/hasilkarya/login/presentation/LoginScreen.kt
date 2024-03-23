@@ -1,7 +1,6 @@
 package com.system.hasilkarya.login.presentation
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -102,7 +101,6 @@ fun LoginScreen(
                        onEvent(LoginScreenEvent.OnPasswordChange(it))
                    },
                    onVisibiltyToggle = {
-                       Log.i("PASSWORD_VISIBILIY", "LoginScreen: $it")
                        onEvent(LoginScreenEvent.OnPasswordVisibilityChange(it))
                    }
                )
