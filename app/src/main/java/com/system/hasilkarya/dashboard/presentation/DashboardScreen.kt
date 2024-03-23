@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -28,14 +29,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
+import com.system.hasilkarya.R
 import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.theme.poppinsFont
-import com.system.hasilkarya.material.presentation.component.MaterialCard
 import com.system.hasilkarya.material.presentation.component.MaterialListItem
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
@@ -44,7 +46,7 @@ fun DashboardScreen(
     state: DashboardScreenState,
     connectionStatus: Status,
     onEvent: (DashboardScreenEvent) -> Unit,
-    onNavigate: (String) -> Unit,
+    onNavigate: (Destination) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
@@ -81,7 +83,7 @@ fun DashboardScreen(
                         ) {
                             Icon(imageVector = Icons.Default.Sync, contentDescription = "sinkronisasi")
                         }
-                        IconButton(onClick = { onNavigate(Destination.ProfileScreen.name) }) {
+                        IconButton(onClick = { onNavigate(Destination.ProfileScreen) }) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
                                 contentDescription = "Settings",
@@ -106,9 +108,28 @@ fun DashboardScreen(
             ),
             content = {
                 item {
-                    MaterialCard(
-                        onClickAction = {
-                            onNavigate(Destination.QrScreen.name)
+                    LazyRow(
+                        content = {
+                            item {
+                                AnimatedVisibility(visible = state.role == "checker") {
+                                    MenuCard(
+                                        text = "Scan Material Movement",
+                                        icon = painterResource(id = R.drawable.scan_material_movement),
+                                        onClickAction = {
+                                            onNavigate(Destination.MaterialQrScreen)
+                                        }
+                                    )
+                                }
+                                AnimatedVisibility(visible = state.role == "gas-operator") {
+                                    MenuCard(
+                                        text = "Scan Transaksi BBM",
+                                        icon = painterResource(id = R.drawable.scan_gas),
+                                        onClickAction = {
+                                            onNavigate(Destination.GasQrScreen)
+                                        }
+                                    )
+                                }
+                            }
                         }
                     )
                 }
