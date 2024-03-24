@@ -1,14 +1,17 @@
-package com.system.hasilkarya.dashboard.domain
+package com.system.hasilkarya.core.repositories
 
+import com.system.hasilkarya.core.entities.MaterialEntity
 import com.system.hasilkarya.core.network.ApiServices
-import com.system.hasilkarya.dashboard.data.MaterialEntity
+import com.system.hasilkarya.core.preferences.AppPreferences
 import com.system.hasilkarya.dashboard.data.PostMaterialRequest
 import com.system.hasilkarya.dashboard.data.PostToLogRequest
+import com.system.hasilkarya.gas.domain.MaterialDao
 import javax.inject.Inject
 
 class MaterialRepository @Inject constructor(
     private val dao: MaterialDao,
-    private val apiServices: ApiServices
+    private val apiServices: ApiServices,
+    private val preferences: AppPreferences,
 ) {
 
     suspend fun saveMaterial(material: MaterialEntity) = dao.saveMaterial(material)
@@ -19,4 +22,7 @@ class MaterialRepository @Inject constructor(
     fun checkDriverId(token: String, driverId: String) = apiServices.checkDriverId(driverId, token)
     fun checkTruckId(token: String, truckId: String) = apiServices.checkTruckId(truckId, token)
     fun checkStationId(token: String, stationId: String) = apiServices.checkStationId(stationId, token)
+    fun getToken() = preferences.getToken()
+    fun getName() = preferences.getName()
+    fun getRole() = preferences.getRole()
 }

@@ -13,12 +13,14 @@ import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.ui.theme.HasilKaryaTheme
 import com.system.hasilkarya.dashboard.presentation.DashboardScreen
 import com.system.hasilkarya.dashboard.presentation.DashboardScreenViewModel
+import com.system.hasilkarya.gas.presentation.GasQrScreen
+import com.system.hasilkarya.gas.presentation.GasQrScreenViewModel
 import com.system.hasilkarya.login.presentation.LoginScreen
 import com.system.hasilkarya.login.presentation.LoginScreenViewModel
+import com.system.hasilkarya.material.presentation.MaterialQrScreen
+import com.system.hasilkarya.material.presentation.MaterialQrScreenViewModel
 import com.system.hasilkarya.profile.presentation.ProfileScreen
 import com.system.hasilkarya.profile.presentation.ProfileScreenViewModel
-import com.system.hasilkarya.qr.presentation.QrScreen
-import com.system.hasilkarya.qr.presentation.QrScreenViewModel
 import com.system.hasilkarya.splash.presentation.SplashScreen
 import com.system.hasilkarya.splash.presentation.SplashScreenViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,10 +45,10 @@ class MainActivity : ComponentActivity() {
                                     state = viewModel.state.collectAsState().value,
                                     onNavigate = { route ->
                                         navController.navigate(
-                                            route = route
+                                            route = route.name
                                         ) {
                                             popUpTo(
-                                                route,
+                                                route.name,
                                             ) { inclusive = true }
                                         }
                                     }
@@ -62,10 +64,10 @@ class MainActivity : ComponentActivity() {
                                     onEvent = viewModel::onEvent,
                                     onNavigate = { route ->
                                         navController.navigate(
-                                            route = route
+                                            route = route.name
                                         ) {
                                             popUpTo(
-                                                route,
+                                                route.name,
                                             ) { inclusive = true }
                                         }
                                     }
@@ -82,24 +84,24 @@ class MainActivity : ComponentActivity() {
                                     onEvent = viewModel::onEvent,
                                     connectionStatus = connectionStatus,
                                     onNavigate = { route ->
-                                        navController.navigate(route = route)
+                                        navController.navigate(route = route.name)
                                     }
                                 )
                             }
                         )
                         composable(
-                            route = Destination.QrScreen.name,
+                            route = Destination.MaterialQrScreen.name,
                             content = {
-                                val viewModel = hiltViewModel<QrScreenViewModel>()
-                                QrScreen(
+                                val viewModel = hiltViewModel<MaterialQrScreenViewModel>()
+                                MaterialQrScreen(
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
                                     onNavigateBack = { route ->
                                         navController.navigate(
-                                            route = route
+                                            route = route.name
                                         ) {
                                             popUpTo(
-                                                route,
+                                                route.name,
                                             ) { inclusive = true }
                                         }
                                     }
@@ -111,6 +113,21 @@ class MainActivity : ComponentActivity() {
                             content = {
                                 val viewModel = hiltViewModel<ProfileScreenViewModel>()
                                 ProfileScreen(
+                                    state = viewModel.state.collectAsState().value,
+                                    onEvent = viewModel::onEvent,
+                                    onNavigateBack = {
+                                        navController.navigate(it.name){
+                                            popUpTo(it.name) { inclusive = true }
+                                        }
+                                    }
+                                )
+                            }
+                        )
+                        composable(
+                            route = Destination.GasQrScreen.name,
+                            content = {
+                                val viewModel = hiltViewModel<GasQrScreenViewModel>()
+                                GasQrScreen(
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
                                     onNavigateBack = {

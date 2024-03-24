@@ -1,11 +1,11 @@
-package com.system.hasilkarya.dashboard.domain
+package com.system.hasilkarya.gas.domain
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.system.hasilkarya.dashboard.data.MaterialEntity
+import com.system.hasilkarya.core.entities.MaterialEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

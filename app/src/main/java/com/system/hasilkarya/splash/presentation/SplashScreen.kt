@@ -21,15 +21,15 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(
     state: SplashScreenState,
-    onNavigate: (String) -> Unit
+    onNavigate: (Destination) -> Unit
 ) {
     LaunchedEffect(
         key1 = state.token,
         block = {
             delay(1000)
             if (state.token.isNotBlank())
-                onNavigate(Destination.DashboardScreen.name)
-            else onNavigate(Destination.LoginScreen.name)
+                onNavigate(Destination.DashboardScreen)
+            else onNavigate(Destination.LoginScreen)
         }
     )
     Scaffold {

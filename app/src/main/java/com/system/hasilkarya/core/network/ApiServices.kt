@@ -7,9 +7,9 @@ import com.system.hasilkarya.dashboard.data.PostToLogResponse
 import com.system.hasilkarya.login.data.LoginRequest
 import com.system.hasilkarya.login.data.LoginResponse
 import com.system.hasilkarya.profile.data.LogoutResponse
-import com.system.hasilkarya.qr.data.CheckDriverIdResponse
-import com.system.hasilkarya.qr.data.CheckStationIdResponse
-import com.system.hasilkarya.qr.data.CheckTruckIdResponse
+import com.system.hasilkarya.material.data.CheckDriverIdResponse
+import com.system.hasilkarya.material.data.CheckStationIdResponse
+import com.system.hasilkarya.material.data.CheckTruckIdResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET

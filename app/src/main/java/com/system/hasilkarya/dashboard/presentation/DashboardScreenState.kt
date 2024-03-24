@@ -2,7 +2,7 @@ package com.system.hasilkarya.dashboard.presentation
 
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.utils.FailedRequest
-import com.system.hasilkarya.dashboard.data.MaterialEntity
+import com.system.hasilkarya.core.entities.MaterialEntity
 
 data class DashboardScreenState(
     val userId: String = "",
@@ -13,4 +13,5 @@ data class DashboardScreenState(
     val isLoading: Boolean = false,
     val isRequestFailed: FailedRequest = FailedRequest(),
     val materials: List<MaterialEntity> = emptyList(),
+    val role: String = "",
 )

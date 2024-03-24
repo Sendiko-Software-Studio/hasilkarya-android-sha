@@ -1,7 +1,6 @@
 package com.system.hasilkarya.login.presentation
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -33,13 +32,13 @@ import kotlinx.coroutines.delay
 fun LoginScreen(
     state: LoginScreenState,
     onEvent: (LoginScreenEvent) -> Unit,
-    onNavigate: (String) -> Unit
+    onNavigate: (Destination) -> Unit
 ) {
     LaunchedEffect(
         key1 = state,
         block = {
             if (state.isLoginSuccessful)
-                onNavigate(Destination.DashboardScreen.name)
+                onNavigate(Destination.DashboardScreen)
 
             if (state.isRequestFailed.isFailed){
                 delay(1000)
@@ -102,7 +101,6 @@ fun LoginScreen(
                        onEvent(LoginScreenEvent.OnPasswordChange(it))
                    },
                    onVisibiltyToggle = {
-                       Log.i("PASSWORD_VISIBILIY", "LoginScreen: $it")
                        onEvent(LoginScreenEvent.OnPasswordVisibilityChange(it))
                    }
                )

@@ -5,14 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
-import com.system.hasilkarya.core.preferences.AppPreferences
 import com.system.hasilkarya.core.ui.utils.FailedRequest
-import com.system.hasilkarya.dashboard.data.MaterialEntity
+import com.system.hasilkarya.core.entities.MaterialEntity
 import com.system.hasilkarya.dashboard.data.PostMaterialRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialResponse
 import com.system.hasilkarya.dashboard.data.PostToLogRequest
 import com.system.hasilkarya.dashboard.data.PostToLogResponse
-import com.system.hasilkarya.dashboard.domain.MaterialRepository
+import com.system.hasilkarya.core.repositories.MaterialRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,13 +28,13 @@ import javax.inject.Inject
 @HiltViewModel
 class DashboardScreenViewModel @Inject constructor(
     private val repository: MaterialRepository,
-    preferences: AppPreferences,
     connectionObserver: NetworkConnectivityObserver
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DashboardScreenState())
-    private val _token = preferences.getToken()
-    private val _name = preferences.getName()
+    private val _token = repository.getToken()
+    private val _name = repository.getName()
+    private val _role = repository.getRole()
     private val _materials = repository.getMaterials()
     val connectionStatus = combine(connectionObserver.observe(), _state) { connectionStatus, state ->
         state.copy(connectionStatus = connectionStatus)
@@ -44,11 +43,13 @@ class DashboardScreenViewModel @Inject constructor(
         _materials,
         _token,
         _name,
+        _role,
         _state
-    ) { materials, token, name, state ->
+    ) { materials, token, name, role, state ->
         state.copy(
             token = token,
             name = name,
+            role = role,
             materials = materials,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), DashboardScreenState())
@@ -79,7 +80,7 @@ class DashboardScreenViewModel @Inject constructor(
                 message += "Driver ID is not valid, "
 
             if (!isStationValid(token, material.stationId))
-                message += "Station ID is not valid, "
+                message += "Station ID is not valid."
 
             val data = PostToLogRequest(
                 driverId = material.driverId,

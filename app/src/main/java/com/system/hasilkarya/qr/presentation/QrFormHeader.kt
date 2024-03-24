@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -16,15 +17,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.ui.theme.poppinsFont
-import com.system.hasilkarya.dashboard.presentation.ScanOptions
 
 @Composable
 fun QrFormHeader(
     navigateBack: () -> Unit,
     result: String,
-    currentlyScanning: ScanOptions
+    message: String,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -33,7 +32,7 @@ fun QrFormHeader(
     ) {
         IconButton(onClick = { navigateBack() }) {
             Icon(
-                imageVector = Icons.Default.ArrowBack,
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "kembali"
             )
         }
@@ -44,7 +43,7 @@ fun QrFormHeader(
                     horizontal = 24.dp
                 )
                 .fillMaxWidth(),
-            text = if (result.isNotBlank()) "Scan QR berhasil!" else "Scan QR ${currentlyScanning.name}!",
+            text = if (result.isNotBlank()) "Scan QR berhasil!" else message,
             fontSize = 20.sp,
             textAlign = TextAlign.Center,
             fontFamily = poppinsFont
