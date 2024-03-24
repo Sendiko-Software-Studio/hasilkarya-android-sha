@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -60,45 +59,45 @@ fun DashboardScreen(
             if (!cameraPermissionState.hasPermission)
                 cameraPermissionState.launchPermissionRequest()
 
-            if (connectionStatus == Status.Available && state.materials.isNotEmpty()){
+            if (connectionStatus == Status.Available && state.materials.isNotEmpty()) {
                 Log.i("MATERIALS", "DashboardScreen: ${state.materials}")
                 onEvent(DashboardScreenEvent.CheckDataAndPost)
             }
         }
     )
     Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = "Halo, ${state.name}",
-                            fontFamily = poppinsFont
-                        )
-                    },
-                    actions = {
-                        AnimatedVisibility(
-                            visible = state.isLoading,
-                            enter = expandHorizontally() + expandVertically(),
-                            exit = shrinkHorizontally() + shrinkVertically()
-                        ) {
-                            Icon(imageVector = Icons.Default.Sync, contentDescription = "sinkronisasi")
-                        }
-                        IconButton(onClick = { onNavigate(Destination.ProfileScreen) }) {
-                            Icon(
-                                imageVector = Icons.Default.Settings,
-                                contentDescription = "Settings",
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        scrolledContainerColor = MaterialTheme.colorScheme.background,
-                        titleContentColor = MaterialTheme.colorScheme.onBackground,
-                        actionIconContentColor = MaterialTheme.colorScheme.onBackground
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Halo, ${state.name}",
+                        fontFamily = poppinsFont
                     )
+                },
+                actions = {
+                    AnimatedVisibility(
+                        visible = state.isLoading,
+                        enter = expandHorizontally() + expandVertically(),
+                        exit = shrinkHorizontally() + shrinkVertically()
+                    ) {
+                        Icon(imageVector = Icons.Default.Sync, contentDescription = "sinkronisasi")
+                    }
+                    IconButton(onClick = { onNavigate(Destination.ProfileScreen) }) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Settings",
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    scrolledContainerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+                    actionIconContentColor = MaterialTheme.colorScheme.onBackground
                 )
-            },
-    ) { paddingValues  ->
+            )
+        },
+    ) { paddingValues ->
         LazyColumn(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             contentPadding = PaddingValues(
@@ -108,35 +107,33 @@ fun DashboardScreen(
             ),
             content = {
                 item {
-                    LazyRow(
-                        content = {
-                            item {
-                                AnimatedVisibility(visible = state.role == "checker") {
-                                    MenuCard(
-                                        text = "Scan Material Movement",
-                                        icon = painterResource(id = R.drawable.scan_material_movement),
-                                        onClickAction = {
-                                            onNavigate(Destination.MaterialQrScreen)
-                                        }
-                                    )
-                                }
-                                AnimatedVisibility(visible = state.role == "gas-operator") {
-                                    MenuCard(
-                                        text = "Scan Transaksi BBM",
-                                        icon = painterResource(id = R.drawable.scan_gas),
-                                        onClickAction = {
-                                            onNavigate(Destination.GasQrScreen)
-                                        }
-                                    )
-                                }
+                    AnimatedVisibility(visible = state.role == "checker") {
+                        MenuCard(
+                            text = "Scan Material Movement",
+                            icon = painterResource(id = R.drawable.scan_material_movement),
+                            onClickAction = {
+                                onNavigate(Destination.MaterialQrScreen)
                             }
-                        }
-                    )
+                        )
+                    }
+                    AnimatedVisibility(visible = state.role == "gas-operator") {
+                        MenuCardExpendable(
+                            text = "Scan Transaksi BBM",
+                            icon = painterResource(id = R.drawable.scan_gas),
+                            onClickAction = {
+                                onNavigate(Destination.GasQrScreen)
+                            }
+                        )
+                    }
                 }
                 item {
                     Spacer(modifier = Modifier.height(24.dp))
                     AnimatedVisibility(visible = state.materials.isNotEmpty()) {
-                        Text(text = "Data yang belum terupload", fontFamily = poppinsFont, fontWeight = FontWeight.Medium)
+                        Text(
+                            text = "Data yang belum terupload",
+                            fontFamily = poppinsFont,
+                            fontWeight = FontWeight.Medium
+                        )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
