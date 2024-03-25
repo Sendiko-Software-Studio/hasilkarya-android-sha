@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.system.hasilkarya.core.navigation.Destination
@@ -88,7 +89,8 @@ fun LoginScreen(
                    },
                    onClearText = {
                        onEvent(LoginScreenEvent.OnEmailClear)
-                   }
+                   },
+                   keyboardType = KeyboardType.Email
                )
                PasswordTextField(
                    modifier = Modifier.fillMaxWidth(),
