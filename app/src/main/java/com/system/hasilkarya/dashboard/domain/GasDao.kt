@@ -14,7 +14,7 @@ interface GasDao {
     suspend fun saveGas(gasEntity: GasEntity)
 
     @Query("SELECT * FROM gas")
-    fun getGases(): Flow<GasEntity>
+    fun getGases(): Flow<List<GasEntity>>
 
     @Delete
     fun deleteGas(gasEntity: GasEntity)
