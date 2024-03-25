@@ -39,7 +39,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,7 +54,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -64,6 +62,7 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.system.hasilkarya.R
 import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
+import com.system.hasilkarya.core.ui.components.NormalTextField
 import com.system.hasilkarya.core.ui.theme.poppinsFont
 import com.system.hasilkarya.dashboard.presentation.ScanOptions
 import com.system.hasilkarya.dashboard.presentation.ScanOptions.Driver
@@ -229,23 +228,15 @@ fun MaterialQrScreen(
                         )
 
                         Spacer(modifier = Modifier.size(16.dp))
-                        OutlinedTextField(
-                            modifier = Modifier
-                                .fillMaxWidth()
+                        NormalTextField(
+                            modifier = Modifier.fillMaxWidth()
                                 .height(128.dp),
                             value = state.remarks,
-                            onValueChange = {
-                                onEvent(MaterialQrScreenEvent.OnNewRemarks(it))
-                            },
-                            placeholder = { Text(text = "keterangan", fontFamily = poppinsFont) },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.TextSnippet,
-                                    contentDescription = "keterangan"
-                                )
-                            },
-                            shape = RoundedCornerShape(16.dp),
-                            textStyle = TextStyle(fontFamily = poppinsFont)
+                            onNewValue = { onEvent(MaterialQrScreenEvent.OnNewRemarks(it)) },
+                            leadingIcon = Icons.AutoMirrored.Filled.TextSnippet,
+                            onClearText = {  },
+                            hint = "Keterangan",
+                            shape = RoundedCornerShape(16.dp)
                         )
                         Button(
                             modifier = Modifier.fillMaxWidth(),
