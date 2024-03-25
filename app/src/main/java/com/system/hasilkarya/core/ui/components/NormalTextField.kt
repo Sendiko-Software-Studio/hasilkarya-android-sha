@@ -13,6 +13,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -28,14 +29,15 @@ fun NormalTextField(
     hint: String = "",
     onClearText: () -> Unit,
     errorState: ErrorTextField = ErrorTextField(),
-    keyboardType: KeyboardType = KeyboardType.Text
+    keyboardType: KeyboardType = KeyboardType.Text,
+    shape: Shape = CircleShape
 ) {
     OutlinedTextField(
         modifier = modifier,
         value = value,
         textStyle = TextStyle(fontFamily = poppinsFont),
         onValueChange = { onNewValue(it) },
-        shape = CircleShape,
+        shape = shape,
         placeholder = {
             Text(text = hint, fontFamily = poppinsFont)
         },
