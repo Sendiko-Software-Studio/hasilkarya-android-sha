@@ -8,6 +8,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
@@ -108,13 +109,15 @@ fun DashboardScreen(
             content = {
                 item {
                     AnimatedVisibility(visible = state.role == "checker") {
-                        MenuCard(
-                            text = "Scan Material Movement",
-                            icon = painterResource(id = R.drawable.scan_material_movement),
-                            onClickAction = {
-                                onNavigate(Destination.MaterialQrScreen)
-                            }
-                        )
+                        Row {
+                            MenuCard(
+                                text = "Scan Material Movement",
+                                icon = painterResource(id = R.drawable.scan_material_movement),
+                                onClickAction = {
+                                    onNavigate(Destination.MaterialQrScreen)
+                                },
+                            )
+                        }
                     }
                     AnimatedVisibility(visible = state.role == "gas-operator") {
                         MenuCardExpendable(
