@@ -1,5 +1,6 @@
 package com.system.hasilkarya.gas.presentation
 
+import com.system.hasilkarya.core.entities.GasEntity
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.presentation.ScanOptions
@@ -17,6 +18,7 @@ data class GasQrScreenState(
     val userId: String = "",
     val stationId: String = "",
     val volume: Double = 0.0,
-    val odometer: Double = 0.0,
+    val odometer: String = "",
     val remarks: String = "",
+    val gasList: List<GasEntity> = emptyList(),
 )

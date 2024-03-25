@@ -9,9 +9,10 @@ sealed class GasQrScreenEvent {
     data class OnStationIdRegistered(val stationId: String): GasQrScreenEvent()
     data class OnVolumeRegistered(val volume: Double): GasQrScreenEvent()
     data class OnNavigateForm(val scanOptions: ScanOptions): GasQrScreenEvent()
-    data class OnOdometerChange(val odometer: Double): GasQrScreenEvent()
+    data class OnOdometerChange(val odometer: String): GasQrScreenEvent()
     data object OnClearOdometer: GasQrScreenEvent()
     data class OnRemarksChange(val remarks: String): GasQrScreenEvent()
     data object OnClearRemarks: GasQrScreenEvent()
     data object SaveGasTransaction: GasQrScreenEvent()
+    data object NotificationClear: GasQrScreenEvent()
 }
