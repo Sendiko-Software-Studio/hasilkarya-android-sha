@@ -73,7 +73,7 @@ fun GasQrScreen(
                         onResult = { onEvent(GasQrScreenEvent.OnDriverIdRegistered(it)) },
                         navigateBack = { onEvent(GasQrScreenEvent.OnNavigateForm(ScanOptions.Truck)) },
                         title = "Driver",
-                        textButton = "Lanjut scan BBM"
+                        textButton = "Lanjut scan pos"
                     )
                 }
                 AnimatedVisibility(

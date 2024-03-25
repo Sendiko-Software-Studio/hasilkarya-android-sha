@@ -1,6 +1,5 @@
 package com.system.hasilkarya.gas.presentation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.system.hasilkarya.core.entities.GasEntity
@@ -20,6 +19,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -176,20 +176,44 @@ class GasQrScreenViewModel @Inject constructor(
                         call: Call<TruckGasResponse>,
                         response: Response<TruckGasResponse>
                     ) {
-                        Log.i("TEST", "postTruckGas: active")
                         _state.update { it.copy(isLoading = false) }
-                        when(response.code()) {
-                            201 -> _state.update { it.copy(isPostSuccessful = true, notificationMessage = "Data tersimpan!") }
-                            else -> _state.update { it.copy(isRequestFailed = FailedRequest(isFailed = true), notificationMessage = "ups") }
+                        when (response.code()) {
+                            201 -> _state.update {
+                                it.copy(
+                                    isPostSuccessful = true,
+                                    notificationMessage = "Data tersimpan!"
+                                )
+                            }
+
+                            else -> _state.update {
+                                it.copy(
+                                    isRequestFailed = FailedRequest(isFailed = true),
+                                    notificationMessage = "Ups! Terjadi kesalahan."
+                                )
+                            }
                         }
                     }
 
                     override fun onFailure(call: Call<TruckGasResponse>, t: Throwable) {
-                        TODO("Not yet implemented")
+                        viewModelScope.launch { repository.store(gasEntity) }
+                        _state.update {
+                            it.copy(
+                                isPostSuccessful = true,
+                                notificationMessage = "Data tersimpan!"
+                            )
+                        }
                     }
 
                 }
             )
+        } else {
+            viewModelScope.launch { repository.store(gasEntity) }
+            _state.update {
+                it.copy(
+                    isPostSuccessful = true,
+                    notificationMessage = "Data tersimpan!"
+                )
+            }
         }
     }
 
