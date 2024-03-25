@@ -130,6 +130,7 @@ class MainActivity : ComponentActivity() {
                                 GasQrScreen(
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
+                                    connectionStatus = viewModel.connectionStatus.collectAsState().value.connectionStatus,
                                     onNavigateBack = {
                                         navController.navigate(it.name){
                                             popUpTo(it.name) { inclusive = true }
