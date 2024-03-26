@@ -1,4 +1,4 @@
-package com.system.hasilkarya.core.repositories
+package com.system.hasilkarya.core.repositories.fuel.truck
 
 import com.system.hasilkarya.core.entities.FuelTruckEntity
 import com.system.hasilkarya.core.network.ApiServices
@@ -7,10 +7,10 @@ import com.system.hasilkarya.truck_fuel.data.TruckFuelLogRequest
 import com.system.hasilkarya.truck_fuel.data.TruckFuelRequest
 import javax.inject.Inject
 
-class FuelRepository @Inject constructor(
+class TruckFuelRepository @Inject constructor(
     private val apiServices: ApiServices,
     private val preferences: AppPreferences,
-    private val dao: FuelDao
+    private val dao: TruckFuelDao
 ){
 
     fun getUserId() = preferences.getUserId()

@@ -1,4 +1,4 @@
-package com.system.hasilkarya.core.repositories
+package com.system.hasilkarya.core.repositories.material
 
 import com.system.hasilkarya.core.entities.MaterialEntity
 import com.system.hasilkarya.core.network.ApiServices

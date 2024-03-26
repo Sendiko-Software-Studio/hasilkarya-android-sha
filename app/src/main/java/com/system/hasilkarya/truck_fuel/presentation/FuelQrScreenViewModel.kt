@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.system.hasilkarya.core.entities.FuelTruckEntity
 import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
-import com.system.hasilkarya.core.repositories.FuelRepository
+import com.system.hasilkarya.core.repositories.fuel.truck.TruckFuelRepository
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
 import com.system.hasilkarya.truck_fuel.data.TruckFuelRequest
@@ -27,7 +27,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FuelQrScreenViewModel @Inject constructor(
-    private val repository: FuelRepository,
+    private val repository: TruckFuelRepository,
     connectionObserver: NetworkConnectivityObserver
 ) : ViewModel() {
 

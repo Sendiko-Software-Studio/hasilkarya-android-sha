@@ -7,6 +7,8 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
 import com.system.hasilkarya.core.entities.FuelTruckEntity
 import com.system.hasilkarya.core.entities.MaterialEntity
+import com.system.hasilkarya.core.repositories.fuel.truck.TruckFuelDao
+import com.system.hasilkarya.core.repositories.material.MaterialDao
 
 @Database(
     entities = [MaterialEntity::class, FuelTruckEntity::class],
@@ -15,7 +17,7 @@ import com.system.hasilkarya.core.entities.MaterialEntity
 )
 abstract class AppDatabase: RoomDatabase() {
     abstract val materialDao: MaterialDao
-    abstract val fuelDao: FuelDao
+    abstract val truckFuelDao: TruckFuelDao
 }
 
 @DeleteTable.Entries(

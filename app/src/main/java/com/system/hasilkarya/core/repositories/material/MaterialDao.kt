@@ -1,4 +1,4 @@
-package com.system.hasilkarya.core.repositories
+package com.system.hasilkarya.core.repositories.material
 
 import androidx.room.Dao
 import androidx.room.Delete

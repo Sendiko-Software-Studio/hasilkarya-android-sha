@@ -2,7 +2,7 @@
 package com.system.hasilkarya.truck_fuel.presentation;
 
 import com.system.hasilkarya.core.network.NetworkConnectivityObserver;
-import com.system.hasilkarya.core.repositories.FuelRepository;
+import com.system.hasilkarya.core.repositories.fuel.truck.TruckFuelRepository;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
 import dagger.internal.QualifierMetadata;
@@ -19,11 +19,11 @@ import javax.inject.Provider;
     "KotlinInternalInJava"
 })
 public final class FuelQrScreenViewModel_Factory implements Factory<FuelQrScreenViewModel> {
-  private final Provider<FuelRepository> repositoryProvider;
+  private final Provider<TruckFuelRepository> repositoryProvider;
 
   private final Provider<NetworkConnectivityObserver> connectionObserverProvider;
 
-  public FuelQrScreenViewModel_Factory(Provider<FuelRepository> repositoryProvider,
+  public FuelQrScreenViewModel_Factory(Provider<TruckFuelRepository> repositoryProvider,
       Provider<NetworkConnectivityObserver> connectionObserverProvider) {
     this.repositoryProvider = repositoryProvider;
     this.connectionObserverProvider = connectionObserverProvider;
@@ -34,13 +34,13 @@ public final class FuelQrScreenViewModel_Factory implements Factory<FuelQrScreen
     return newInstance(repositoryProvider.get(), connectionObserverProvider.get());
   }
 
-  public static FuelQrScreenViewModel_Factory create(Provider<FuelRepository> repositoryProvider,
+  public static FuelQrScreenViewModel_Factory create(Provider<TruckFuelRepository> repositoryProvider,
       Provider<NetworkConnectivityObserver> connectionObserverProvider) {
     return new FuelQrScreenViewModel_Factory(repositoryProvider, connectionObserverProvider);
   }
 
-  public static FuelQrScreenViewModel newInstance(FuelRepository repository,
-      NetworkConnectivityObserver connectionObserver) {
+  public static FuelQrScreenViewModel newInstance(TruckFuelRepository repository,
+                                                  NetworkConnectivityObserver connectionObserver) {
     return new FuelQrScreenViewModel(repository, connectionObserver);
   }
 }

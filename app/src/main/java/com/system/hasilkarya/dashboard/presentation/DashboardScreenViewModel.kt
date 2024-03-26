@@ -7,8 +7,8 @@ import com.system.hasilkarya.core.entities.FuelTruckEntity
 import com.system.hasilkarya.core.entities.MaterialEntity
 import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
-import com.system.hasilkarya.core.repositories.FuelRepository
-import com.system.hasilkarya.core.repositories.MaterialRepository
+import com.system.hasilkarya.core.repositories.fuel.truck.TruckFuelRepository
+import com.system.hasilkarya.core.repositories.material.MaterialRepository
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.data.MaterialLogRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialRequest
@@ -34,7 +34,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DashboardScreenViewModel @Inject constructor(
     private val materialRepository: MaterialRepository,
-    private val fuelRepository: FuelRepository,
+    private val truckFuelRepository: TruckFuelRepository,
     connectionObserver: NetworkConnectivityObserver
 ) : ViewModel() {
 
@@ -43,7 +43,7 @@ class DashboardScreenViewModel @Inject constructor(
     private val _name = materialRepository.getName()
     private val _role = materialRepository.getRole()
     private val _materials = materialRepository.getMaterials()
-    private val _fuels = fuelRepository.getFuels()
+    private val _fuels = truckFuelRepository.getFuels()
     val connectionStatus = combine(connectionObserver.observe(), _state) { connectionStatus, state ->
         state.copy(connectionStatus = connectionStatus)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), DashboardScreenState())
@@ -112,7 +112,7 @@ class DashboardScreenViewModel @Inject constructor(
                 remarks = fuelTruckEntity.remarks
             )
 
-            val request = fuelRepository.postToLog(token, data)
+            val request = truckFuelRepository.postToLog(token, data)
 
             request.enqueue(
                 object : Callback<TruckFuelLogResponse> {
@@ -123,19 +123,19 @@ class DashboardScreenViewModel @Inject constructor(
                         _state.update { it.copy(isLoading = false) }
                         when(response.code()) {
                             200 -> {
-                                viewModelScope.launch { fuelRepository.deleteFuel(fuelTruckEntity) }
+                                viewModelScope.launch { truckFuelRepository.deleteFuel(fuelTruckEntity) }
                                 _state.update {
                                     it.copy(isPostSuccessful = true)
                                 }
                             }
                             else -> viewModelScope.launch {
-                                fuelRepository.saveFuel(fuelTruckEntity)
+                                truckFuelRepository.saveFuel(fuelTruckEntity)
                             }
                         }
                     }
 
                     override fun onFailure(call: Call<TruckFuelLogResponse>, t: Throwable) {
-                        viewModelScope.launch { fuelRepository.saveFuel(fuelTruckEntity) }
+                        viewModelScope.launch { truckFuelRepository.saveFuel(fuelTruckEntity) }
                         _state.update {
                             it.copy(
                                 isRequestFailed = FailedRequest(isFailed = true)
@@ -231,7 +231,7 @@ class DashboardScreenViewModel @Inject constructor(
             remarks = fuelTruckEntity.remarks
         )
         if (connectionStatus.value.connectionStatus == Status.Available) {
-            val request = fuelRepository.postFuels(token, data)
+            val request = truckFuelRepository.postFuels(token, data)
             request.enqueue(
                 object : Callback<TruckFuelResponse> {
                     override fun onResponse(
@@ -242,7 +242,7 @@ class DashboardScreenViewModel @Inject constructor(
                         when (response.code()) {
                             201 -> {
                                 viewModelScope.launch {
-                                    fuelRepository.deleteFuel(fuelTruckEntity)
+                                    truckFuelRepository.deleteFuel(fuelTruckEntity)
                                 }
                                 _state.update {
                                     it.copy(
@@ -267,7 +267,7 @@ class DashboardScreenViewModel @Inject constructor(
                     }
 
                     override fun onFailure(call: Call<TruckFuelResponse>, t: Throwable) {
-                        viewModelScope.launch { fuelRepository.saveFuel(fuelTruckEntity) }
+                        viewModelScope.launch { truckFuelRepository.saveFuel(fuelTruckEntity) }
                         _state.update {
                             it.copy(
                                 isPostSuccessful = true,
@@ -278,7 +278,7 @@ class DashboardScreenViewModel @Inject constructor(
                 }
             )
         } else {
-            viewModelScope.launch { fuelRepository.saveFuel(fuelTruckEntity) }
+            viewModelScope.launch { truckFuelRepository.saveFuel(fuelTruckEntity) }
             _state.update {
                 it.copy(
                     isPostSuccessful = true,

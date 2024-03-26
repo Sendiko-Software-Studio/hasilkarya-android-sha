@@ -1,4 +1,4 @@
-package com.system.hasilkarya.core.repositories
+package com.system.hasilkarya.core.repositories.fuel.truck
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -8,7 +8,7 @@ import com.system.hasilkarya.core.entities.FuelTruckEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface FuelDao {
+interface TruckFuelDao {
 
     @Upsert
     suspend fun saveFuel(fuelTruckEntity: FuelTruckEntity)
