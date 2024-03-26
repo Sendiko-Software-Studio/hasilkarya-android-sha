@@ -1,4 +1,4 @@
-package com.system.hasilkarya.gas.presentation
+package com.system.hasilkarya.fuel.presentation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,7 +31,7 @@ import com.system.hasilkarya.dashboard.presentation.ScanOptions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GasInputForm(
+fun FuelInputForm(
     odometer: String,
     remarks: String,
     onOdometerChange: (String) -> Unit,
@@ -111,7 +111,7 @@ fun GasInputForm(
 @Composable
 fun GasInputFormPrev() {
     Surface {
-        GasInputForm(
+        FuelInputForm(
             odometer = "0.0",
             remarks = "",
             onOdometerChange = {},

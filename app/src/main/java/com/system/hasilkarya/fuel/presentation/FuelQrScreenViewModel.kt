@@ -1,15 +1,15 @@
-package com.system.hasilkarya.gas.presentation
+package com.system.hasilkarya.fuel.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.system.hasilkarya.core.entities.GasEntity
+import com.system.hasilkarya.core.entities.FuelTruckEntity
 import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
-import com.system.hasilkarya.core.repositories.GasRepository
+import com.system.hasilkarya.core.repositories.FuelRepository
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.presentation.ScanOptions
-import com.system.hasilkarya.gas.data.TruckGasRequest
-import com.system.hasilkarya.gas.data.TruckGasResponse
+import com.system.hasilkarya.fuel.data.TruckFuelRequest
+import com.system.hasilkarya.fuel.data.TruckFuelResponse
 import com.system.hasilkarya.material.data.CheckDriverIdResponse
 import com.system.hasilkarya.material.data.CheckStationIdResponse
 import com.system.hasilkarya.material.data.CheckTruckIdResponse
@@ -26,22 +26,22 @@ import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
-class GasQrScreenViewModel @Inject constructor(
-    private val repository: GasRepository,
+class FuelQrScreenViewModel @Inject constructor(
+    private val repository: FuelRepository,
     connectionObserver: NetworkConnectivityObserver
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(GasQrScreenState())
+    private val _state = MutableStateFlow(FuelQrScreenState())
     private val _userId = repository.getUserId()
     private val _token = repository.getToken()
     val connectionStatus =
         combine(connectionObserver.observe(), _state) { connectionStatus, state ->
             state.copy(connectionStatus = connectionStatus)
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), GasQrScreenState())
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FuelQrScreenState())
 
     val state = combine(_userId, _token, _state) { userId, token, state ->
         state.copy(token = token, userId = userId)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), GasQrScreenState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FuelQrScreenState())
 
     private fun checkDriverId(driverId: String) {
         _state.update { it.copy(isLoading = true) }
@@ -157,24 +157,25 @@ class GasQrScreenViewModel @Inject constructor(
         )
     }
 
-    private fun postTruckGas(gasEntity: GasEntity) {
+    private fun postTruckFuel(fuelTruckEntity: FuelTruckEntity) {
         _state.update { it.copy(isLoading = true) }
         val token = "Bearer ${state.value.token}"
-        val data = TruckGasRequest(
-            truckId = gasEntity.truckId,
-            driverId = gasEntity.driverId,
-            stationId = gasEntity.stationId,
-            volume = gasEntity.volume,
-            odometer = gasEntity.odometer,
-            gasOperatorId = gasEntity.userId
+        val data = TruckFuelRequest(
+            truckId = fuelTruckEntity.truckId,
+            driverId = fuelTruckEntity.driverId,
+            stationId = fuelTruckEntity.stationId,
+            volume = fuelTruckEntity.volume,
+            odometer = fuelTruckEntity.odometer,
+            gasOperatorId = fuelTruckEntity.userId,
+            remarks = fuelTruckEntity.remarks
         )
-        val request = repository.postGas(token, data)
+        val request = repository.postFuels(token, data)
         if (connectionStatus.value.connectionStatus == Status.Available) {
             request.enqueue(
-                object : Callback<TruckGasResponse> {
+                object : Callback<TruckFuelResponse> {
                     override fun onResponse(
-                        call: Call<TruckGasResponse>,
-                        response: Response<TruckGasResponse>
+                        call: Call<TruckFuelResponse>,
+                        response: Response<TruckFuelResponse>
                     ) {
                         _state.update { it.copy(isLoading = false) }
                         when (response.code()) {
@@ -194,8 +195,8 @@ class GasQrScreenViewModel @Inject constructor(
                         }
                     }
 
-                    override fun onFailure(call: Call<TruckGasResponse>, t: Throwable) {
-                        viewModelScope.launch { repository.store(gasEntity) }
+                    override fun onFailure(call: Call<TruckFuelResponse>, t: Throwable) {
+                        viewModelScope.launch { repository.saveFuel(fuelTruckEntity) }
                         _state.update {
                             it.copy(
                                 isPostSuccessful = true,
@@ -207,7 +208,7 @@ class GasQrScreenViewModel @Inject constructor(
                 }
             )
         } else {
-            viewModelScope.launch { repository.store(gasEntity) }
+            viewModelScope.launch { repository.saveFuel(fuelTruckEntity) }
             _state.update {
                 it.copy(
                     isPostSuccessful = true,
@@ -217,13 +218,13 @@ class GasQrScreenViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: GasQrScreenEvent) {
+    fun onEvent(event: TruckFuelQrScreenEvent) {
         when (event) {
-            is GasQrScreenEvent.OnNavigateForm -> _state.update {
+            is TruckFuelQrScreenEvent.OnNavigateForm -> _state.update {
                 it.copy(currentlyScanning = event.scanOptions)
             }
 
-            is GasQrScreenEvent.OnTruckIdRegistered -> {
+            is TruckFuelQrScreenEvent.OnTruckIdRegistered -> {
                 if (connectionStatus.value.connectionStatus == Status.Available) {
                     checkTruckId(event.truckId)
                 } else _state.update {
@@ -231,7 +232,7 @@ class GasQrScreenViewModel @Inject constructor(
                 }
             }
 
-            is GasQrScreenEvent.OnDriverIdRegistered -> {
+            is TruckFuelQrScreenEvent.OnDriverIdRegistered -> {
                 if (connectionStatus.value.connectionStatus == Status.Available) {
                     checkDriverId(event.driverId)
                 } else _state.update {
@@ -239,7 +240,7 @@ class GasQrScreenViewModel @Inject constructor(
                 }
             }
 
-            is GasQrScreenEvent.OnStationIdRegistered -> {
+            is TruckFuelQrScreenEvent.OnStationIdRegistered -> {
                 if (connectionStatus.value.connectionStatus == Status.Available) {
                     checkStationId(event.stationId)
                 } else _state.update {
@@ -247,39 +248,40 @@ class GasQrScreenViewModel @Inject constructor(
                 }
             }
 
-            is GasQrScreenEvent.OnVolumeRegistered -> _state.update {
+            is TruckFuelQrScreenEvent.OnVolumeRegistered -> _state.update {
                 it.copy(volume = event.volume, currentlyScanning = ScanOptions.None)
             }
 
-            is GasQrScreenEvent.OnOdometerChange -> _state.update {
+            is TruckFuelQrScreenEvent.OnOdometerChange -> _state.update {
                 it.copy(odometer = event.odometer)
             }
 
-            GasQrScreenEvent.OnClearOdometer -> _state.update {
+            TruckFuelQrScreenEvent.OnClearOdometer -> _state.update {
                 it.copy(odometer = "")
             }
 
-            is GasQrScreenEvent.OnRemarksChange -> _state.update {
+            is TruckFuelQrScreenEvent.OnRemarksChange -> _state.update {
                 it.copy(remarks = event.remarks)
             }
 
-            GasQrScreenEvent.OnClearRemarks -> _state.update {
+            TruckFuelQrScreenEvent.OnClearRemarks -> _state.update {
                 it.copy(remarks = "")
             }
 
-            GasQrScreenEvent.SaveGasTransaction -> {
-                val data = GasEntity(
+            TruckFuelQrScreenEvent.SaveTruckFuelTransaction -> {
+                val data = FuelTruckEntity(
                     truckId = state.value.truckId,
                     driverId = state.value.driverId,
                     stationId = state.value.stationId,
                     volume = state.value.volume,
                     userId = state.value.userId,
-                    odometer = state.value.odometer.toDouble()
+                    odometer = state.value.odometer.toDouble(),
+                    remarks = state.value.remarks
                 )
-                postTruckGas(data)
+                postTruckFuel(data)
             }
 
-            GasQrScreenEvent.NotificationClear -> _state.update {
+            TruckFuelQrScreenEvent.NotificationClear -> _state.update {
                 it.copy(notificationMessage = "")
             }
         }
