@@ -1,11 +1,13 @@
 package com.system.hasilkarya.core.network
 
+import com.system.hasilkarya.dashboard.data.MaterialLogRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialResponse
-import com.system.hasilkarya.dashboard.data.PostToLogRequest
 import com.system.hasilkarya.dashboard.data.PostToLogResponse
-import com.system.hasilkarya.gas.data.TruckGasRequest
-import com.system.hasilkarya.gas.data.TruckGasResponse
+import com.system.hasilkarya.fuel.data.TruckFuelLogRequest
+import com.system.hasilkarya.fuel.data.TruckFuelLogResponse
+import com.system.hasilkarya.fuel.data.TruckFuelRequest
+import com.system.hasilkarya.fuel.data.TruckFuelResponse
 import com.system.hasilkarya.login.data.LoginRequest
 import com.system.hasilkarya.login.data.LoginResponse
 import com.system.hasilkarya.material.data.CheckDriverIdResponse
@@ -58,13 +60,19 @@ interface ApiServices {
     @POST("checker/material-movement-error-log/store")
     fun postToLog(
         @Header("Authorization") token: String,
-        @Body request: PostToLogRequest
+        @Body request: MaterialLogRequest
     ): Call<PostToLogResponse>
 
     @POST("gas-operator/fuel-log/truck/store")
     fun postFuelTruck(
         @Header("Authorization") token: String,
-        @Body truckGasRequest: TruckGasRequest
-    ): Call<TruckGasResponse>
+        @Body truckFuelRequest: TruckFuelRequest
+    ): Call<TruckFuelResponse>
+
+    @POST("gas-operator/fuel-log-error-log/truck/store")
+    fun postFuelLog(
+        @Header("Authorization") token: String,
+        @Body truckFuelLogRequest: TruckFuelLogRequest
+    ): Call<TruckFuelLogResponse>
 
 }
