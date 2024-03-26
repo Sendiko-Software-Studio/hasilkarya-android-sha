@@ -7,7 +7,9 @@ import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,7 +29,6 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -37,6 +38,7 @@ import com.system.hasilkarya.R
 import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.theme.poppinsFont
+import com.system.hasilkarya.fuel.presentation.component.FuelTruckCard
 import com.system.hasilkarya.material.presentation.component.MaterialListItem
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
@@ -55,12 +57,16 @@ fun DashboardScreen(
         key2 = state.materials,
         key3 = connectionStatus,
         block = {
+            Log.i("FUELS", "DashboardScreen: ${state.fuels}")
 
             if (!cameraPermissionState.hasPermission)
                 cameraPermissionState.launchPermissionRequest()
 
             if (connectionStatus == Status.Available && state.materials.isNotEmpty()) {
-                Log.i("MATERIALS", "DashboardScreen: ${state.materials}")
+                onEvent(DashboardScreenEvent.CheckDataAndPost)
+            }
+
+            if (connectionStatus == Status.Available && state.fuels.isNotEmpty()){
                 onEvent(DashboardScreenEvent.CheckDataAndPost)
             }
         }
@@ -99,24 +105,34 @@ fun DashboardScreen(
         },
     ) { paddingValues ->
         LazyColumn(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             contentPadding = PaddingValues(
                 top = paddingValues.calculateTopPadding() + 16.dp,
                 start = 16.dp,
                 end = 16.dp
             ),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             content = {
                 item {
-                    AnimatedVisibility(visible = state.role == "checker") {
-                        MenuCard(
-                            text = "Scan Material Movement",
-                            icon = painterResource(id = R.drawable.scan_material_movement),
-                            onClickAction = {
-                                onNavigate(Destination.MaterialQrScreen)
-                            }
-                        )
+                    AnimatedVisibility(
+                        visible = state.role == "checker",
+                        enter = expandHorizontally(),
+                        exit = shrinkHorizontally()
+                    ) {
+                        Row {
+                            MenuCard(
+                                text = "Scan Material Movement",
+                                icon = painterResource(id = R.drawable.scan_material_movement),
+                                onClickAction = {
+                                    onNavigate(Destination.MaterialQrScreen)
+                                },
+                            )
+                        }
                     }
-                    AnimatedVisibility(visible = state.role == "gas-operator") {
+                    AnimatedVisibility(
+                        visible = state.role == "gas-operator",
+                        enter = expandHorizontally(),
+                        exit = shrinkHorizontally()
+                    ) {
                         MenuCardExpendable(
                             text = "Scan Transaksi BBM",
                             icon = painterResource(id = R.drawable.scan_gas),
@@ -127,18 +143,27 @@ fun DashboardScreen(
                     }
                 }
                 item {
-                    Spacer(modifier = Modifier.height(24.dp))
-                    AnimatedVisibility(visible = state.materials.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    AnimatedVisibility(
+                        visible = state.materials.isNotEmpty() || state.fuels.isNotEmpty(),
+                        enter = expandHorizontally(),
+                        exit = shrinkHorizontally()
+                    ) {
                         Text(
                             text = "Data yang belum terupload",
                             fontFamily = poppinsFont,
                             fontWeight = FontWeight.Medium
                         )
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
                 }
                 items(state.materials) {
                     MaterialListItem(materialEntity = it)
+                }
+                items(state.fuels) {
+                    FuelTruckCard(fuelTruckEntity = it)
+                }
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         )

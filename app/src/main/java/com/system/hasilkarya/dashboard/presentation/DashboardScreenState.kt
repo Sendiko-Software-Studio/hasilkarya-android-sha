@@ -1,8 +1,9 @@
 package com.system.hasilkarya.dashboard.presentation
 
+import com.system.hasilkarya.core.entities.FuelTruckEntity
+import com.system.hasilkarya.core.entities.MaterialEntity
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.utils.FailedRequest
-import com.system.hasilkarya.core.entities.MaterialEntity
 
 data class DashboardScreenState(
     val userId: String = "",
@@ -14,4 +15,5 @@ data class DashboardScreenState(
     val isRequestFailed: FailedRequest = FailedRequest(),
     val materials: List<MaterialEntity> = emptyList(),
     val role: String = "",
+    val fuels: List<FuelTruckEntity> = emptyList()
 )

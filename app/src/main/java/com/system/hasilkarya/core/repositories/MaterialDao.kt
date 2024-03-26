@@ -1,4 +1,4 @@
-package com.system.hasilkarya.gas.domain
+package com.system.hasilkarya.core.repositories
 
 import androidx.room.Dao
 import androidx.room.Delete

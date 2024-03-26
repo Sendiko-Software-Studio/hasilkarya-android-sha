@@ -1,4 +1,4 @@
-package com.system.hasilkarya.material.presentation.component
+package com.system.hasilkarya.fuel.presentation.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,13 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.system.hasilkarya.core.entities.MaterialEntity
+import com.system.hasilkarya.core.entities.FuelTruckEntity
 import com.system.hasilkarya.core.ui.theme.poppinsFont
 
 @Composable
-fun MaterialListItem(
+fun FuelTruckCard(
     modifier: Modifier = Modifier,
-    materialEntity: MaterialEntity
+    fuelTruckEntity: FuelTruckEntity
 ) {
     OutlinedCard(modifier = modifier) {
         Column(
@@ -42,42 +42,48 @@ fun MaterialListItem(
                 Spacer(modifier = Modifier.width(8.dp))
                 AssistChip(
                     onClick = { },
-                    label = { Text(text = "Perpindahan Material", fontFamily = poppinsFont) },
+                    label = { Text(text = "Transaksi BBM", fontFamily = poppinsFont) },
                     modifier = Modifier.weight(1f)
                 )
             }
             Text(
-                text = "driverId: ${materialEntity.driverId.take(8)}...",
+                text = "ID Driver: ${fuelTruckEntity.driverId.take(8)}...",
                 fontFamily = poppinsFont,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Start
             )
             Text(
-                text = "truckId: ${materialEntity.truckId.take(8)}...",
+                text = "ID Truk: ${fuelTruckEntity.truckId.take(8)}...",
                 fontFamily = poppinsFont,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Start
             )
             Text(
-                text = "stationId: ${materialEntity.stationId.take(8)}...",
+                text = "ID Pos: ${fuelTruckEntity.stationId.take(8)}...",
                 fontFamily = poppinsFont,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Start
             )
             Text(
-                text = "checkerId: ${materialEntity.checkerId.take(8)}...",
+                text = "ID Operator BBM: ${fuelTruckEntity.userId.take(8)}...",
                 fontFamily = poppinsFont,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Start
             )
             Text(
-                text = "rasio observasi: ${materialEntity.ratio}",
+                text = "Jumlah liter BBM: ${fuelTruckEntity.volume}",
                 fontFamily = poppinsFont,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Start
             )
             Text(
-                text = "keterangan: ${materialEntity.remarks}",
+                text = "Odometer: ${fuelTruckEntity.odometer}",
+                fontFamily = poppinsFont,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Start
+            )
+            Text(
+                text = "Keterangan: ${fuelTruckEntity.remarks}",
                 fontFamily = poppinsFont,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Start
@@ -88,22 +94,21 @@ fun MaterialListItem(
 
 @Preview
 @Composable
-fun MaterialListPrev() {
+fun FuelTruckCardPrev() {
     Surface {
-        val data = MaterialEntity(
-            checkerId = "2308b833-4bd3-4dcf-8813-6df57e5c22d6",
+        val data = FuelTruckEntity(
+            userId = "2308b833-4bd3-4dcf-8813-6df57e5c22d6",
             driverId = "c12639e5-ccaa-4cab-82e8-6d768d0db174",
-            ratio = 0.6,
+            volume = 0.6,
             remarks = "sesuai test gagal",
             stationId = "854c43db-d477-4329-9c2c-3e24d700a2d6",
-            truckId = "f0b6efac-0ee6-4995-8532-a6c32402f402"
+            truckId = "f0b6efac-0ee6-4995-8532-a6c32402f402",
+            odometer = 89.9
         )
         Column {
-            MaterialListItem(materialEntity = data, modifier = Modifier.padding(16.dp))
-            MaterialListItem(materialEntity = data, modifier = Modifier.padding(16.dp))
-            MaterialListItem(materialEntity = data, modifier = Modifier.padding(16.dp))
-            MaterialListItem(materialEntity = data, modifier = Modifier.padding(16.dp))
-
+            FuelTruckCard(fuelTruckEntity = data)
+            FuelTruckCard(fuelTruckEntity = data)
+            FuelTruckCard(fuelTruckEntity = data)
         }
     }
 }

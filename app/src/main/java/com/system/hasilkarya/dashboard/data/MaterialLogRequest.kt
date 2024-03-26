@@ -2,7 +2,7 @@ package com.system.hasilkarya.dashboard.data
 
 import com.google.gson.annotations.SerializedName
 
-data class PostToLogRequest(
+data class MaterialLogRequest(
 
 	@field:SerializedName("truck_id")
 	val truckId: String,

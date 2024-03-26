@@ -7,10 +7,10 @@ import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.preferences.AppPreferences
 import com.system.hasilkarya.core.preferences.dataStore
 import com.system.hasilkarya.core.repositories.AppDatabase
-import com.system.hasilkarya.core.repositories.GasRepository
+import com.system.hasilkarya.core.repositories.FuelRepository
 import com.system.hasilkarya.core.repositories.MaterialRepository
-import com.system.hasilkarya.dashboard.domain.GasDao
-import com.system.hasilkarya.gas.domain.MaterialDao
+import com.system.hasilkarya.core.repositories.FuelDao
+import com.system.hasilkarya.core.repositories.MaterialDao
 import com.system.hasilkarya.login.domain.LoginRepository
 import com.system.hasilkarya.profile.domain.ProfileRepository
 import dagger.Module
@@ -87,8 +87,8 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideGasDao(database: AppDatabase): GasDao {
-        return database.gasDao
+    fun provideFuelDao(database: AppDatabase): FuelDao {
+        return database.fuelDao
     }
 
     @Singleton
@@ -99,8 +99,8 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideGasRepository(apiServices: ApiServices, preferences: AppPreferences, dao: GasDao): GasRepository {
-        return GasRepository(apiServices, preferences, dao)
+    fun provideFuelRepository(apiServices: ApiServices, preferences: AppPreferences, dao: FuelDao): FuelRepository {
+        return FuelRepository(apiServices, preferences, dao)
     }
 
     @Provides

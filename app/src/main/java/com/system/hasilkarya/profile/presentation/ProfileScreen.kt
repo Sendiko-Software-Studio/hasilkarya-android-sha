@@ -132,7 +132,7 @@ fun ProfileScreen(
                     item {
                         val uriHandler = LocalUriHandler.current
                         Text(
-                            text = "v1.0",
+                            text = "v1.2-alpha",
                             fontFamily = poppinsFont,
                             modifier = Modifier
                                 .padding(16.dp)

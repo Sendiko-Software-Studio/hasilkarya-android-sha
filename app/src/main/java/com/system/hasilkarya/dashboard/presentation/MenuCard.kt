@@ -52,13 +52,15 @@ fun MenuCard(
                 Icon(
                     painter = icon,
                     contentDescription = text,
+                    modifier = Modifier.size(128.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = text,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center,
-                    fontFamily = poppinsFont
+                    fontFamily = poppinsFont,
+                    modifier = Modifier.width(128.dp)
                 )
             }
         }
@@ -133,7 +135,8 @@ fun MenuCardExpendable(
                                         modifier = Modifier.fillMaxWidth()
                                             .padding(vertical = 8.dp)
                                     )
-                                }
+                                },
+                                enabled = false
                             )
                             Divider()
                         }

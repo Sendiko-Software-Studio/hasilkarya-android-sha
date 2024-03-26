@@ -15,8 +15,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:enableOnBackInvokedCallback="true"
         android:theme="@style/Theme.HasilKarya"
-        tools:targetApi="31">
+        tools:targetApi="tiramisu">
         <activity
             android:name=".core.MainActivity"
             android:exported="true"
