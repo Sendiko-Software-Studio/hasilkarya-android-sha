@@ -21,8 +21,10 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        ksp {
-            arg("room.schemaLocation", "$projectDir/schemas")
+        kapt {
+          arguments {
+              arg("room.schemaLocation", "$projectDir/schemas")
+          }
         }
     }
 
