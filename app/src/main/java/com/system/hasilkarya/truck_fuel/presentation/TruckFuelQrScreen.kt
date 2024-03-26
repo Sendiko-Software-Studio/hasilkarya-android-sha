@@ -1,4 +1,4 @@
-package com.system.hasilkarya.fuel.presentation
+package com.system.hasilkarya.truck_fuel.presentation
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility

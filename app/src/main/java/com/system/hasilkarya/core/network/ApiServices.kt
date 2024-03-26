@@ -4,16 +4,16 @@ import com.system.hasilkarya.dashboard.data.MaterialLogRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialResponse
 import com.system.hasilkarya.dashboard.data.PostToLogResponse
-import com.system.hasilkarya.fuel.data.TruckFuelLogRequest
-import com.system.hasilkarya.fuel.data.TruckFuelLogResponse
-import com.system.hasilkarya.fuel.data.TruckFuelRequest
-import com.system.hasilkarya.fuel.data.TruckFuelResponse
 import com.system.hasilkarya.login.data.LoginRequest
 import com.system.hasilkarya.login.data.LoginResponse
 import com.system.hasilkarya.material.data.CheckDriverIdResponse
 import com.system.hasilkarya.material.data.CheckStationIdResponse
 import com.system.hasilkarya.material.data.CheckTruckIdResponse
 import com.system.hasilkarya.profile.data.LogoutResponse
+import com.system.hasilkarya.truck_fuel.data.TruckFuelLogRequest
+import com.system.hasilkarya.truck_fuel.data.TruckFuelLogResponse
+import com.system.hasilkarya.truck_fuel.data.TruckFuelRequest
+import com.system.hasilkarya.truck_fuel.data.TruckFuelResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -74,5 +74,8 @@ interface ApiServices {
         @Header("Authorization") token: String,
         @Body truckFuelLogRequest: TruckFuelLogRequest
     ): Call<TruckFuelLogResponse>
+
+    @POST("gas-operator/fuel-log/heavy-vehicle/store")
+    fun postFuelHeavyVehicle()
 
 }

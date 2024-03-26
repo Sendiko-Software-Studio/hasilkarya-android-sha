@@ -3,8 +3,8 @@ package com.system.hasilkarya.core.repositories
 import com.system.hasilkarya.core.entities.FuelTruckEntity
 import com.system.hasilkarya.core.network.ApiServices
 import com.system.hasilkarya.core.preferences.AppPreferences
-import com.system.hasilkarya.fuel.data.TruckFuelLogRequest
-import com.system.hasilkarya.fuel.data.TruckFuelRequest
+import com.system.hasilkarya.truck_fuel.data.TruckFuelLogRequest
+import com.system.hasilkarya.truck_fuel.data.TruckFuelRequest
 import javax.inject.Inject
 
 class FuelRepository @Inject constructor(

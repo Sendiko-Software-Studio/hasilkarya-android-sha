@@ -14,10 +14,10 @@ import com.system.hasilkarya.dashboard.data.MaterialLogRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialResponse
 import com.system.hasilkarya.dashboard.data.PostToLogResponse
-import com.system.hasilkarya.fuel.data.TruckFuelLogRequest
-import com.system.hasilkarya.fuel.data.TruckFuelLogResponse
-import com.system.hasilkarya.fuel.data.TruckFuelRequest
-import com.system.hasilkarya.fuel.data.TruckFuelResponse
+import com.system.hasilkarya.truck_fuel.data.TruckFuelLogRequest
+import com.system.hasilkarya.truck_fuel.data.TruckFuelLogResponse
+import com.system.hasilkarya.truck_fuel.data.TruckFuelRequest
+import com.system.hasilkarya.truck_fuel.data.TruckFuelResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -1,4 +1,4 @@
-package com.system.hasilkarya.fuel.data
+package com.system.hasilkarya.truck_fuel.data
 
 import com.google.gson.annotations.SerializedName
 

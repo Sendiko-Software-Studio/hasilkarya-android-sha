@@ -1,4 +1,4 @@
-package com.system.hasilkarya.fuel.presentation
+package com.system.hasilkarya.truck_fuel.presentation
 
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
 

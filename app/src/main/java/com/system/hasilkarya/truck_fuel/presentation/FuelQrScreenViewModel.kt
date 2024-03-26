@@ -1,4 +1,4 @@
-package com.system.hasilkarya.fuel.presentation
+package com.system.hasilkarya.truck_fuel.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,8 +8,8 @@ import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.repositories.FuelRepository
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
-import com.system.hasilkarya.fuel.data.TruckFuelRequest
-import com.system.hasilkarya.fuel.data.TruckFuelResponse
+import com.system.hasilkarya.truck_fuel.data.TruckFuelRequest
+import com.system.hasilkarya.truck_fuel.data.TruckFuelResponse
 import com.system.hasilkarya.material.data.CheckDriverIdResponse
 import com.system.hasilkarya.material.data.CheckStationIdResponse
 import com.system.hasilkarya.material.data.CheckTruckIdResponse

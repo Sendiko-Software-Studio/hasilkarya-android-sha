@@ -13,8 +13,8 @@ import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.ui.theme.HasilKaryaTheme
 import com.system.hasilkarya.dashboard.presentation.DashboardScreen
 import com.system.hasilkarya.dashboard.presentation.DashboardScreenViewModel
-import com.system.hasilkarya.fuel.presentation.TruckFuelQrScreen
-import com.system.hasilkarya.fuel.presentation.FuelQrScreenViewModel
+import com.system.hasilkarya.truck_fuel.presentation.TruckFuelQrScreen
+import com.system.hasilkarya.truck_fuel.presentation.FuelQrScreenViewModel
 import com.system.hasilkarya.login.presentation.LoginScreen
 import com.system.hasilkarya.login.presentation.LoginScreenViewModel
 import com.system.hasilkarya.material.presentation.MaterialQrScreen
