@@ -13,8 +13,8 @@ import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.ui.theme.HasilKaryaTheme
 import com.system.hasilkarya.dashboard.presentation.DashboardScreen
 import com.system.hasilkarya.dashboard.presentation.DashboardScreenViewModel
-import com.system.hasilkarya.gas.presentation.GasQrScreen
-import com.system.hasilkarya.gas.presentation.GasQrScreenViewModel
+import com.system.hasilkarya.fuel.presentation.TruckFuelQrScreen
+import com.system.hasilkarya.fuel.presentation.FuelQrScreenViewModel
 import com.system.hasilkarya.login.presentation.LoginScreen
 import com.system.hasilkarya.login.presentation.LoginScreenViewModel
 import com.system.hasilkarya.material.presentation.MaterialQrScreen
@@ -126,8 +126,8 @@ class MainActivity : ComponentActivity() {
                         composable(
                             route = Destination.GasQrScreen.name,
                             content = {
-                                val viewModel = hiltViewModel<GasQrScreenViewModel>()
-                                GasQrScreen(
+                                val viewModel = hiltViewModel<FuelQrScreenViewModel>()
+                                TruckFuelQrScreen(
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
                                     connectionStatus = viewModel.connectionStatus.collectAsState().value.connectionStatus,
