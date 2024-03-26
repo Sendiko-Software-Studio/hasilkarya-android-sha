@@ -56,12 +56,16 @@ fun DashboardScreen(
         key2 = state.materials,
         key3 = connectionStatus,
         block = {
+            Log.i("FUELS", "DashboardScreen: ${state.fuels}")
 
             if (!cameraPermissionState.hasPermission)
                 cameraPermissionState.launchPermissionRequest()
 
             if (connectionStatus == Status.Available && state.materials.isNotEmpty()) {
-                Log.i("MATERIALS", "DashboardScreen: ${state.materials}")
+                onEvent(DashboardScreenEvent.CheckDataAndPost)
+            }
+
+            if (connectionStatus == Status.Available && state.fuels.isNotEmpty()){
                 onEvent(DashboardScreenEvent.CheckDataAndPost)
             }
         }
