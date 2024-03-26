@@ -26,22 +26,22 @@ import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
-class FuelQrScreenViewModel @Inject constructor(
+class TruckFuelQrScreenViewModel @Inject constructor(
     private val repository: TruckFuelRepository,
     connectionObserver: NetworkConnectivityObserver
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(FuelQrScreenState())
+    private val _state = MutableStateFlow(TruckFuelQrScreenState())
     private val _userId = repository.getUserId()
     private val _token = repository.getToken()
     val connectionStatus =
         combine(connectionObserver.observe(), _state) { connectionStatus, state ->
             state.copy(connectionStatus = connectionStatus)
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FuelQrScreenState())
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TruckFuelQrScreenState())
 
     val state = combine(_userId, _token, _state) { userId, token, state ->
         state.copy(token = token, userId = userId)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FuelQrScreenState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TruckFuelQrScreenState())
 
     private fun checkDriverId(driverId: String) {
         _state.update { it.copy(isLoading = true) }

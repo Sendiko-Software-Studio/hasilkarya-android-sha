@@ -5,7 +5,7 @@ import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
 
-data class FuelQrScreenState(
+data class TruckFuelQrScreenState(
     val token: String = "",
     val notificationMessage: String = "",
     val isLoading: Boolean = false,

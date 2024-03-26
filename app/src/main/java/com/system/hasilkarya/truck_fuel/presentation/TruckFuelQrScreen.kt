@@ -22,7 +22,7 @@ import kotlinx.coroutines.delay
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TruckFuelQrScreen(
-    state: FuelQrScreenState,
+    state: TruckFuelQrScreenState,
     onEvent: (TruckFuelQrScreenEvent) -> Unit,
     connectionStatus: Status,
     onNavigateBack: (Destination) -> Unit,

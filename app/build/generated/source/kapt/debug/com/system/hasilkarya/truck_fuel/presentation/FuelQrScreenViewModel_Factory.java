@@ -18,7 +18,7 @@ import javax.inject.Provider;
     "KotlinInternal",
     "KotlinInternalInJava"
 })
-public final class FuelQrScreenViewModel_Factory implements Factory<FuelQrScreenViewModel> {
+public final class FuelQrScreenViewModel_Factory implements Factory<TruckFuelQrScreenViewModel> {
   private final Provider<TruckFuelRepository> repositoryProvider;
 
   private final Provider<NetworkConnectivityObserver> connectionObserverProvider;
@@ -30,7 +30,7 @@ public final class FuelQrScreenViewModel_Factory implements Factory<FuelQrScreen
   }
 
   @Override
-  public FuelQrScreenViewModel get() {
+  public TruckFuelQrScreenViewModel get() {
     return newInstance(repositoryProvider.get(), connectionObserverProvider.get());
   }
 
@@ -39,8 +39,8 @@ public final class FuelQrScreenViewModel_Factory implements Factory<FuelQrScreen
     return new FuelQrScreenViewModel_Factory(repositoryProvider, connectionObserverProvider);
   }
 
-  public static FuelQrScreenViewModel newInstance(TruckFuelRepository repository,
-                                                  NetworkConnectivityObserver connectionObserver) {
-    return new FuelQrScreenViewModel(repository, connectionObserver);
+  public static TruckFuelQrScreenViewModel newInstance(TruckFuelRepository repository,
+                                                       NetworkConnectivityObserver connectionObserver) {
+    return new TruckFuelQrScreenViewModel(repository, connectionObserver);
   }
 }

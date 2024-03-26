@@ -15,7 +15,7 @@ import dagger.multibindings.StringKey;
 import java.lang.String;
 
 @OriginatingElement(
-    topLevelClass = FuelQrScreenViewModel.class
+    topLevelClass = TruckFuelQrScreenViewModel.class
 )
 public final class FuelQrScreenViewModel_HiltModules {
   private FuelQrScreenViewModel_HiltModules() {
@@ -31,7 +31,7 @@ public final class FuelQrScreenViewModel_HiltModules {
     @IntoMap
     @StringKey("com.system.hasilkarya.fuel.presentation.FuelQrScreenViewModel")
     @HiltViewModelMap
-    public abstract ViewModel binds(FuelQrScreenViewModel vm);
+    public abstract ViewModel binds(TruckFuelQrScreenViewModel vm);
   }
 
   @Module
