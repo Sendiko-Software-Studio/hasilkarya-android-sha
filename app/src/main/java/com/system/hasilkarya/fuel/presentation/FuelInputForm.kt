@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.system.hasilkarya.core.ui.components.NormalTextField
 import com.system.hasilkarya.core.ui.theme.poppinsFont
-import com.system.hasilkarya.dashboard.presentation.ScanOptions
+import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

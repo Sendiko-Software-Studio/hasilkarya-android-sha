@@ -10,9 +10,9 @@ import com.system.hasilkarya.core.repositories.MaterialRepository
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialResponse
-import com.system.hasilkarya.dashboard.presentation.ScanOptions.Driver
-import com.system.hasilkarya.dashboard.presentation.ScanOptions.None
-import com.system.hasilkarya.dashboard.presentation.ScanOptions.Pos
+import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.Driver
+import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.None
+import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.Pos
 import com.system.hasilkarya.material.data.CheckDriverIdResponse
 import com.system.hasilkarya.material.data.CheckStationIdResponse
 import com.system.hasilkarya.material.data.CheckTruckIdResponse

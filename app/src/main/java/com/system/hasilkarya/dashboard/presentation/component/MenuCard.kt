@@ -1,4 +1,4 @@
-package com.system.hasilkarya.dashboard.presentation
+package com.system.hasilkarya.dashboard.presentation.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally

@@ -7,7 +7,7 @@ import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.repositories.FuelRepository
 import com.system.hasilkarya.core.ui.utils.FailedRequest
-import com.system.hasilkarya.dashboard.presentation.ScanOptions
+import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
 import com.system.hasilkarya.fuel.data.TruckFuelRequest
 import com.system.hasilkarya.fuel.data.TruckFuelResponse
 import com.system.hasilkarya.material.data.CheckDriverIdResponse
