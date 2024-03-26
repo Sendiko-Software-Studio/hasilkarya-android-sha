@@ -40,7 +40,7 @@ fun UnsentItemCard(
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
             Text(
-                text = "Data belum ter-upload.",
+                text = "Data belum terupload.",
                 fontFamily = poppinsFont,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier.weight(1f)

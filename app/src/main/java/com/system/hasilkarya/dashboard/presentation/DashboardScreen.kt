@@ -10,9 +10,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -30,7 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
@@ -140,20 +137,6 @@ fun DashboardScreen(
                             onClickAction = {
                                 onNavigate(Destination.GasQrScreen)
                             }
-                        )
-                    }
-                }
-                item {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    AnimatedVisibility(
-                        visible = state.materials.isNotEmpty() || state.fuels.isNotEmpty(),
-                        enter = expandHorizontally(),
-                        exit = shrinkHorizontally()
-                    ) {
-                        Text(
-                            text = "Data yang belum terupload",
-                            fontFamily = poppinsFont,
-                            fontWeight = FontWeight.Medium
                         )
                     }
                 }
