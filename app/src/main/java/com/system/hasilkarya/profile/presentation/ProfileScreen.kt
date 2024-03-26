@@ -107,7 +107,7 @@ fun ProfileScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(text = "Email: ", fontFamily = poppinsFont)
-                                    Text(text = state.email, fontFamily = poppinsFont)
+                                    Text(text = state.email, fontFamily = poppinsFont, textAlign = TextAlign.End)
                                 }
                                 Divider()
                                 Button(
@@ -132,7 +132,7 @@ fun ProfileScreen(
                     item {
                         val uriHandler = LocalUriHandler.current
                         Text(
-                            text = "v1.2-alpha",
+                            text = "v1.22-alpha",
                             fontFamily = poppinsFont,
                             modifier = Modifier
                                 .padding(16.dp)

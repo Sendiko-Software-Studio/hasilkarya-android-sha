@@ -1,6 +1,6 @@
 package com.system.hasilkarya.fuel.presentation
 
-import com.system.hasilkarya.dashboard.presentation.ScanOptions
+import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
 
 sealed class TruckFuelQrScreenEvent {
 

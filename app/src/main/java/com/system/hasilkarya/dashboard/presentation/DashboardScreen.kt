@@ -11,26 +11,25 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
@@ -38,8 +37,9 @@ import com.system.hasilkarya.R
 import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.theme.poppinsFont
-import com.system.hasilkarya.fuel.presentation.component.FuelTruckCard
-import com.system.hasilkarya.material.presentation.component.MaterialListItem
+import com.system.hasilkarya.dashboard.presentation.component.MenuCard
+import com.system.hasilkarya.dashboard.presentation.component.MenuCardExpendable
+import com.system.hasilkarya.dashboard.presentation.component.UnsentItemCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -73,10 +73,10 @@ fun DashboardScreen(
     )
     Scaffold(
         topBar = {
-            TopAppBar(
+            LargeTopAppBar(
                 title = {
                     Text(
-                        text = "Halo, ${state.name}",
+                        text = "Selamat datang, ${state.name}",
                         fontFamily = poppinsFont
                     )
                 },
@@ -143,27 +143,32 @@ fun DashboardScreen(
                     }
                 }
                 item {
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                     AnimatedVisibility(
-                        visible = state.materials.isNotEmpty() || state.fuels.isNotEmpty(),
+                        visible = state.materials.isNotEmpty(),
                         enter = expandHorizontally(),
                         exit = shrinkHorizontally()
                     ) {
-                        Text(
-                            text = "Data yang belum terupload",
-                            fontFamily = poppinsFont,
-                            fontWeight = FontWeight.Medium
+                        UnsentItemCard(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            itemCount = state.materials.size
                         )
                     }
                 }
-                items(state.materials) {
-                    MaterialListItem(materialEntity = it)
-                }
-                items(state.fuels) {
-                    FuelTruckCard(fuelTruckEntity = it)
-                }
                 item {
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
+                    AnimatedVisibility(
+                        visible = state.fuels.isNotEmpty(),
+                        enter = expandHorizontally(),
+                        exit = shrinkHorizontally()
+                    ) {
+                        UnsentItemCard(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            itemCount = state.materials.size
+                        )
+                    }
                 }
             }
         )

@@ -2,7 +2,7 @@ package com.system.hasilkarya.material.presentation
 
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.utils.FailedRequest
-import com.system.hasilkarya.dashboard.presentation.ScanOptions
+import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
 
 data class MaterialQrScreenState(
     val currentlyScanning: ScanOptions = ScanOptions.Truck,

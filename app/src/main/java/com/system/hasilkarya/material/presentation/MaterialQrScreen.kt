@@ -64,11 +64,11 @@ import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
 import com.system.hasilkarya.core.ui.components.NormalTextField
 import com.system.hasilkarya.core.ui.theme.poppinsFont
-import com.system.hasilkarya.dashboard.presentation.ScanOptions
-import com.system.hasilkarya.dashboard.presentation.ScanOptions.Driver
-import com.system.hasilkarya.dashboard.presentation.ScanOptions.None
-import com.system.hasilkarya.dashboard.presentation.ScanOptions.Pos
-import com.system.hasilkarya.dashboard.presentation.ScanOptions.Truck
+import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
+import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.Driver
+import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.None
+import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.Pos
+import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.Truck
 import com.system.hasilkarya.material.data.ratioData
 import com.system.hasilkarya.qr.domain.BarcodeAnalyzer
 import com.system.hasilkarya.qr.presentation.QrFormHeader

@@ -1,6 +1,6 @@
 package com.system.hasilkarya.material.presentation
 
-import com.system.hasilkarya.dashboard.presentation.ScanOptions
+import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
 
 sealed class MaterialQrScreenEvent {
     data class OnDriverIdRegistered(val driverId: String): MaterialQrScreenEvent()

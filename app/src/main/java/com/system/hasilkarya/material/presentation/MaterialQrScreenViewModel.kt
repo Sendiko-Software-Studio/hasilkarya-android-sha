@@ -2,17 +2,17 @@ package com.system.hasilkarya.material.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.system.hasilkarya.core.entities.MaterialEntity
 import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.preferences.AppPreferences
 import com.system.hasilkarya.core.repositories.MaterialRepository
 import com.system.hasilkarya.core.ui.utils.FailedRequest
-import com.system.hasilkarya.core.entities.MaterialEntity
 import com.system.hasilkarya.dashboard.data.PostMaterialRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialResponse
-import com.system.hasilkarya.dashboard.presentation.ScanOptions.Driver
-import com.system.hasilkarya.dashboard.presentation.ScanOptions.None
-import com.system.hasilkarya.dashboard.presentation.ScanOptions.Pos
+import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.Driver
+import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.None
+import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.Pos
 import com.system.hasilkarya.material.data.CheckDriverIdResponse
 import com.system.hasilkarya.material.data.CheckStationIdResponse
 import com.system.hasilkarya.material.data.CheckTruckIdResponse
@@ -38,14 +38,15 @@ class MaterialQrScreenViewModel @Inject constructor(
     private val _state = MutableStateFlow(MaterialQrScreenState())
     private val _token = preferences.getToken()
     private val _userId = preferences.getUserId()
-    private val _connectionStatus = connectionObserver.observe()
+    private val connectionStatus = combine(connectionObserver.observe(), _state) { connectionStatus, state ->
+        state.copy(connectionStatus = connectionStatus)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), MaterialQrScreenState())
     val state = combine(
-        _token, _userId, _connectionStatus, _state
-    ) { token, userId, connectionStatus, state ->
+        _token, _userId, _state
+    ) { token, userId, state ->
         state.copy(
             token = token,
             userId = userId,
-            connectionStatus = connectionStatus
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), MaterialQrScreenState())
 
@@ -231,15 +232,15 @@ class MaterialQrScreenViewModel @Inject constructor(
 
     fun onEvent(event: MaterialQrScreenEvent) {
         when (event) {
-            is MaterialQrScreenEvent.OnDriverIdRegistered -> if (state.value.connectionStatus == Status.Available)
+            is MaterialQrScreenEvent.OnDriverIdRegistered -> if (connectionStatus.value.connectionStatus == Status.Available)
                 checkDriverId(event.driverId)
             else _state.update { it.copy(driverId = event.driverId, currentlyScanning = Pos) }
 
-            is MaterialQrScreenEvent.OnTruckIdRegistered -> if (state.value.connectionStatus == Status.Available)
+            is MaterialQrScreenEvent.OnTruckIdRegistered -> if (connectionStatus.value.connectionStatus == Status.Available)
                 checkTruckId(event.truckId)
             else _state.update { it.copy(truckId = event.truckId, currentlyScanning = Driver) }
 
-            is MaterialQrScreenEvent.OnPosIdRegistered -> if (state.value.connectionStatus == Status.Available)
+            is MaterialQrScreenEvent.OnPosIdRegistered -> if (connectionStatus.value.connectionStatus == Status.Available)
                 checkStationId(event.posId)
             else _state.update { it.copy(posId = event.posId, currentlyScanning = None) }
 

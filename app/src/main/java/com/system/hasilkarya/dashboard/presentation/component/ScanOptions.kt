@@ -1,4 +1,4 @@
-package com.system.hasilkarya.dashboard.presentation
+package com.system.hasilkarya.dashboard.presentation.component
 
 enum class ScanOptions {
     Driver, Truck, Pos, Volume, None

@@ -3,7 +3,7 @@ package com.system.hasilkarya.fuel.presentation
 import com.system.hasilkarya.core.entities.FuelTruckEntity
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.utils.FailedRequest
-import com.system.hasilkarya.dashboard.presentation.ScanOptions
+import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
 
 data class FuelQrScreenState(
     val token: String = "",
