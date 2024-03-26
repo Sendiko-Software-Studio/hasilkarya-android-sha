@@ -1,4 +1,4 @@
-package com.system.hasilkarya.gas.presentation
+package com.system.hasilkarya.fuel.presentation
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
@@ -21,9 +21,9 @@ import kotlinx.coroutines.delay
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun GasQrScreen(
-    state: GasQrScreenState,
-    onEvent: (GasQrScreenEvent) -> Unit,
+fun TruckFuelQrScreen(
+    state: FuelQrScreenState,
+    onEvent: (TruckFuelQrScreenEvent) -> Unit,
     connectionStatus: Status,
     onNavigateBack: (Destination) -> Unit,
 ) {
@@ -32,7 +32,7 @@ fun GasQrScreen(
         block = {
             if (state.notificationMessage.isNotBlank()){
                 delay(2000)
-                onEvent(GasQrScreenEvent.NotificationClear)
+                onEvent(TruckFuelQrScreenEvent.NotificationClear)
             }
 
             if (state.isPostSuccessful){
@@ -58,7 +58,7 @@ fun GasQrScreen(
                     exit = slideOutHorizontally()
                 ) {
                     QrScanComponent(
-                        onResult = { onEvent(GasQrScreenEvent.OnTruckIdRegistered(it)) },
+                        onResult = { onEvent(TruckFuelQrScreenEvent.OnTruckIdRegistered(it)) },
                         navigateBack = { onNavigateBack(Destination.DashboardScreen) },
                         title = "Truck",
                         textButton = "Lanjut scan driver"
@@ -70,8 +70,8 @@ fun GasQrScreen(
                     exit = slideOutHorizontally()
                 ) {
                     QrScanComponent(
-                        onResult = { onEvent(GasQrScreenEvent.OnDriverIdRegistered(it)) },
-                        navigateBack = { onEvent(GasQrScreenEvent.OnNavigateForm(ScanOptions.Truck)) },
+                        onResult = { onEvent(TruckFuelQrScreenEvent.OnDriverIdRegistered(it)) },
+                        navigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Truck)) },
                         title = "Driver",
                         textButton = "Lanjut scan pos"
                     )
@@ -82,8 +82,8 @@ fun GasQrScreen(
                     exit = slideOutHorizontally()
                 ) {
                     QrScanComponent(
-                        onResult = { onEvent(GasQrScreenEvent.OnStationIdRegistered(it)) },
-                        navigateBack = { onEvent(GasQrScreenEvent.OnNavigateForm(ScanOptions.Driver)) },
+                        onResult = { onEvent(TruckFuelQrScreenEvent.OnStationIdRegistered(it)) },
+                        navigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Driver)) },
                         title = "Pos",
                         textButton = "Lanjut scan BBM"
                     )
@@ -94,22 +94,22 @@ fun GasQrScreen(
                     exit = slideOutHorizontally()
                 ) {
                     QrScanComponent(
-                        onResult = { onEvent(GasQrScreenEvent.OnVolumeRegistered(it.toDouble())) },
-                        navigateBack = { onEvent(GasQrScreenEvent.OnNavigateForm(ScanOptions.Pos)) },
+                        onResult = { onEvent(TruckFuelQrScreenEvent.OnVolumeRegistered(it.toDouble())) },
+                        navigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Pos)) },
                         title = "Jumlah BBM",
                         textButton = "Lanjut isi data"
                     )
                 }
                 AnimatedVisibility(visible = state.currentlyScanning == ScanOptions.None) {
-                    GasInputForm(
+                    FuelInputForm(
                         odometer = state.odometer.toString(),
                         remarks = state.remarks,
-                        onOdometerChange = { onEvent(GasQrScreenEvent.OnOdometerChange(it)) },
-                        onOdometerClear = { onEvent(GasQrScreenEvent.OnClearOdometer) },
-                        onRemarksChange = { onEvent(GasQrScreenEvent.OnRemarksChange(it)) },
-                        onRemarksClear = { onEvent(GasQrScreenEvent.OnClearRemarks) },
-                        onNavigateBack = { onEvent(GasQrScreenEvent.OnNavigateForm(it)) },
-                        onSubmit = { onEvent(GasQrScreenEvent.SaveGasTransaction) }
+                        onOdometerChange = { onEvent(TruckFuelQrScreenEvent.OnOdometerChange(it)) },
+                        onOdometerClear = { onEvent(TruckFuelQrScreenEvent.OnClearOdometer) },
+                        onRemarksChange = { onEvent(TruckFuelQrScreenEvent.OnRemarksChange(it)) },
+                        onRemarksClear = { onEvent(TruckFuelQrScreenEvent.OnClearRemarks) },
+                        onNavigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(it)) },
+                        onSubmit = { onEvent(TruckFuelQrScreenEvent.SaveTruckFuelTransaction) }
                     )
                 }
             }

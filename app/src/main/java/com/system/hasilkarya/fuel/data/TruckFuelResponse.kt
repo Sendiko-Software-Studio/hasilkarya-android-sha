@@ -1,16 +1,16 @@
-package com.system.hasilkarya.gas.data
+package com.system.hasilkarya.fuel.data
 
 import com.google.gson.annotations.SerializedName
 
-data class TruckGasResponse(
+data class TruckFuelResponse(
 
-	@field:SerializedName("data")
-	val data: Data,
+    @field:SerializedName("data")
+	val data: Data1,
 
-	@field:SerializedName("success")
+    @field:SerializedName("success")
 	val success: Boolean,
 
-	@field:SerializedName("message")
+    @field:SerializedName("message")
 	val message: String
 )
 

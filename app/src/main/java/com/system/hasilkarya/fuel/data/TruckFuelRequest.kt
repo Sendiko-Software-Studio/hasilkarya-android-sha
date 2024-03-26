@@ -1,8 +1,8 @@
-package com.system.hasilkarya.gas.data
+package com.system.hasilkarya.fuel.data
 
 import com.google.gson.annotations.SerializedName
 
-data class TruckGasRequest(
+data class TruckFuelRequest(
 
 	@field:SerializedName("volume")
 	val volume: Any,
@@ -20,5 +20,8 @@ data class TruckGasRequest(
 	val stationId: String,
 
 	@field:SerializedName("gas_operator_id")
-	val gasOperatorId: String
+	val gasOperatorId: String,
+
+	@field:SerializedName("remarks")
+	val remarks: String
 )
