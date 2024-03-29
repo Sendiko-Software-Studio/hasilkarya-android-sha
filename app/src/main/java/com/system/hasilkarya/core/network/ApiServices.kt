@@ -4,6 +4,7 @@ import com.system.hasilkarya.dashboard.data.MaterialLogRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialResponse
 import com.system.hasilkarya.dashboard.data.PostToLogResponse
+import com.system.hasilkarya.heavy_vehicle_fuel.data.CheckHeavyVehicleIdResponse
 import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelRequest
 import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelResponse
 import com.system.hasilkarya.login.data.LoginRequest
@@ -82,5 +83,11 @@ interface ApiServices {
         @Header("Authorization") token: String,
         @Body heavyVehicleFuelRequest: HeavyVehicleFuelRequest
     ): Call<HeavyVehicleFuelResponse>
+
+    @GET("heavy-vehicle/check-availability/{id}")
+    fun checkHeavyVehicleId(
+        @Path("id") heavyVehicleId: String,
+        @Header("Authorization") token: String
+    ): Call<CheckHeavyVehicleIdResponse>
 
 }
