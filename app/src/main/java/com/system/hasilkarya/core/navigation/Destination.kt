@@ -7,4 +7,5 @@ enum class Destination {
     MaterialQrScreen,
     ProfileScreen,
     GasQrScreen,
+    GasHVQrScreen,
 }
