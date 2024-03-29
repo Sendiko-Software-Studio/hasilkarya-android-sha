@@ -20,5 +20,8 @@ data class HeavyVehicleFuelRequest(
 	val gasOperatorId: String,
 
 	@field:SerializedName("heavy_vehicle_id")
-	val heavyVehicleId: String
+	val heavyVehicleId: String,
+
+	@field:SerializedName("remarks")
+	val remarks: String,
 )
