@@ -13,8 +13,8 @@ import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.ui.theme.HasilKaryaTheme
 import com.system.hasilkarya.dashboard.presentation.DashboardScreen
 import com.system.hasilkarya.dashboard.presentation.DashboardScreenViewModel
-import com.system.hasilkarya.truck_fuel.presentation.TruckFuelQrScreen
-import com.system.hasilkarya.truck_fuel.presentation.FuelQrScreenViewModel
+import com.system.hasilkarya.heavy_vehicle_fuel.presentation.HeavyVehicleFuelQrScreen
+import com.system.hasilkarya.heavy_vehicle_fuel.presentation.HeavyVehicleFuelQrScreenViewModel
 import com.system.hasilkarya.login.presentation.LoginScreen
 import com.system.hasilkarya.login.presentation.LoginScreenViewModel
 import com.system.hasilkarya.material.presentation.MaterialQrScreen
@@ -23,6 +23,8 @@ import com.system.hasilkarya.profile.presentation.ProfileScreen
 import com.system.hasilkarya.profile.presentation.ProfileScreenViewModel
 import com.system.hasilkarya.splash.presentation.SplashScreen
 import com.system.hasilkarya.splash.presentation.SplashScreenViewModel
+import com.system.hasilkarya.truck_fuel.presentation.TruckFuelQrScreen
+import com.system.hasilkarya.truck_fuel.presentation.TruckFuelQrScreenViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -126,7 +128,7 @@ class MainActivity : ComponentActivity() {
                         composable(
                             route = Destination.GasQrScreen.name,
                             content = {
-                                val viewModel = hiltViewModel<FuelQrScreenViewModel>()
+                                val viewModel = hiltViewModel<TruckFuelQrScreenViewModel>()
                                 TruckFuelQrScreen(
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
@@ -136,6 +138,22 @@ class MainActivity : ComponentActivity() {
                                             popUpTo(it.name) { inclusive = true }
                                         }
                                     }
+                                )
+                            }
+                        )
+                        composable(
+                            route = Destination.GasHVQrScreen.name,
+                            content = {
+                                val viewModel = hiltViewModel<HeavyVehicleFuelQrScreenViewModel>()
+                                HeavyVehicleFuelQrScreen(
+                                    state = viewModel.state.collectAsState().value,
+                                    onEvent = viewModel::onEvent,
+                                    onNavigateBack = {
+                                        navController.navigate(it.name){
+                                            popUpTo(it.name) { inclusive = true }
+                                        }
+                                    },
+                                    connectionStatus = viewModel.connectionStatus.collectAsState().value.connectionStatus
                                 )
                             }
                         )
