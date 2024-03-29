@@ -3,10 +3,12 @@ package com.system.hasilkarya.dashboard.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.system.hasilkarya.core.entities.FuelHeavyVehicleEntity
 import com.system.hasilkarya.core.entities.FuelTruckEntity
 import com.system.hasilkarya.core.entities.MaterialEntity
 import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
+import com.system.hasilkarya.core.repositories.fuel.heavy_vehicle.HeavyVehicleFuelRepository
 import com.system.hasilkarya.core.repositories.fuel.truck.TruckFuelRepository
 import com.system.hasilkarya.core.repositories.material.MaterialRepository
 import com.system.hasilkarya.core.ui.utils.FailedRequest
@@ -14,6 +16,8 @@ import com.system.hasilkarya.dashboard.data.MaterialLogRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialResponse
 import com.system.hasilkarya.dashboard.data.PostToLogResponse
+import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelRequest
+import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelResponse
 import com.system.hasilkarya.truck_fuel.data.TruckFuelLogRequest
 import com.system.hasilkarya.truck_fuel.data.TruckFuelLogResponse
 import com.system.hasilkarya.truck_fuel.data.TruckFuelRequest
@@ -35,6 +39,7 @@ import javax.inject.Inject
 class DashboardScreenViewModel @Inject constructor(
     private val materialRepository: MaterialRepository,
     private val truckFuelRepository: TruckFuelRepository,
+    private val heavyVehicleFuelRepository: HeavyVehicleFuelRepository,
     connectionObserver: NetworkConnectivityObserver
 ) : ViewModel() {
 
@@ -44,17 +49,20 @@ class DashboardScreenViewModel @Inject constructor(
     private val _role = materialRepository.getRole()
     private val _materials = materialRepository.getMaterials()
     private val _fuels = truckFuelRepository.getFuels()
+    private val _heavyFuels = heavyVehicleFuelRepository.getHeavyVehicleFuels()
     val connectionStatus = combine(connectionObserver.observe(), _state) { connectionStatus, state ->
         state.copy(connectionStatus = connectionStatus)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), DashboardScreenState())
     private val _dataList = combine(
         _materials,
         _fuels,
+        _heavyFuels,
         _state
-    ) { materials, fuels, state ->
+    ) { materials, fuels, heavyFuels, state ->
         state.copy(
             materials = materials,
-            fuels = fuels
+            fuels = fuels,
+            heavyFuels = heavyFuels
         )
     }
     val state = combine(
@@ -64,13 +72,13 @@ class DashboardScreenViewModel @Inject constructor(
         _dataList,
         _state
     ) { token, name, role, dataList, state ->
-        Log.i("FUELS", "state: dataList[${dataList.fuels}]")
         state.copy(
             token = token,
             name = name,
             role = role,
             materials = dataList.materials,
-            fuels = dataList.fuels
+            fuels = dataList.fuels,
+            heavyFuels = dataList.heavyFuels
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), DashboardScreenState())
 
@@ -212,9 +220,63 @@ class DashboardScreenViewModel @Inject constructor(
 
     private fun checkAndPostFuels() {
         val fuels = state.value.fuels
-        Log.i("FUELS", "checkAndPostFuels: $fuels")
         fuels.forEach {
             postTruckFuel(it)
+        }
+    }
+
+    private fun checkAndPostHeavyFuels() {
+        Log.i("DEBUG", "checkAndPostHeavyFuels: active")
+        val fuels = state.value.heavyFuels
+        fuels.forEach {
+            postHeavyVehicleFuel(it)
+        }
+    }
+
+    private fun postHeavyVehicleFuel(heavyVehicleEntity: FuelHeavyVehicleEntity) {
+        val token = "Bearer ${state.value.token}"
+        val data = HeavyVehicleFuelRequest(
+            heavyVehicleId = heavyVehicleEntity.heavyVehicleId,
+            driverId = heavyVehicleEntity.driverId,
+            stationId = heavyVehicleEntity.stationId,
+            gasOperatorId = heavyVehicleEntity.gasOperatorId,
+            volume = heavyVehicleEntity.volume,
+            hourmeter = heavyVehicleEntity.hourmeter,
+            remarks = heavyVehicleEntity.remarks
+        )
+        if (connectionStatus.value.connectionStatus == Status.Available) {
+            _state.update { it.copy(isLoading = true) }
+            val request = heavyVehicleFuelRepository.postHeavyVehicleFuel(token, data)
+            request.enqueue(
+                object : Callback<HeavyVehicleFuelResponse> {
+                    override fun onResponse(
+                        call: Call<HeavyVehicleFuelResponse>,
+                        response: Response<HeavyVehicleFuelResponse>
+                    ) {
+                        _state.update { it.copy(isLoading = false) }
+                        when(response.code()) {
+                            201 -> {
+                                viewModelScope.launch { heavyVehicleFuelRepository.deleteHeavyVehicleFuel(heavyVehicleEntity) }
+                                _state.update { it.copy(isPostSuccessful = true) }
+                            }
+                            else -> viewModelScope.launch {
+                                heavyVehicleFuelRepository.deleteHeavyVehicleFuel(heavyVehicleEntity)
+                                _state.update { it.copy(isPostSuccessful = true, heavyFuels = it.heavyFuels - heavyVehicleEntity) }
+                            }
+                        }
+                    }
+
+                    override fun onFailure(call: Call<HeavyVehicleFuelResponse>, t: Throwable) {
+                        viewModelScope.launch {
+                            heavyVehicleFuelRepository.storeHeavyVehicleFuel(heavyVehicleEntity)
+                            _state.update { it.copy(isPostSuccessful = true, isLoading = false) }
+                        }
+                    }
+                }
+            )
+        } else viewModelScope.launch {
+            heavyVehicleFuelRepository.storeHeavyVehicleFuel(heavyVehicleEntity)
+            _state.update { it.copy(isPostSuccessful = true) }
         }
     }
 
@@ -365,8 +427,10 @@ class DashboardScreenViewModel @Inject constructor(
             }
 
             DashboardScreenEvent.CheckDataAndPost -> {
+                Log.i("DEBUG", "onEvent: active")
                 checkAndPostMaterials()
                 checkAndPostFuels()
+                checkAndPostHeavyFuels()
             }
         }
     }
