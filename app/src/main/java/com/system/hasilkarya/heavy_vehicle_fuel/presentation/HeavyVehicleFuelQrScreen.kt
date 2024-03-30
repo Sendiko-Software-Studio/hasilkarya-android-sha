@@ -96,7 +96,7 @@ fun HeavyVehicleFuelQrScreen(
                     exit = slideOutHorizontally()
                 ) {
                     QrScanComponent(
-                        onResult = { onEvent(HeavyVehicleFuelQrScreenEvent.OnVolumeRegistered(it.toDouble())) },
+                        onResult = { onEvent(HeavyVehicleFuelQrScreenEvent.OnVolumeRegistered(it.toDoubleOrNull())) },
                         navigateBack = { onEvent(HeavyVehicleFuelQrScreenEvent.OnNavigateForm(ScanOptions.Pos)) },
                         title = "Jumlah BBM",
                         textButton = "Lanjut isi data"

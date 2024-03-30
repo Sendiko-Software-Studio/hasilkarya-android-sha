@@ -225,8 +225,12 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
                     checkStationId(event.stationId)
                 } else _state.update { it.copy(stationId = event.stationId, currentlyScanning = ScanOptions.Volume) }
             }
-            is HeavyVehicleFuelQrScreenEvent.OnVolumeRegistered -> _state.update {
-                it.copy(volume = event.volume, currentlyScanning = ScanOptions.None)
+            is HeavyVehicleFuelQrScreenEvent.OnVolumeRegistered -> {
+                if (event.volume == null){
+                    _state.update { it.copy(notificationMessage = "Maaf, Qr invalid.") }
+                } else _state.update {
+                    it.copy(volume = event.volume, currentlyScanning = ScanOptions.None)
+                }
             }
             is HeavyVehicleFuelQrScreenEvent.OnHourmeterChange -> _state.update {
                 it.copy(hourmeter = event.odometer)

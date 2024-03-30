@@ -6,7 +6,7 @@ sealed class HeavyVehicleFuelQrScreenEvent {
     data class OnHeavyVehicleIdRegistered(val vHId: String): HeavyVehicleFuelQrScreenEvent()
     data class OnDriverIdRegistered(val driverId: String): HeavyVehicleFuelQrScreenEvent()
     data class OnStationIdRegistered(val stationId: String): HeavyVehicleFuelQrScreenEvent()
-    data class OnVolumeRegistered(val volume: Double): HeavyVehicleFuelQrScreenEvent()
+    data class OnVolumeRegistered(val volume: Double?): HeavyVehicleFuelQrScreenEvent()
     data class OnNavigateForm(val scanOptions: ScanOptions): HeavyVehicleFuelQrScreenEvent()
     data class OnHourmeterChange(val odometer: String): HeavyVehicleFuelQrScreenEvent()
     data object OnClearHourmeter: HeavyVehicleFuelQrScreenEvent()

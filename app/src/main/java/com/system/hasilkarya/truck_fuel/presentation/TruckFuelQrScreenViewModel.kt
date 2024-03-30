@@ -8,11 +8,11 @@ import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.repositories.fuel.truck.TruckFuelRepository
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
-import com.system.hasilkarya.truck_fuel.data.TruckFuelRequest
-import com.system.hasilkarya.truck_fuel.data.TruckFuelResponse
 import com.system.hasilkarya.material.data.CheckDriverIdResponse
 import com.system.hasilkarya.material.data.CheckStationIdResponse
 import com.system.hasilkarya.material.data.CheckTruckIdResponse
+import com.system.hasilkarya.truck_fuel.data.TruckFuelRequest
+import com.system.hasilkarya.truck_fuel.data.TruckFuelResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -248,8 +248,12 @@ class TruckFuelQrScreenViewModel @Inject constructor(
                 }
             }
 
-            is TruckFuelQrScreenEvent.OnVolumeRegistered -> _state.update {
-                it.copy(volume = event.volume, currentlyScanning = ScanOptions.None)
+            is TruckFuelQrScreenEvent.OnVolumeRegistered -> {
+                if (event.volume == null){
+                    _state.update { it.copy(notificationMessage = "Maaf, Qr invalid.") }
+                } else _state.update {
+                    it.copy(volume = event.volume, currentlyScanning = ScanOptions.None)
+                }
             }
 
             is TruckFuelQrScreenEvent.OnOdometerChange -> _state.update {
@@ -284,6 +288,7 @@ class TruckFuelQrScreenViewModel @Inject constructor(
             TruckFuelQrScreenEvent.NotificationClear -> _state.update {
                 it.copy(notificationMessage = "")
             }
+
         }
     }
 }

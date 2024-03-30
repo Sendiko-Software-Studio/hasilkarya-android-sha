@@ -94,7 +94,7 @@ fun TruckFuelQrScreen(
                     exit = slideOutHorizontally()
                 ) {
                     QrScanComponent(
-                        onResult = { onEvent(TruckFuelQrScreenEvent.OnVolumeRegistered(it.toDouble())) },
+                        onResult = { onEvent(TruckFuelQrScreenEvent.OnVolumeRegistered(it.toDoubleOrNull())) },
                         navigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Pos)) },
                         title = "Jumlah BBM",
                         textButton = "Lanjut isi data"
@@ -102,7 +102,7 @@ fun TruckFuelQrScreen(
                 }
                 AnimatedVisibility(visible = state.currentlyScanning == ScanOptions.None) {
                     FuelInputForm(
-                        odometer = state.odometer.toString(),
+                        odometer = state.odometer,
                         remarks = state.remarks,
                         onOdometerChange = { onEvent(TruckFuelQrScreenEvent.OnOdometerChange(it)) },
                         onOdometerClear = { onEvent(TruckFuelQrScreenEvent.OnClearOdometer) },
