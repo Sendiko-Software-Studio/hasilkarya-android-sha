@@ -3,6 +3,7 @@ package com.system.hasilkarya.core.repositories.fuel.heavy_vehicle
 import com.system.hasilkarya.core.entities.FuelHeavyVehicleEntity
 import com.system.hasilkarya.core.network.ApiServices
 import com.system.hasilkarya.core.preferences.AppPreferences
+import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelLogRequest
 import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelRequest
 import javax.inject.Inject
 
@@ -21,4 +22,5 @@ class HeavyVehicleFuelRepository @Inject constructor(
     fun checkDriverId(token: String, driverId: String) = apiServices.checkDriverId(driverId, token)
     fun checkStationId(token: String, stationId: String) = apiServices.checkStationId(stationId, token)
     fun postHeavyVehicleFuel(token: String, heavyVehicleFuelRequest: HeavyVehicleFuelRequest) = apiServices.postFuelHeavyVehicle(token, heavyVehicleFuelRequest)
+    fun postHeavyVehicleFuelLog(token: String, heavyVehicleFuelLogRequest: HeavyVehicleFuelLogRequest) = apiServices.postFuelHeavyVehicleLog(token, heavyVehicleFuelLogRequest)
 }
