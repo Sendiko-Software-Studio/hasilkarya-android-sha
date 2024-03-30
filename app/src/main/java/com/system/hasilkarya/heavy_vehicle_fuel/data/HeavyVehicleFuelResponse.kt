@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class HeavyVehicleFuelResponse(
 
     @field:SerializedName("data")
-	val data: Data,
+	val data: Data1,
 
     @field:SerializedName("success")
 	val success: Boolean,
