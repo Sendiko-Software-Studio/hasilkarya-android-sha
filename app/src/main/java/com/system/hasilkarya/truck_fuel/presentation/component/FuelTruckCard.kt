@@ -1,4 +1,4 @@
-package com.system.hasilkarya.fuel.presentation.component
+package com.system.hasilkarya.truck_fuel.presentation.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

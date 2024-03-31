@@ -1,8 +1,8 @@
-package com.system.hasilkarya.fuel.data
+package com.system.hasilkarya.heavy_vehicle_fuel.data
 
 import com.google.gson.annotations.SerializedName
 
-data class TruckFuelLogResponse(
+data class HeavyVehicleLogResponse(
 
 	@field:SerializedName("data")
 	val data: Data1,
@@ -20,7 +20,7 @@ data class Data1(
 	val date: Any,
 
 	@field:SerializedName("truck_id")
-	val truckId: String,
+	val truckId: Any,
 
 	@field:SerializedName("driver_id")
 	val driverId: String,
@@ -29,7 +29,7 @@ data class Data1(
 	val code: Any,
 
 	@field:SerializedName("error_log")
-	val errorLog: Any,
+	val errorLog: String,
 
 	@field:SerializedName("observation_ratio_percentage")
 	val observationRatioPercentage: Any,

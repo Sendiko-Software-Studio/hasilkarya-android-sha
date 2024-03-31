@@ -1,18 +1,18 @@
-package com.system.hasilkarya.fuel.presentation
+package com.system.hasilkarya.truck_fuel.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.system.hasilkarya.core.entities.FuelTruckEntity
 import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
-import com.system.hasilkarya.core.repositories.FuelRepository
+import com.system.hasilkarya.core.repositories.fuel.truck.TruckFuelRepository
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
-import com.system.hasilkarya.fuel.data.TruckFuelRequest
-import com.system.hasilkarya.fuel.data.TruckFuelResponse
 import com.system.hasilkarya.material.data.CheckDriverIdResponse
 import com.system.hasilkarya.material.data.CheckStationIdResponse
 import com.system.hasilkarya.material.data.CheckTruckIdResponse
+import com.system.hasilkarya.truck_fuel.data.TruckFuelRequest
+import com.system.hasilkarya.truck_fuel.data.TruckFuelResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,22 +26,22 @@ import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
-class FuelQrScreenViewModel @Inject constructor(
-    private val repository: FuelRepository,
+class TruckFuelQrScreenViewModel @Inject constructor(
+    private val repository: TruckFuelRepository,
     connectionObserver: NetworkConnectivityObserver
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(FuelQrScreenState())
+    private val _state = MutableStateFlow(TruckFuelQrScreenState())
     private val _userId = repository.getUserId()
     private val _token = repository.getToken()
     val connectionStatus =
         combine(connectionObserver.observe(), _state) { connectionStatus, state ->
             state.copy(connectionStatus = connectionStatus)
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FuelQrScreenState())
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TruckFuelQrScreenState())
 
     val state = combine(_userId, _token, _state) { userId, token, state ->
         state.copy(token = token, userId = userId)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), FuelQrScreenState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TruckFuelQrScreenState())
 
     private fun checkDriverId(driverId: String) {
         _state.update { it.copy(isLoading = true) }
@@ -248,8 +248,12 @@ class FuelQrScreenViewModel @Inject constructor(
                 }
             }
 
-            is TruckFuelQrScreenEvent.OnVolumeRegistered -> _state.update {
-                it.copy(volume = event.volume, currentlyScanning = ScanOptions.None)
+            is TruckFuelQrScreenEvent.OnVolumeRegistered -> {
+                if (event.volume == null){
+                    _state.update { it.copy(notificationMessage = "Maaf, Qr invalid.") }
+                } else _state.update {
+                    it.copy(volume = event.volume, currentlyScanning = ScanOptions.None)
+                }
             }
 
             is TruckFuelQrScreenEvent.OnOdometerChange -> _state.update {
@@ -284,6 +288,7 @@ class FuelQrScreenViewModel @Inject constructor(
             TruckFuelQrScreenEvent.NotificationClear -> _state.update {
                 it.copy(notificationMessage = "")
             }
+
         }
     }
 }

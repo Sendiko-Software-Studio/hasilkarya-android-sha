@@ -6,7 +6,7 @@ import com.system.hasilkarya.core.entities.MaterialEntity
 import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.preferences.AppPreferences
-import com.system.hasilkarya.core.repositories.MaterialRepository
+import com.system.hasilkarya.core.repositories.material.MaterialRepository
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialRequest
 import com.system.hasilkarya.dashboard.data.PostMaterialResponse

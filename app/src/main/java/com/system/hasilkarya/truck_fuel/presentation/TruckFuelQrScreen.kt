@@ -1,4 +1,4 @@
-package com.system.hasilkarya.fuel.presentation
+package com.system.hasilkarya.truck_fuel.presentation
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
@@ -22,7 +22,7 @@ import kotlinx.coroutines.delay
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TruckFuelQrScreen(
-    state: FuelQrScreenState,
+    state: TruckFuelQrScreenState,
     onEvent: (TruckFuelQrScreenEvent) -> Unit,
     connectionStatus: Status,
     onNavigateBack: (Destination) -> Unit,
@@ -94,7 +94,7 @@ fun TruckFuelQrScreen(
                     exit = slideOutHorizontally()
                 ) {
                     QrScanComponent(
-                        onResult = { onEvent(TruckFuelQrScreenEvent.OnVolumeRegistered(it.toDouble())) },
+                        onResult = { onEvent(TruckFuelQrScreenEvent.OnVolumeRegistered(it.toDoubleOrNull())) },
                         navigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Pos)) },
                         title = "Jumlah BBM",
                         textButton = "Lanjut isi data"
@@ -102,7 +102,7 @@ fun TruckFuelQrScreen(
                 }
                 AnimatedVisibility(visible = state.currentlyScanning == ScanOptions.None) {
                     FuelInputForm(
-                        odometer = state.odometer.toString(),
+                        odometer = state.odometer,
                         remarks = state.remarks,
                         onOdometerChange = { onEvent(TruckFuelQrScreenEvent.OnOdometerChange(it)) },
                         onOdometerClear = { onEvent(TruckFuelQrScreenEvent.OnClearOdometer) },

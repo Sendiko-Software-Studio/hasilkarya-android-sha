@@ -66,7 +66,17 @@ fun DashboardScreen(
                 onEvent(DashboardScreenEvent.CheckDataAndPost)
             }
 
+        }
+    )
+
+    LaunchedEffect(
+        key1 = state.fuels,
+        key2 = state.heavyFuels,
+        block = {
             if (connectionStatus == Status.Available && state.fuels.isNotEmpty()){
+                onEvent(DashboardScreenEvent.CheckDataAndPost)
+            }
+            if (connectionStatus == Status.Available && state.heavyFuels.isNotEmpty()){
                 onEvent(DashboardScreenEvent.CheckDataAndPost)
             }
         }
@@ -136,8 +146,11 @@ fun DashboardScreen(
                         MenuCardExpendable(
                             text = "Scan Transaksi BBM",
                             icon = painterResource(id = R.drawable.scan_gas),
-                            onClickAction = {
+                            onClickAction1 = {
                                 onNavigate(Destination.GasQrScreen)
+                            },
+                            onClickAction2 = {
+                                onNavigate(Destination.GasHVQrScreen)
                             }
                         )
                     }
@@ -159,14 +172,14 @@ fun DashboardScreen(
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
                     AnimatedVisibility(
-                        visible = state.fuels.isNotEmpty(),
+                        visible = state.fuels.isNotEmpty() || state.heavyFuels.isNotEmpty(),
                         enter = expandHorizontally(),
                         exit = shrinkHorizontally()
                     ) {
                         UnsentItemCard(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            itemCount = state.materials.size
+                            itemCount = state.fuels.size + state.heavyFuels.size
                         )
                     }
                 }

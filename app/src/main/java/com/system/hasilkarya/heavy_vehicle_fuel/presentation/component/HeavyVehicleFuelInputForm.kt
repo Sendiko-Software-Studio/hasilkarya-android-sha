@@ -1,4 +1,4 @@
-package com.system.hasilkarya.fuel.presentation
+package com.system.hasilkarya.heavy_vehicle_fuel.presentation.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,14 +15,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.system.hasilkarya.core.ui.components.NormalTextField
@@ -31,11 +29,11 @@ import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FuelInputForm(
-    odometer: String,
+fun HeavyVehicleFuelInputForm(
+    hourmeter: String,
     remarks: String,
-    onOdometerChange: (String) -> Unit,
-    onOdometerClear: () -> Unit,
+    onHourmeterChange: (String) -> Unit,
+    onHourmeterClear: () -> Unit,
     onRemarksChange: (String) -> Unit,
     onRemarksClear: () -> Unit,
     onNavigateBack: (ScanOptions) -> Unit,
@@ -70,10 +68,10 @@ fun FuelInputForm(
                 )
                 NormalTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = odometer,
-                    onNewValue = { onOdometerChange(it) },
+                    value = hourmeter,
+                    onNewValue = { onHourmeterChange(it) },
                     leadingIcon = Icons.Default.Speed,
-                    onClearText = { onOdometerClear() },
+                    onClearText = { onHourmeterClear() },
                     hint = "0.0",
                     keyboardType = KeyboardType.Decimal
                 )
@@ -103,24 +101,6 @@ fun FuelInputForm(
                     },
                 )
             }
-        }
-    }
-}
-
-@Preview
-@Composable
-fun GasInputFormPrev() {
-    Surface {
-        FuelInputForm(
-            odometer = "0.0",
-            remarks = "",
-            onOdometerChange = {},
-            onOdometerClear = { /*TODO*/ },
-            onRemarksChange = {},
-            onRemarksClear = { /*TODO*/ },
-            onNavigateBack = {}
-        ) {
-
         }
     }
 }
