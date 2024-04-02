@@ -8,9 +8,9 @@ import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.repositories.fuel.truck.TruckFuelRepository
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
-import com.system.hasilkarya.material.data.CheckDriverIdResponse
-import com.system.hasilkarya.material.data.CheckStationIdResponse
-import com.system.hasilkarya.material.data.CheckTruckIdResponse
+import com.system.hasilkarya.dashboard.data.CheckDriverIdResponse
+import com.system.hasilkarya.dashboard.data.CheckStationIdResponse
+import com.system.hasilkarya.dashboard.data.CheckTruckIdResponse
 import com.system.hasilkarya.truck_fuel.data.TruckFuelRequest
 import com.system.hasilkarya.truck_fuel.data.TruckFuelResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
