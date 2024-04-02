@@ -3,8 +3,8 @@ package com.system.hasilkarya.core.repositories.material
 import com.system.hasilkarya.core.entities.MaterialEntity
 import com.system.hasilkarya.core.network.ApiServices
 import com.system.hasilkarya.core.preferences.AppPreferences
-import com.system.hasilkarya.dashboard.data.MaterialLogRequest
-import com.system.hasilkarya.dashboard.data.PostMaterialRequest
+import com.system.hasilkarya.material.data.MaterialLogRequest
+import com.system.hasilkarya.material.data.PostMaterialRequest
 import javax.inject.Inject
 
 class MaterialRepository @Inject constructor(
