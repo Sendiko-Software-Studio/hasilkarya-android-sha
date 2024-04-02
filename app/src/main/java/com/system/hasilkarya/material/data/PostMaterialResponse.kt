@@ -1,16 +1,16 @@
-package com.system.hasilkarya.dashboard.data
+package com.system.hasilkarya.material.data
 
 import com.google.gson.annotations.SerializedName
 
 data class PostMaterialResponse(
 
-	@field:SerializedName("data")
+    @field:SerializedName("data")
 	val data: Data1,
 
-	@field:SerializedName("success")
+    @field:SerializedName("success")
 	val success: Boolean,
 
-	@field:SerializedName("message")
+    @field:SerializedName("message")
 	val message: String
 )
 

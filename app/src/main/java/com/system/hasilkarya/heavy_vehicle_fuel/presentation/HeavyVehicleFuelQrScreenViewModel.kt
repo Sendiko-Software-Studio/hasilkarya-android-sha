@@ -12,8 +12,8 @@ import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
 import com.system.hasilkarya.heavy_vehicle_fuel.data.CheckHeavyVehicleIdResponse
 import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelRequest
 import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelResponse
-import com.system.hasilkarya.material.data.CheckDriverIdResponse
-import com.system.hasilkarya.material.data.CheckStationIdResponse
+import com.system.hasilkarya.dashboard.data.CheckDriverIdResponse
+import com.system.hasilkarya.dashboard.data.CheckStationIdResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

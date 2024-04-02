@@ -1,16 +1,16 @@
-package com.system.hasilkarya.dashboard.data
+package com.system.hasilkarya.material.data
 
 import com.google.gson.annotations.SerializedName
 
 data class PostToLogResponse(
 
-	@field:SerializedName("data")
+    @field:SerializedName("data")
 	val data: Data? = null,
 
-	@field:SerializedName("success")
+    @field:SerializedName("success")
 	val success: Boolean? = null,
 
-	@field:SerializedName("message")
+    @field:SerializedName("message")
 	val message: String? = null
 )
 

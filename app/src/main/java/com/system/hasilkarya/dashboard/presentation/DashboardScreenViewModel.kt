@@ -11,10 +11,10 @@ import com.system.hasilkarya.core.repositories.fuel.heavy_vehicle.HeavyVehicleFu
 import com.system.hasilkarya.core.repositories.fuel.truck.TruckFuelRepository
 import com.system.hasilkarya.core.repositories.material.MaterialRepository
 import com.system.hasilkarya.core.ui.utils.FailedRequest
-import com.system.hasilkarya.dashboard.data.MaterialLogRequest
-import com.system.hasilkarya.dashboard.data.PostMaterialRequest
-import com.system.hasilkarya.dashboard.data.PostMaterialResponse
-import com.system.hasilkarya.dashboard.data.PostToLogResponse
+import com.system.hasilkarya.material.data.MaterialLogRequest
+import com.system.hasilkarya.material.data.PostMaterialRequest
+import com.system.hasilkarya.material.data.PostMaterialResponse
+import com.system.hasilkarya.material.data.PostToLogResponse
 import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelLogRequest
 import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelRequest
 import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelResponse
