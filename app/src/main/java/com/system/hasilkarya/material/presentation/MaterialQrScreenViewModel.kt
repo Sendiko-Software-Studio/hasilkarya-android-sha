@@ -172,7 +172,7 @@ class MaterialQrScreenViewModel @Inject constructor(
             truckId = materialEntity.truckId,
             stationId = materialEntity.stationId,
             checkerId = materialEntity.checkerId,
-            ratio = materialEntity.ratio,
+            observationRatio = materialEntity.ratio.toInt(),
             remarks = materialEntity.remarks,
         )
         if (connectionStatus == Status.Available) {
