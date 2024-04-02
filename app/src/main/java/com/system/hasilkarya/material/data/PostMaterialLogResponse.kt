@@ -4,13 +4,13 @@ import com.google.gson.annotations.SerializedName
 
 data class PostToLogResponse(
 
-    @field:SerializedName("data")
-	val data: Data? = null,
+	@field:SerializedName("data")
+	val data: Data1? = null,
 
-    @field:SerializedName("success")
+	@field:SerializedName("success")
 	val success: Boolean? = null,
 
-    @field:SerializedName("message")
+	@field:SerializedName("message")
 	val message: String? = null
 )
 
