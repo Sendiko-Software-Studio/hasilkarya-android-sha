@@ -186,7 +186,8 @@ fun MaterialQrScreen(
                             leadingIcon = Icons.AutoMirrored.Filled.TextSnippet,
                             onClearText = {  },
                             hint = "Keterangan",
-                            shape = RoundedCornerShape(16.dp)
+                            shape = RoundedCornerShape(16.dp),
+                            singleLine = false,
                         )
                         Button(
                             modifier = Modifier.fillMaxWidth(),

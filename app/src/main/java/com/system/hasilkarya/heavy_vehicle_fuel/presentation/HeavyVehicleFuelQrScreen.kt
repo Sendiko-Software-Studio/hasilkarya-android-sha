@@ -16,7 +16,6 @@ import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
-import com.system.hasilkarya.heavy_vehicle_fuel.presentation.component.HeavyVehicleFuelInputForm
 import com.system.hasilkarya.qr.presentation.QrScanComponent
 import kotlinx.coroutines.delay
 
