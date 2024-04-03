@@ -1,9 +1,8 @@
 package com.system.hasilkarya.core.network
 
-import com.system.hasilkarya.dashboard.data.MaterialLogRequest
-import com.system.hasilkarya.dashboard.data.PostMaterialRequest
-import com.system.hasilkarya.dashboard.data.PostMaterialResponse
-import com.system.hasilkarya.dashboard.data.PostToLogResponse
+import com.system.hasilkarya.dashboard.data.CheckDriverIdResponse
+import com.system.hasilkarya.dashboard.data.CheckStationIdResponse
+import com.system.hasilkarya.dashboard.data.CheckTruckIdResponse
 import com.system.hasilkarya.heavy_vehicle_fuel.data.CheckHeavyVehicleIdResponse
 import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelLogRequest
 import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelRequest
@@ -11,9 +10,10 @@ import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelResponse
 import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleLogResponse
 import com.system.hasilkarya.login.data.LoginRequest
 import com.system.hasilkarya.login.data.LoginResponse
-import com.system.hasilkarya.material.data.CheckDriverIdResponse
-import com.system.hasilkarya.material.data.CheckStationIdResponse
-import com.system.hasilkarya.material.data.CheckTruckIdResponse
+import com.system.hasilkarya.material.data.PostMaterialLogRequest
+import com.system.hasilkarya.material.data.PostMaterialRequest
+import com.system.hasilkarya.material.data.PostMaterialResponse
+import com.system.hasilkarya.material.data.PostToLogResponse
 import com.system.hasilkarya.profile.data.LogoutResponse
 import com.system.hasilkarya.truck_fuel.data.TruckFuelLogRequest
 import com.system.hasilkarya.truck_fuel.data.TruckFuelLogResponse
@@ -65,7 +65,7 @@ interface ApiServices {
     @POST("checker/material-movement-error-log/store")
     fun postToLog(
         @Header("Authorization") token: String,
-        @Body request: MaterialLogRequest
+        @Body request: PostMaterialLogRequest
     ): Call<PostToLogResponse>
 
     @POST("gas-operator/fuel-log/truck/store")

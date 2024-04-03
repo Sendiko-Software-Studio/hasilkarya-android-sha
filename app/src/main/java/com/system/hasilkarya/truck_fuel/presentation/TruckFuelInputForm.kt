@@ -93,6 +93,7 @@ fun FuelInputForm(
                     onClearText = { onRemarksClear() },
                     hint = "Keterangan",
                     shape = RoundedCornerShape(16.dp),
+                    singleLine = false,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(

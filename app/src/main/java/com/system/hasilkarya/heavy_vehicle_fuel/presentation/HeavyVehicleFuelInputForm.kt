@@ -1,4 +1,4 @@
-package com.system.hasilkarya.heavy_vehicle_fuel.presentation.component
+package com.system.hasilkarya.heavy_vehicle_fuel.presentation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -91,6 +91,7 @@ fun HeavyVehicleFuelInputForm(
                     onClearText = { onRemarksClear() },
                     hint = "Keterangan",
                     shape = RoundedCornerShape(16.dp),
+                    singleLine = false,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(

@@ -16,7 +16,6 @@ import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
-import com.system.hasilkarya.heavy_vehicle_fuel.presentation.component.HeavyVehicleFuelInputForm
 import com.system.hasilkarya.qr.presentation.QrScanComponent
 import kotlinx.coroutines.delay
 
@@ -37,7 +36,7 @@ fun HeavyVehicleFuelQrScreen(
                 onEvent(HeavyVehicleFuelQrScreenEvent.NotificationClear)
             }
 
-            if (state.isPostSuccessful){
+            if (state.isPostSuccessful) {
                 delay(1000)
                 onNavigateBack(Destination.DashboardScreen)
             }
@@ -60,7 +59,14 @@ fun HeavyVehicleFuelQrScreen(
                     exit = slideOutHorizontally()
                 ) {
                     QrScanComponent(
-                        onResult = { onEvent(HeavyVehicleFuelQrScreenEvent.OnHeavyVehicleIdRegistered(it)) },
+                        onResult = {
+                            onEvent(
+                                HeavyVehicleFuelQrScreenEvent.OnHeavyVehicleIdRegistered(
+                                    it,
+                                    connectionStatus
+                                )
+                            )
+                        },
                         navigateBack = { onNavigateBack(Destination.DashboardScreen) },
                         title = "Alat Berat",
                         textButton = "Lanjut scan driver"
@@ -72,8 +78,21 @@ fun HeavyVehicleFuelQrScreen(
                     exit = slideOutHorizontally()
                 ) {
                     QrScanComponent(
-                        onResult = { onEvent(HeavyVehicleFuelQrScreenEvent.OnDriverIdRegistered(it)) },
-                        navigateBack = { onEvent(HeavyVehicleFuelQrScreenEvent.OnNavigateForm(ScanOptions.HeavyVehicle)) },
+                        onResult = {
+                            onEvent(
+                                HeavyVehicleFuelQrScreenEvent.OnDriverIdRegistered(
+                                    it,
+                                    connectionStatus
+                                )
+                            )
+                        },
+                        navigateBack = {
+                            onEvent(
+                                HeavyVehicleFuelQrScreenEvent.OnNavigateForm(
+                                    ScanOptions.HeavyVehicle
+                                )
+                            )
+                        },
                         title = "Driver",
                         textButton = "Lanjut scan pos"
                     )
@@ -84,8 +103,21 @@ fun HeavyVehicleFuelQrScreen(
                     exit = slideOutHorizontally()
                 ) {
                     QrScanComponent(
-                        onResult = { onEvent(HeavyVehicleFuelQrScreenEvent.OnStationIdRegistered(it)) },
-                        navigateBack = { onEvent(HeavyVehicleFuelQrScreenEvent.OnNavigateForm(ScanOptions.Driver)) },
+                        onResult = {
+                            onEvent(
+                                HeavyVehicleFuelQrScreenEvent.OnStationIdRegistered(
+                                    it,
+                                    connectionStatus
+                                )
+                            )
+                        },
+                        navigateBack = {
+                            onEvent(
+                                HeavyVehicleFuelQrScreenEvent.OnNavigateForm(
+                                    ScanOptions.Driver
+                                )
+                            )
+                        },
                         title = "Pos",
                         textButton = "Lanjut scan BBM"
                     )
@@ -96,8 +128,18 @@ fun HeavyVehicleFuelQrScreen(
                     exit = slideOutHorizontally()
                 ) {
                     QrScanComponent(
-                        onResult = { onEvent(HeavyVehicleFuelQrScreenEvent.OnVolumeRegistered(it.toDoubleOrNull())) },
-                        navigateBack = { onEvent(HeavyVehicleFuelQrScreenEvent.OnNavigateForm(ScanOptions.Pos)) },
+                        onResult = {
+                            onEvent(
+                                HeavyVehicleFuelQrScreenEvent.OnVolumeRegistered(it.toDoubleOrNull())
+                            )
+                        },
+                        navigateBack = {
+                            onEvent(
+                                HeavyVehicleFuelQrScreenEvent.OnNavigateForm(
+                                    ScanOptions.Pos
+                                )
+                            )
+                        },
                         title = "Jumlah BBM",
                         textButton = "Lanjut isi data"
                     )
@@ -110,13 +152,23 @@ fun HeavyVehicleFuelQrScreen(
                     HeavyVehicleFuelInputForm(
                         hourmeter = state.hourmeter,
                         remarks = state.remarks,
-                        onHourmeterChange = { onEvent(HeavyVehicleFuelQrScreenEvent.OnHourmeterChange(it)) },
+                        onHourmeterChange = {
+                            onEvent(
+                                HeavyVehicleFuelQrScreenEvent.OnHourmeterChange(
+                                    it
+                                )
+                            )
+                        },
                         onHourmeterClear = { onEvent(HeavyVehicleFuelQrScreenEvent.OnClearHourmeter) },
                         onRemarksChange = { onEvent(HeavyVehicleFuelQrScreenEvent.OnRemarksChange(it)) },
                         onRemarksClear = { onEvent(HeavyVehicleFuelQrScreenEvent.OnClearRemarks) },
                         onNavigateBack = { onEvent(HeavyVehicleFuelQrScreenEvent.OnNavigateForm(it)) },
                         onSubmit = {
-                            onEvent(HeavyVehicleFuelQrScreenEvent.SaveHeavyVehicleFuelTransaction)
+                            onEvent(
+                                HeavyVehicleFuelQrScreenEvent.SaveHeavyVehicleFuelTransaction(
+                                    connectionStatus
+                                )
+                            )
                         }
                     )
                 }

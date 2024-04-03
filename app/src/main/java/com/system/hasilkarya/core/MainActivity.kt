@@ -98,6 +98,7 @@ class MainActivity : ComponentActivity() {
                                 MaterialQrScreen(
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
+                                    connectionStatus = viewModel.connectionStatus.collectAsState().value.connectionStatus,
                                     onNavigateBack = { route ->
                                         navController.navigate(
                                             route = route.name

@@ -45,6 +45,8 @@ class AppPreferences @Inject constructor(private val dataStore: DataStore<Prefer
             it[tokenKey] = ""
             it[nameKey] = ""
             it[userIdKey] = ""
+            it[emailKey] = ""
+            it[roleKey] = ""
         }
     }
 

@@ -30,7 +30,8 @@ fun NormalTextField(
     onClearText: () -> Unit,
     errorState: ErrorTextField = ErrorTextField(),
     keyboardType: KeyboardType = KeyboardType.Text,
-    shape: Shape = CircleShape
+    shape: Shape = CircleShape,
+    singleLine: Boolean = true,
 ) {
     OutlinedTextField(
         modifier = modifier,
@@ -63,6 +64,7 @@ fun NormalTextField(
             Text(text = errorState.errorMessage, fontFamily = poppinsFont)
         },
         isError = errorState.isError,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType)
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        singleLine = singleLine
     )
 }
