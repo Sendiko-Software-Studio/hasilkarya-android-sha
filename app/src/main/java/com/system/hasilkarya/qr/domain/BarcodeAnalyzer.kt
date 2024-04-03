@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
 class BarcodeAnalyzer(
     private val onBarcodeDetected: (barcodes: List<Barcode>) -> Unit,
 ): ImageAnalysis.Analyzer {
-    private var lastAnalyzedTimeStamp = 500L
+    private var lastAnalyzedTimeStamp = 1000L
 
     override fun analyze(image: ImageProxy) {
         val currentTimestamp = System.currentTimeMillis()
