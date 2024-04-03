@@ -6,32 +6,32 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Outbound
 import androidx.compose.material.icons.automirrored.filled.TextSnippet
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
@@ -133,69 +133,70 @@ fun MaterialQrScreen(
                     }
                 )
                 AnimatedVisibility(visible = state.currentlyScanning == None) {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            IconButton(
-                                onClick = {
-                                    onEvent(MaterialQrScreenEvent.OnNavigateForm(Pos))
-                                },
-                                content = {
-                                    Icon(
-                                        imageVector = Icons.Default.ArrowBack,
-                                        contentDescription = "kembali"
-                                    )
+                    Scaffold(
+                        topBar = {
+                            TopAppBar(
+                                title = { Text(text = "Masukkan data", fontFamily = poppinsFont) },
+                                navigationIcon = {
+                                    IconButton(onClick = { onEvent(MaterialQrScreenEvent.OnNavigateForm(Pos)) }) {
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                            contentDescription = "kembali"
+                                        )
+                                    }
                                 }
                             )
                         }
-
-                        Text(
-                            text = "Masukkan volume material",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 16.dp),
-                            fontFamily = poppinsFont
-                        )
-                        NormalTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = state.materialVolume,
-                            onNewValue = { onEvent(MaterialQrScreenEvent.OnVolumeChange(it)) },
-                            leadingIcon = Icons.AutoMirrored.Default.Outbound,
-                            onClearText = {  },
-                            keyboardType = KeyboardType.Decimal
-                        )
-                        Spacer(modifier = Modifier.size(16.dp))
-                        Text(
-                            text = "Tambah keterangan",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 16.dp),
-                            fontFamily = poppinsFont
-                        )
-                        NormalTextField(
-                            modifier = Modifier.fillMaxWidth()
-                                .height(128.dp),
-                            value = state.remarks,
-                            onNewValue = { onEvent(MaterialQrScreenEvent.OnNewRemarks(it)) },
-                            leadingIcon = Icons.AutoMirrored.Filled.TextSnippet,
-                            onClearText = {  },
-                            hint = "Keterangan",
-                            shape = RoundedCornerShape(16.dp),
-                            singleLine = false,
-                        )
-                        Button(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = {
-                                onEvent(MaterialQrScreenEvent.SaveMaterial(connectionStatus))
-                            }
+                    ) { paddingValues ->
+                        Box(
+                            modifier = Modifier.padding(paddingValues)
                         ) {
-                            Text(text = "Simpan data", fontFamily = poppinsFont)
+                            Column(
+                                modifier = Modifier.padding(8.dp)
+                            ) {
+                                Text(
+                                    text = "Masukkan volume material",
+                                    fontFamily = poppinsFont,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                NormalTextField(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    value = state.materialVolume,
+                                    onNewValue = { onEvent(MaterialQrScreenEvent.OnVolumeChange(it)) },
+                                    leadingIcon = Icons.AutoMirrored.Default.Outbound,
+                                    onClearText = {  },
+                                    keyboardType = KeyboardType.Decimal,
+                                    hint = "Dalam meter kubik (m³)"
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "Tambah keterangan",
+                                    fontFamily = poppinsFont,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                NormalTextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(128.dp),
+                                    value = state.remarks,
+                                    onNewValue = { onEvent(MaterialQrScreenEvent.OnNewRemarks(it)) },
+                                    leadingIcon = Icons.AutoMirrored.Filled.TextSnippet,
+                                    onClearText = {  },
+                                    hint = "Keterangan",
+                                    shape = RoundedCornerShape(16.dp),
+                                    singleLine = false,
+                                )
+                                Button(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onClick = {
+                                        onEvent(MaterialQrScreenEvent.SaveMaterial(connectionStatus))
+                                    }
+                                ) {
+                                    Text(text = "Simpan data", fontFamily = poppinsFont)
+                                }
+                            }
                         }
                     }
                 }
