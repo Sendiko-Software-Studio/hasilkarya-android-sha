@@ -1,4 +1,4 @@
-package com.system.hasilkarya.material.data
+package com.system.hasilkarya.dashboard.data
 
 import com.google.gson.annotations.SerializedName
 

@@ -9,7 +9,7 @@ data class MaterialQrScreenState(
     val driverId: String = "",
     val truckId: String = "",
     val posId: String = "",
-    val observationRatioPercentage: Double = 0.0,
+    val materialVolume: String = "",
     val remarks: String = "",
     val token: String = "",
     val connectionStatus: Status = Status.UnAvailable,

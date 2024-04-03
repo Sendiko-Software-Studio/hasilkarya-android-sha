@@ -8,14 +8,14 @@ import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.preferences.AppPreferences
 import com.system.hasilkarya.core.repositories.material.MaterialRepository
 import com.system.hasilkarya.core.ui.utils.FailedRequest
-import com.system.hasilkarya.dashboard.data.PostMaterialRequest
-import com.system.hasilkarya.dashboard.data.PostMaterialResponse
+import com.system.hasilkarya.dashboard.data.CheckDriverIdResponse
+import com.system.hasilkarya.dashboard.data.CheckStationIdResponse
+import com.system.hasilkarya.dashboard.data.CheckTruckIdResponse
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.Driver
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.None
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.Pos
-import com.system.hasilkarya.material.data.CheckDriverIdResponse
-import com.system.hasilkarya.material.data.CheckStationIdResponse
-import com.system.hasilkarya.material.data.CheckTruckIdResponse
+import com.system.hasilkarya.material.data.PostMaterialRequest
+import com.system.hasilkarya.material.data.PostMaterialResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -38,7 +38,7 @@ class MaterialQrScreenViewModel @Inject constructor(
     private val _state = MutableStateFlow(MaterialQrScreenState())
     private val _token = preferences.getToken()
     private val _userId = preferences.getUserId()
-    private val connectionStatus = combine(connectionObserver.observe(), _state) { connectionStatus, state ->
+    val connectionStatus = combine(connectionObserver.observe(), _state) { connectionStatus, state ->
         state.copy(connectionStatus = connectionStatus)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), MaterialQrScreenState())
     val state = combine(
@@ -164,7 +164,7 @@ class MaterialQrScreenViewModel @Inject constructor(
         )
     }
 
-    private fun postMaterial(materialEntity: MaterialEntity) {
+    private fun postMaterial(materialEntity: MaterialEntity, connectionStatus: Status) {
         _state.update { it.copy(isLoading = true) }
         val token = "Bearer ${state.value.token}"
         val data = PostMaterialRequest(
@@ -172,10 +172,10 @@ class MaterialQrScreenViewModel @Inject constructor(
             truckId = materialEntity.truckId,
             stationId = materialEntity.stationId,
             checkerId = materialEntity.checkerId,
-            ratio = materialEntity.ratio,
+            observationRatio = materialEntity.ratio.toInt(),
             remarks = materialEntity.remarks,
         )
-        if (state.value.connectionStatus == Status.Available) {
+        if (connectionStatus == Status.Available) {
             val request = repository.postMaterial(token, data)
             request.enqueue(
                 object : Callback<PostMaterialResponse> {
@@ -232,36 +232,36 @@ class MaterialQrScreenViewModel @Inject constructor(
 
     fun onEvent(event: MaterialQrScreenEvent) {
         when (event) {
-            is MaterialQrScreenEvent.OnDriverIdRegistered -> if (connectionStatus.value.connectionStatus == Status.Available)
+            is MaterialQrScreenEvent.OnDriverIdRegistered -> if (event.connectionStatus == Status.Available)
                 checkDriverId(event.driverId)
             else _state.update { it.copy(driverId = event.driverId, currentlyScanning = Pos) }
 
-            is MaterialQrScreenEvent.OnTruckIdRegistered -> if (connectionStatus.value.connectionStatus == Status.Available)
+            is MaterialQrScreenEvent.OnTruckIdRegistered -> if (event.connectionStatus == Status.Available)
                 checkTruckId(event.truckId)
             else _state.update { it.copy(truckId = event.truckId, currentlyScanning = Driver) }
 
-            is MaterialQrScreenEvent.OnPosIdRegistered -> if (connectionStatus.value.connectionStatus == Status.Available)
+            is MaterialQrScreenEvent.OnPosIdRegistered -> if (event.connectionStatus == Status.Available)
                 checkStationId(event.posId)
             else _state.update { it.copy(posId = event.posId, currentlyScanning = None) }
 
-            is MaterialQrScreenEvent.OnSelectedRatio -> _state.update {
-                it.copy(observationRatioPercentage = event.ratio)
+            is MaterialQrScreenEvent.OnVolumeChange -> _state.update {
+                it.copy(materialVolume = event.volume)
             }
 
             is MaterialQrScreenEvent.OnNewRemarks -> _state.update {
                 it.copy(remarks = event.remarks)
             }
 
-            MaterialQrScreenEvent.SaveMaterial -> {
+            is MaterialQrScreenEvent.SaveMaterial -> {
                 val data = MaterialEntity(
                     driverId = state.value.driverId,
                     truckId = state.value.truckId,
                     stationId = state.value.posId,
-                    ratio = state.value.observationRatioPercentage,
+                    ratio = state.value.materialVolume.toDouble(),
                     remarks = state.value.remarks,
                     checkerId = state.value.userId,
                 )
-                postMaterial(data)
+                postMaterial(data, event.connectionStatus)
             }
 
             MaterialQrScreenEvent.OnClearNotification -> _state.update {

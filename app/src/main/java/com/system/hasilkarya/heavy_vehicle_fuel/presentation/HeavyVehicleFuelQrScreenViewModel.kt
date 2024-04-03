@@ -8,12 +8,12 @@ import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.repositories.fuel.heavy_vehicle.HeavyVehicleFuelRepository
 import com.system.hasilkarya.core.ui.utils.FailedRequest
+import com.system.hasilkarya.dashboard.data.CheckDriverIdResponse
+import com.system.hasilkarya.dashboard.data.CheckStationIdResponse
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
 import com.system.hasilkarya.heavy_vehicle_fuel.data.CheckHeavyVehicleIdResponse
 import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelRequest
 import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelResponse
-import com.system.hasilkarya.material.data.CheckDriverIdResponse
-import com.system.hasilkarya.material.data.CheckStationIdResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,14 +30,19 @@ import javax.inject.Inject
 class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
     private val repository: HeavyVehicleFuelRepository,
     connectionObserver: NetworkConnectivityObserver
-): ViewModel() {
+) : ViewModel() {
 
     private val _state = MutableStateFlow(HeavyVehicleFuelQrScreenState())
     private val _userId = repository.getUserId()
     private val _token = repository.getToken()
-    val connectionStatus = combine(connectionObserver.observe(), _state) { connectionStatus, state ->
-        state.copy(connectionStatus = connectionStatus)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), HeavyVehicleFuelQrScreenState())
+    val connectionStatus =
+        combine(connectionObserver.observe(), _state) { connectionStatus, state ->
+            state.copy(connectionStatus = connectionStatus)
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            HeavyVehicleFuelQrScreenState()
+        )
     val state = combine(_userId, _token, _state) { userId, token, state ->
         state.copy(
             userId = userId,
@@ -59,7 +64,10 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
                     _state.update { it.copy(isLoading = false) }
                     when (response.code()) {
                         200 -> _state.update {
-                            it.copy(heavyVehicleId = heavyVehicleId, currentlyScanning = ScanOptions.Driver)
+                            it.copy(
+                                heavyVehicleId = heavyVehicleId,
+                                currentlyScanning = ScanOptions.Driver
+                            )
                         }
 
                         else -> _state.update {
@@ -160,7 +168,10 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
         )
     }
 
-    private fun postHeavyVehicleFuel(heavyVehicleEntity: FuelHeavyVehicleEntity) {
+    private fun postHeavyVehicleFuel(
+        heavyVehicleEntity: FuelHeavyVehicleEntity,
+        connectionStatus: Status
+    ) {
         val token = "Bearer ${state.value.token}"
         val data = HeavyVehicleFuelRequest(
             heavyVehicleId = heavyVehicleEntity.heavyVehicleId,
@@ -171,7 +182,7 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
             hourmeter = heavyVehicleEntity.hourmeter,
             remarks = heavyVehicleEntity.remarks
         )
-        if (connectionStatus.value.connectionStatus == Status.Available) {
+        if (connectionStatus == Status.Available) {
             _state.update { it.copy(isLoading = true) }
             val request = repository.postHeavyVehicleFuel(token, data)
             request.enqueue(
@@ -181,8 +192,14 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
                         response: Response<HeavyVehicleFuelResponse>
                     ) {
                         _state.update { it.copy(isLoading = false) }
-                        when(response.code()) {
-                            201 -> _state.update { it.copy(isPostSuccessful = true, notificationMessage = "Data berhasil disimpan!") }
+                        when (response.code()) {
+                            201 -> _state.update {
+                                it.copy(
+                                    isPostSuccessful = true,
+                                    notificationMessage = "Data berhasil disimpan!"
+                                )
+                            }
+
                             else -> viewModelScope.launch {
                                 repository.storeHeavyVehicleFuel(heavyVehicleEntity)
                                 _state.update { it.copy(notificationMessage = "Data berhasil disimpan!") }
@@ -193,61 +210,96 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
                     override fun onFailure(call: Call<HeavyVehicleFuelResponse>, t: Throwable) {
                         viewModelScope.launch {
                             repository.storeHeavyVehicleFuel(heavyVehicleEntity)
-                            _state.update { it.copy(notificationMessage = "Data berhasil disimpan!", isPostSuccessful = true, isLoading = false) }
+                            _state.update {
+                                it.copy(
+                                    notificationMessage = "Data berhasil disimpan!",
+                                    isPostSuccessful = true,
+                                    isLoading = false
+                                )
+                            }
                         }
                     }
                 }
             )
         } else viewModelScope.launch {
             repository.storeHeavyVehicleFuel(heavyVehicleEntity)
-            _state.update { it.copy(notificationMessage = "Data berhasil disimpan!", isPostSuccessful = true) }
+            _state.update {
+                it.copy(
+                    notificationMessage = "Data berhasil disimpan!",
+                    isPostSuccessful = true
+                )
+            }
         }
     }
 
     fun onEvent(event: HeavyVehicleFuelQrScreenEvent) {
-        when(event) {
+        when (event) {
             is HeavyVehicleFuelQrScreenEvent.OnNavigateForm -> _state.update {
                 it.copy(currentlyScanning = event.scanOptions)
             }
+
             is HeavyVehicleFuelQrScreenEvent.OnHeavyVehicleIdRegistered -> {
-                Log.i("DEBUG", "onEvent: ${connectionStatus.value.connectionStatus}")
-                if (connectionStatus.value.connectionStatus == Status.Available) {
+                if (event.connectionStatus == Status.Available) {
                     checkHeavyVehicleId(event.vHId)
-                } else _state.update { it.copy(heavyVehicleId = event.vHId, currentlyScanning = ScanOptions.Driver) }
+                } else _state.update {
+                    it.copy(
+                        heavyVehicleId = event.vHId,
+                        currentlyScanning = ScanOptions.Driver
+                    )
+                }
             }
+
             is HeavyVehicleFuelQrScreenEvent.OnDriverIdRegistered -> {
-                if (connectionStatus.value.connectionStatus == Status.Available) {
+                if (event.connectionStatus == Status.Available) {
                     checkDriverId(event.driverId)
-                } else _state.update { it.copy(driverId = event.driverId, currentlyScanning = ScanOptions.Pos) }
+                } else _state.update {
+                    it.copy(
+                        driverId = event.driverId,
+                        currentlyScanning = ScanOptions.Pos
+                    )
+                }
             }
+
             is HeavyVehicleFuelQrScreenEvent.OnStationIdRegistered -> {
-                if (connectionStatus.value.connectionStatus == Status.Available){
+                if (event.connectionStatus == Status.Available) {
                     checkStationId(event.stationId)
-                } else _state.update { it.copy(stationId = event.stationId, currentlyScanning = ScanOptions.Volume) }
+                } else _state.update {
+                    it.copy(
+                        stationId = event.stationId,
+                        currentlyScanning = ScanOptions.Volume
+                    )
+                }
             }
+
             is HeavyVehicleFuelQrScreenEvent.OnVolumeRegistered -> {
-                if (event.volume == null){
+                if (event.volume == null) {
                     _state.update { it.copy(notificationMessage = "Maaf, Qr invalid.") }
                 } else _state.update {
                     it.copy(volume = event.volume, currentlyScanning = ScanOptions.None)
                 }
             }
+
             is HeavyVehicleFuelQrScreenEvent.OnHourmeterChange -> _state.update {
                 it.copy(hourmeter = event.odometer)
             }
+
             HeavyVehicleFuelQrScreenEvent.OnClearHourmeter -> _state.update {
                 it.copy(hourmeter = "")
             }
+
             is HeavyVehicleFuelQrScreenEvent.OnRemarksChange -> _state.update {
                 it.copy(remarks = event.remarks)
             }
+
             HeavyVehicleFuelQrScreenEvent.OnClearRemarks -> _state.update {
                 it.copy(remarks = "")
             }
+
             HeavyVehicleFuelQrScreenEvent.NotificationClear -> _state.update {
                 it.copy(notificationMessage = "", isRequestFailed = FailedRequest())
             }
-            HeavyVehicleFuelQrScreenEvent.SaveHeavyVehicleFuelTransaction -> {
+
+            is HeavyVehicleFuelQrScreenEvent.SaveHeavyVehicleFuelTransaction -> {
                 val data = FuelHeavyVehicleEntity(
                     heavyVehicleId = state.value.heavyVehicleId,
                     driverId = state.value.driverId,
@@ -257,7 +309,7 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
                     hourmeter = state.value.hourmeter.toDouble(),
                     remarks = state.value.remarks
                 )
-                postHeavyVehicleFuel(data)
+                postHeavyVehicleFuel(data, event.connectionStatus)
             }
         }
     }

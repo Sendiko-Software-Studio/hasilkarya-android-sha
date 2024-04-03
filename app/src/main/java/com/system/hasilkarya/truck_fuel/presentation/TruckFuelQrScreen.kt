@@ -30,12 +30,12 @@ fun TruckFuelQrScreen(
     LaunchedEffect(
         key1 = state,
         block = {
-            if (state.notificationMessage.isNotBlank()){
+            if (state.notificationMessage.isNotBlank()) {
                 delay(2000)
                 onEvent(TruckFuelQrScreenEvent.NotificationClear)
             }
 
-            if (state.isPostSuccessful){
+            if (state.isPostSuccessful) {
                 delay(1000)
                 onNavigateBack(Destination.DashboardScreen)
             }
@@ -58,7 +58,14 @@ fun TruckFuelQrScreen(
                     exit = slideOutHorizontally()
                 ) {
                     QrScanComponent(
-                        onResult = { onEvent(TruckFuelQrScreenEvent.OnTruckIdRegistered(it)) },
+                        onResult = {
+                            onEvent(
+                                TruckFuelQrScreenEvent.OnTruckIdRegistered(
+                                    it,
+                                    connectionStatus
+                                )
+                            )
+                        },
                         navigateBack = { onNavigateBack(Destination.DashboardScreen) },
                         title = "Truck",
                         textButton = "Lanjut scan driver"
@@ -70,7 +77,14 @@ fun TruckFuelQrScreen(
                     exit = slideOutHorizontally()
                 ) {
                     QrScanComponent(
-                        onResult = { onEvent(TruckFuelQrScreenEvent.OnDriverIdRegistered(it)) },
+                        onResult = {
+                            onEvent(
+                                TruckFuelQrScreenEvent.OnDriverIdRegistered(
+                                    it,
+                                    connectionStatus
+                                )
+                            )
+                        },
                         navigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Truck)) },
                         title = "Driver",
                         textButton = "Lanjut scan pos"
@@ -82,7 +96,14 @@ fun TruckFuelQrScreen(
                     exit = slideOutHorizontally()
                 ) {
                     QrScanComponent(
-                        onResult = { onEvent(TruckFuelQrScreenEvent.OnStationIdRegistered(it)) },
+                        onResult = {
+                            onEvent(
+                                TruckFuelQrScreenEvent.OnStationIdRegistered(
+                                    it,
+                                    connectionStatus
+                                )
+                            )
+                        },
                         navigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Driver)) },
                         title = "Pos",
                         textButton = "Lanjut scan BBM"
@@ -109,7 +130,13 @@ fun TruckFuelQrScreen(
                         onRemarksChange = { onEvent(TruckFuelQrScreenEvent.OnRemarksChange(it)) },
                         onRemarksClear = { onEvent(TruckFuelQrScreenEvent.OnClearRemarks) },
                         onNavigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(it)) },
-                        onSubmit = { onEvent(TruckFuelQrScreenEvent.SaveTruckFuelTransaction) }
+                        onSubmit = {
+                            onEvent(
+                                TruckFuelQrScreenEvent.SaveTruckFuelTransaction(
+                                    connectionStatus
+                                )
+                            )
+                        }
                     )
                 }
             }
