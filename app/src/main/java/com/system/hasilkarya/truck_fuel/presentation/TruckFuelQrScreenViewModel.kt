@@ -7,10 +7,10 @@ import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.repositories.fuel.truck.TruckFuelRepository
 import com.system.hasilkarya.core.ui.utils.FailedRequest
-import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
 import com.system.hasilkarya.dashboard.data.CheckDriverIdResponse
 import com.system.hasilkarya.dashboard.data.CheckStationIdResponse
 import com.system.hasilkarya.dashboard.data.CheckTruckIdResponse
+import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
 import com.system.hasilkarya.truck_fuel.data.TruckFuelRequest
 import com.system.hasilkarya.truck_fuel.data.TruckFuelResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -157,8 +157,7 @@ class TruckFuelQrScreenViewModel @Inject constructor(
         )
     }
 
-    private fun postTruckFuel(fuelTruckEntity: FuelTruckEntity) {
-        _state.update { it.copy(isLoading = true) }
+    private fun postTruckFuel(fuelTruckEntity: FuelTruckEntity, connectionStatus: Status) {
         val token = "Bearer ${state.value.token}"
         val data = TruckFuelRequest(
             truckId = fuelTruckEntity.truckId,
@@ -170,7 +169,8 @@ class TruckFuelQrScreenViewModel @Inject constructor(
             remarks = fuelTruckEntity.remarks
         )
         val request = repository.postFuels(token, data)
-        if (connectionStatus.value.connectionStatus == Status.Available) {
+        if (connectionStatus == Status.Available) {
+            _state.update { it.copy(isLoading = true) }
             request.enqueue(
                 object : Callback<TruckFuelResponse> {
                     override fun onResponse(
@@ -225,7 +225,7 @@ class TruckFuelQrScreenViewModel @Inject constructor(
             }
 
             is TruckFuelQrScreenEvent.OnTruckIdRegistered -> {
-                if (connectionStatus.value.connectionStatus == Status.Available) {
+                if (event.connectionStatus == Status.Available) {
                     checkTruckId(event.truckId)
                 } else _state.update {
                     it.copy(truckId = event.truckId, currentlyScanning = ScanOptions.Driver)
@@ -233,7 +233,7 @@ class TruckFuelQrScreenViewModel @Inject constructor(
             }
 
             is TruckFuelQrScreenEvent.OnDriverIdRegistered -> {
-                if (connectionStatus.value.connectionStatus == Status.Available) {
+                if (event.connectionStatus == Status.Available) {
                     checkDriverId(event.driverId)
                 } else _state.update {
                     it.copy(driverId = event.driverId, currentlyScanning = ScanOptions.Pos)
@@ -241,7 +241,7 @@ class TruckFuelQrScreenViewModel @Inject constructor(
             }
 
             is TruckFuelQrScreenEvent.OnStationIdRegistered -> {
-                if (connectionStatus.value.connectionStatus == Status.Available) {
+                if (event.connectionStatus == Status.Available) {
                     checkStationId(event.stationId)
                 } else _state.update {
                     it.copy(stationId = event.stationId, currentlyScanning = ScanOptions.Volume)
@@ -249,7 +249,7 @@ class TruckFuelQrScreenViewModel @Inject constructor(
             }
 
             is TruckFuelQrScreenEvent.OnVolumeRegistered -> {
-                if (event.volume == null){
+                if (event.volume == null) {
                     _state.update { it.copy(notificationMessage = "Maaf, Qr invalid.") }
                 } else _state.update {
                     it.copy(volume = event.volume, currentlyScanning = ScanOptions.None)
@@ -272,7 +272,7 @@ class TruckFuelQrScreenViewModel @Inject constructor(
                 it.copy(remarks = "")
             }
 
-            TruckFuelQrScreenEvent.SaveTruckFuelTransaction -> {
+            is TruckFuelQrScreenEvent.SaveTruckFuelTransaction -> {
                 val data = FuelTruckEntity(
                     truckId = state.value.truckId,
                     driverId = state.value.driverId,
@@ -282,7 +282,7 @@ class TruckFuelQrScreenViewModel @Inject constructor(
                     odometer = state.value.odometer.toDouble(),
                     remarks = state.value.remarks
                 )
-                postTruckFuel(data)
+                postTruckFuel(data, event.connectionStatus)
             }
 
             TruckFuelQrScreenEvent.NotificationClear -> _state.update {
