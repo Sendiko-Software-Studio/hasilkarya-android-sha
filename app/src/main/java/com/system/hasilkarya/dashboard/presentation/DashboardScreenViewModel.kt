@@ -54,25 +54,14 @@ class DashboardScreenViewModel @Inject constructor(
     val connectionStatus = combine(connectionObserver.observe(), _state) { connectionStatus, state ->
         state.copy(connectionStatus = connectionStatus)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), DashboardScreenState())
-    private val _dataList = combine(
-        _materials,
-        _fuels,
-        _heavyFuels,
-        _state
-    ) { materials, fuels, heavyFuels, state ->
+    private val _dataList = combine(_materials, _fuels, _heavyFuels, _state) { materials, fuels, heavyFuels, state ->
         state.copy(
             materials = materials,
             fuels = fuels,
             heavyFuels = heavyFuels
         )
     }
-    val state = combine(
-        _token,
-        _name,
-        _role,
-        _dataList,
-        _state
-    ) { token, name, role, dataList, state ->
+    val state = combine(_token, _name, _role, _dataList, _state) { token, name, role, dataList, state ->
         state.copy(
             token = token,
             name = name,
@@ -214,7 +203,8 @@ class DashboardScreenViewModel @Inject constructor(
                 truckId = material.truckId,
                 stationId = material.stationId,
                 checkerId = material.checkerId,
-                errorLog = message
+                errorLog = message,
+                remarks = material.remarks
             )
 
             val request = materialRepository.postToLog(token, data)
@@ -229,7 +219,12 @@ class DashboardScreenViewModel @Inject constructor(
                         when(response.code()) {
                             200 -> viewModelScope.launch {
                                 materialRepository.deleteMaterial(material)
-                                _state.update { it.copy(isPostSuccessful = true) }
+                                _state.update {
+                                    it.copy(
+                                        isPostSuccessful = true,
+                                        materials = state.value.materials - material
+                                    )
+                                }
                             }
 
                             else -> viewModelScope.launch {

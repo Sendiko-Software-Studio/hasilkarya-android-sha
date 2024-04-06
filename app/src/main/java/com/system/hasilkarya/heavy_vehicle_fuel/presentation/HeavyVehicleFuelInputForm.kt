@@ -61,7 +61,7 @@ fun HeavyVehicleFuelInputForm(
                 modifier = Modifier.padding(8.dp)
             ) {
                 Text(
-                    text = "Isi jumlah odometer",
+                    text = "Isi jumlah hourmeter",
                     fontFamily = poppinsFont,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium

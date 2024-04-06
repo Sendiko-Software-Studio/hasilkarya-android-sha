@@ -17,5 +17,8 @@ data class PostMaterialLogRequest(
 	val stationId: String,
 
 	@field:SerializedName("checker_id")
-	val checkerId: String
+	val checkerId: String,
+
+	@field:SerializedName("remarks")
+	val remarks: String,
 )
