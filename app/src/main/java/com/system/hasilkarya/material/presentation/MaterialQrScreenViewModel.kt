@@ -7,6 +7,7 @@ import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.preferences.AppPreferences
 import com.system.hasilkarya.core.repositories.material.MaterialRepository
+import com.system.hasilkarya.core.ui.utils.ErrorTextField
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.data.CheckDriverIdResponse
 import com.system.hasilkarya.dashboard.data.CheckStationIdResponse
@@ -253,15 +254,26 @@ class MaterialQrScreenViewModel @Inject constructor(
             }
 
             is MaterialQrScreenEvent.SaveMaterial -> {
-                val data = MaterialEntity(
-                    driverId = state.value.driverId,
-                    truckId = state.value.truckId,
-                    stationId = state.value.posId,
-                    ratio = state.value.materialVolume.toDouble(),
-                    remarks = state.value.remarks,
-                    checkerId = state.value.userId,
-                )
-                postMaterial(data, event.connectionStatus)
+                if (state.value.materialVolume.isBlank()){
+                    _state.update {
+                        it.copy(
+                            materialVolumeErrorState = ErrorTextField(
+                                isError = !it.materialVolumeErrorState.isError,
+                                errorMessage = "Volume Material tidak boleh kosong."
+                            )
+                        )
+                    }
+                } else {
+                    val data = MaterialEntity(
+                        driverId = state.value.driverId,
+                        truckId = state.value.truckId,
+                        stationId = state.value.posId,
+                        ratio = state.value.materialVolume.toDouble(),
+                        remarks = state.value.remarks,
+                        checkerId = state.value.userId,
+                    )
+                    postMaterial(data, event.connectionStatus)
+                }
             }
 
             MaterialQrScreenEvent.OnClearNotification -> _state.update {
