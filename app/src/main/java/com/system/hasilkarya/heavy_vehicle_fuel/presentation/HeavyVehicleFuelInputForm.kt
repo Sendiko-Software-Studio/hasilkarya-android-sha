@@ -25,12 +25,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.system.hasilkarya.core.ui.components.NormalTextField
 import com.system.hasilkarya.core.ui.theme.poppinsFont
+import com.system.hasilkarya.core.ui.utils.ErrorTextField
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HeavyVehicleFuelInputForm(
     hourmeter: String,
+    hourmeterErrorState: ErrorTextField,
     remarks: String,
     onHourmeterChange: (String) -> Unit,
     onHourmeterClear: () -> Unit,
@@ -73,7 +75,8 @@ fun HeavyVehicleFuelInputForm(
                     leadingIcon = Icons.Default.Speed,
                     onClearText = { onHourmeterClear() },
                     hint = "0.0",
-                    keyboardType = KeyboardType.Decimal
+                    keyboardType = KeyboardType.Decimal,
+                    errorState = hourmeterErrorState
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
