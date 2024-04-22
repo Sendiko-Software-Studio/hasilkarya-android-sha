@@ -1,6 +1,7 @@
 package com.system.hasilkarya.heavy_vehicle_fuel.presentation
 
 import com.system.hasilkarya.core.network.Status
+import com.system.hasilkarya.core.ui.utils.ErrorTextField
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
 
@@ -18,5 +19,6 @@ data class HeavyVehicleFuelQrScreenState(
     val stationId: String = "",
     val volume: Double = 0.0,
     val hourmeter: String = "",
+    val hourmeterErrorState: ErrorTextField = ErrorTextField(),
     val remarks: String = "",
 )
