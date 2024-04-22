@@ -2,6 +2,7 @@ package com.system.hasilkarya.profile.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.system.hasilkarya.core.ui.theme.AppTheme
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.profile.data.LogoutResponse
 import com.system.hasilkarya.profile.domain.ProfileRepository
@@ -26,10 +27,11 @@ class ProfileScreenViewModel @Inject constructor(
     private val _name = repository.getName()
     private val _token = repository.getToken()
     private val _email = repository.getEmail()
+    private val _theme = repository.getTheme()
     val state = combine(
-        _name, _token, _email, _state
-    ) { name, token, email, state ->
-        state.copy(name = name, token = token, email = email)
+        _name, _token, _email, _theme, _state
+    ) { name, token, email, theme, state ->
+        state.copy(name = name, token = token, email = email, theme = theme)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ProfileScreenState())
 
     private fun logout() {
@@ -81,9 +83,19 @@ class ProfileScreenViewModel @Inject constructor(
         )
     }
 
+    private fun changeTheme(theme: AppTheme) {
+        viewModelScope.launch {
+            repository.setTheme(theme)
+        }
+        _state.update {
+            it.copy(theme = theme)
+        }
+    }
+
     fun onEvent(event: ProfileScreenEvent) {
         when(event) {
             ProfileScreenEvent.OnLogout -> logout()
+            is ProfileScreenEvent.OnThemeChanged -> changeTheme(event.theme)
         }
     }
 
