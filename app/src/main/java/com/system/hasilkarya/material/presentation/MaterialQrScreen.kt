@@ -167,7 +167,8 @@ fun MaterialQrScreen(
                                     leadingIcon = Icons.AutoMirrored.Default.Outbound,
                                     onClearText = {  },
                                     keyboardType = KeyboardType.Decimal,
-                                    hint = "Dalam meter kubik (m³)"
+                                    hint = "Dalam meter kubik (m³)",
+                                    errorState = state.materialVolumeErrorState
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
