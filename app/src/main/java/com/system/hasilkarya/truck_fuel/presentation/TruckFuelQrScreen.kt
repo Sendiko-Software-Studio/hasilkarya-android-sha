@@ -124,6 +124,7 @@ fun TruckFuelQrScreen(
                 AnimatedVisibility(visible = state.currentlyScanning == ScanOptions.None) {
                     FuelInputForm(
                         odometer = state.odometer,
+                        odometerErrorState = state.odometerErrorState,
                         remarks = state.remarks,
                         onOdometerChange = { onEvent(TruckFuelQrScreenEvent.OnOdometerChange(it)) },
                         onOdometerClear = { onEvent(TruckFuelQrScreenEvent.OnClearOdometer) },
