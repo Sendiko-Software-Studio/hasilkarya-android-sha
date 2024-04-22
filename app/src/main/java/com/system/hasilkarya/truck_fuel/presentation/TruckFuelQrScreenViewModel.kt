@@ -6,6 +6,7 @@ import com.system.hasilkarya.core.entities.FuelTruckEntity
 import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.repositories.fuel.truck.TruckFuelRepository
+import com.system.hasilkarya.core.ui.utils.ErrorTextField
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.data.CheckDriverIdResponse
 import com.system.hasilkarya.dashboard.data.CheckStationIdResponse
@@ -273,16 +274,27 @@ class TruckFuelQrScreenViewModel @Inject constructor(
             }
 
             is TruckFuelQrScreenEvent.SaveTruckFuelTransaction -> {
-                val data = FuelTruckEntity(
-                    truckId = state.value.truckId,
-                    driverId = state.value.driverId,
-                    stationId = state.value.stationId,
-                    volume = state.value.volume,
-                    userId = state.value.userId,
-                    odometer = state.value.odometer.toDouble(),
-                    remarks = state.value.remarks
-                )
-                postTruckFuel(data, event.connectionStatus)
+                if (state.value.odometer.isEmpty()){
+                    _state.update {
+                        it.copy(
+                            odometerErrorState = ErrorTextField(
+                                isError = !it.odometerErrorState.isError,
+                                errorMessage = "Odometer tidak boleh kosong."
+                            )
+                        )
+                    }
+                } else {
+                    val data = FuelTruckEntity(
+                        truckId = state.value.truckId,
+                        driverId = state.value.driverId,
+                        stationId = state.value.stationId,
+                        volume = state.value.volume,
+                        userId = state.value.userId,
+                        odometer = state.value.odometer.toDouble(),
+                        remarks = state.value.remarks
+                    )
+                    postTruckFuel(data, event.connectionStatus)
+                }
             }
 
             TruckFuelQrScreenEvent.NotificationClear -> _state.update {
