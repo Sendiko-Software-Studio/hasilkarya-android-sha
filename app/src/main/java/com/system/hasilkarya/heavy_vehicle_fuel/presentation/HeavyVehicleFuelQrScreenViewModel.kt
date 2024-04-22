@@ -7,6 +7,7 @@ import com.system.hasilkarya.core.entities.FuelHeavyVehicleEntity
 import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.repositories.fuel.heavy_vehicle.HeavyVehicleFuelRepository
+import com.system.hasilkarya.core.ui.utils.ErrorTextField
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.data.CheckDriverIdResponse
 import com.system.hasilkarya.dashboard.data.CheckStationIdResponse
@@ -300,16 +301,27 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
             }
 
             is HeavyVehicleFuelQrScreenEvent.SaveHeavyVehicleFuelTransaction -> {
-                val data = FuelHeavyVehicleEntity(
-                    heavyVehicleId = state.value.heavyVehicleId,
-                    driverId = state.value.driverId,
-                    stationId = state.value.stationId,
-                    gasOperatorId = state.value.userId,
-                    volume = state.value.volume,
-                    hourmeter = state.value.hourmeter.toDouble(),
-                    remarks = state.value.remarks
-                )
-                postHeavyVehicleFuel(data, event.connectionStatus)
+                if (state.value.hourmeter.isBlank()) {
+                    _state.update {
+                        it.copy(
+                            hourmeterErrorState = ErrorTextField(
+                                isError = !it.hourmeterErrorState.isError,
+                                errorMessage = "Hourmeter tidak bolah kosong."
+                            )
+                        )
+                    }
+                } else {
+                    val data = FuelHeavyVehicleEntity(
+                        heavyVehicleId = state.value.heavyVehicleId,
+                        driverId = state.value.driverId,
+                        stationId = state.value.stationId,
+                        gasOperatorId = state.value.userId,
+                        volume = state.value.volume,
+                        hourmeter = state.value.hourmeter.toDouble(),
+                        remarks = state.value.remarks
+                    )
+                    postHeavyVehicleFuel(data, event.connectionStatus)
+                }
             }
         }
     }
