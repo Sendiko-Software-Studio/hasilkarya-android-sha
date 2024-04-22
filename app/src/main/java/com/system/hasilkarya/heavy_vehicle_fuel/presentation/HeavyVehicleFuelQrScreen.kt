@@ -151,6 +151,7 @@ fun HeavyVehicleFuelQrScreen(
                 ) {
                     HeavyVehicleFuelInputForm(
                         hourmeter = state.hourmeter,
+                        hourmeterErrorState = state.hourmeterErrorState,
                         remarks = state.remarks,
                         onHourmeterChange = {
                             onEvent(
