@@ -126,6 +126,7 @@ class DashboardScreenViewModel @Inject constructor(
             checkerId = materialEntity.checkerId,
             observationRatio = materialEntity.ratio.toInt(),
             remarks = materialEntity.remarks,
+            date = materialEntity.date
         )
         if (connectionStatus.value.connectionStatus == Status.Available) {
             val request = materialRepository.postMaterial(token, data)
@@ -257,7 +258,8 @@ class DashboardScreenViewModel @Inject constructor(
             volume = fuelTruckEntity.volume,
             odometer = fuelTruckEntity.odometer,
             gasOperatorId = fuelTruckEntity.userId,
-            remarks = fuelTruckEntity.remarks
+            remarks = fuelTruckEntity.remarks,
+            date = fuelTruckEntity.date
         )
         if (connectionStatus.value.connectionStatus == Status.Available) {
             val request = truckFuelRepository.postFuels(token, data)
@@ -272,6 +274,9 @@ class DashboardScreenViewModel @Inject constructor(
                             201 -> {
                                 viewModelScope.launch {
                                     truckFuelRepository.deleteFuel(fuelTruckEntity)
+                                    _state.update {
+                                        it.copy(fuels = it.fuels - fuelTruckEntity)
+                                    }
                                 }
                                 _state.update {
                                     it.copy(
@@ -337,7 +342,8 @@ class DashboardScreenViewModel @Inject constructor(
                 odometer = fuelTruckEntity.odometer,
                 gasOperatorId = fuelTruckEntity.userId,
                 errorLog = message,
-                remarks = fuelTruckEntity.remarks
+                remarks = fuelTruckEntity.remarks,
+                date = fuelTruckEntity.date
             )
 
             val request = truckFuelRepository.postToLog(token, data)
@@ -353,7 +359,7 @@ class DashboardScreenViewModel @Inject constructor(
                             200 -> {
                                 viewModelScope.launch { truckFuelRepository.deleteFuel(fuelTruckEntity) }
                                 _state.update {
-                                    it.copy(isPostSuccessful = true)
+                                    it.copy(isPostSuccessful = true, fuels = it.fuels - fuelTruckEntity)
                                 }
                             }
                             else -> viewModelScope.launch {
@@ -386,7 +392,8 @@ class DashboardScreenViewModel @Inject constructor(
             gasOperatorId = heavyVehicleEntity.gasOperatorId,
             volume = heavyVehicleEntity.volume,
             hourmeter = heavyVehicleEntity.hourmeter,
-            remarks = heavyVehicleEntity.remarks
+            remarks = heavyVehicleEntity.remarks,
+            date = heavyVehicleEntity.date
         )
         if (connectionStatus.value.connectionStatus == Status.Available) {
             _state.update { it.copy(isLoading = true) }
@@ -401,7 +408,7 @@ class DashboardScreenViewModel @Inject constructor(
                         when(response.code()) {
                             201 -> {
                                 viewModelScope.launch { heavyVehicleFuelRepository.deleteHeavyVehicleFuel(heavyVehicleEntity) }
-                                _state.update { it.copy(isPostSuccessful = true) }
+                                _state.update { it.copy(isPostSuccessful = true, heavyFuels = it.heavyFuels - heavyVehicleEntity) }
                             }
                             else -> viewModelScope.launch {
                                 postHeavyVehicleFuelLog(heavyVehicleEntity)
@@ -447,7 +454,8 @@ class DashboardScreenViewModel @Inject constructor(
                 volume = heavyVehicleEntity.volume,
                 hourmeter = heavyVehicleEntity.hourmeter,
                 remarks = heavyVehicleEntity.remarks,
-                errorLog = message
+                errorLog = message,
+                date = heavyVehicleEntity.date
             )
 
             val request = heavyVehicleFuelRepository.postHeavyVehicleFuelLog(token, data)
@@ -462,7 +470,7 @@ class DashboardScreenViewModel @Inject constructor(
                         when(response.code()) {
                             200 -> viewModelScope.launch {
                                 heavyVehicleFuelRepository.deleteHeavyVehicleFuel(heavyVehicleEntity)
-                                _state.update { it.copy(isPostSuccessful = true) }
+                                _state.update { it.copy(isPostSuccessful = true, heavyFuels = it.heavyFuels - heavyVehicleEntity) }
                             }
 
                             else -> viewModelScope.launch {

@@ -1,6 +1,8 @@
 package com.system.hasilkarya.heavy_vehicle_fuel.presentation
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.system.hasilkarya.core.entities.FuelHeavyVehicleEntity
@@ -25,6 +27,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -181,7 +184,8 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
             gasOperatorId = heavyVehicleEntity.gasOperatorId,
             volume = heavyVehicleEntity.volume,
             hourmeter = heavyVehicleEntity.hourmeter,
-            remarks = heavyVehicleEntity.remarks
+            remarks = heavyVehicleEntity.remarks,
+            date = heavyVehicleEntity.date
         )
         if (connectionStatus == Status.Available) {
             _state.update { it.copy(isLoading = true) }
@@ -233,6 +237,7 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun onEvent(event: HeavyVehicleFuelQrScreenEvent) {
         when (event) {
             is HeavyVehicleFuelQrScreenEvent.OnNavigateForm -> _state.update {
@@ -318,7 +323,8 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
                         gasOperatorId = state.value.userId,
                         volume = state.value.volume,
                         hourmeter = state.value.hourmeter.toDouble(),
-                        remarks = state.value.remarks
+                        remarks = state.value.remarks,
+                        date = LocalDateTime.now().toString()
                     )
                     postHeavyVehicleFuel(data, event.connectionStatus)
                 }

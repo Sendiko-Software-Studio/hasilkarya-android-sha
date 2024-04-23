@@ -24,4 +24,7 @@ data class HeavyVehicleFuelRequest(
 
 	@field:SerializedName("remarks")
 	val remarks: String,
+
+	@field:SerializedName("date")
+	val date: String,
 )

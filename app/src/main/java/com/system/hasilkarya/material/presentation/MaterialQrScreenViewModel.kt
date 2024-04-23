@@ -1,5 +1,7 @@
 package com.system.hasilkarya.material.presentation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.system.hasilkarya.core.entities.MaterialEntity
@@ -27,7 +29,9 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDateTime
 import javax.inject.Inject
+
 
 @HiltViewModel
 class MaterialQrScreenViewModel @Inject constructor(
@@ -175,6 +179,7 @@ class MaterialQrScreenViewModel @Inject constructor(
             checkerId = materialEntity.checkerId,
             observationRatio = materialEntity.ratio.toInt(),
             remarks = materialEntity.remarks,
+            date = materialEntity.date
         )
         if (connectionStatus == Status.Available) {
             val request = repository.postMaterial(token, data)
@@ -231,6 +236,7 @@ class MaterialQrScreenViewModel @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun onEvent(event: MaterialQrScreenEvent) {
         when (event) {
             is MaterialQrScreenEvent.OnDriverIdRegistered -> if (event.connectionStatus == Status.Available)
@@ -264,14 +270,28 @@ class MaterialQrScreenViewModel @Inject constructor(
                         )
                     }
                 } else {
-                    val data = MaterialEntity(
-                        driverId = state.value.driverId,
-                        truckId = state.value.truckId,
-                        stationId = state.value.posId,
-                        ratio = state.value.materialVolume.toDouble(),
-                        remarks = state.value.remarks,
-                        checkerId = state.value.userId,
-                    )
+
+                    val data = if (event.connectionStatus != Status.Available) {
+                        MaterialEntity(
+                            driverId = state.value.driverId,
+                            truckId = state.value.truckId,
+                            stationId = state.value.posId,
+                            ratio = state.value.materialVolume.toDouble(),
+                            remarks = state.value.remarks,
+                            checkerId = state.value.userId,
+                            date = LocalDateTime.now().toString(),
+                        )
+                    } else {
+                        MaterialEntity(
+                            driverId = state.value.driverId,
+                            truckId = state.value.truckId,
+                            stationId = state.value.posId,
+                            ratio = state.value.materialVolume.toDouble(),
+                            remarks = state.value.remarks,
+                            checkerId = state.value.userId,
+                            date = "",
+                        )
+                    }
                     postMaterial(data, event.connectionStatus)
                 }
             }
