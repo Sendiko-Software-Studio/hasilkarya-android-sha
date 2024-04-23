@@ -3,6 +3,7 @@
 package com.system.hasilkarya.material.presentation
 
 import android.annotation.SuppressLint
+import android.media.MediaPlayer
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -28,10 +29,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.system.hasilkarya.R
 import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
@@ -53,6 +56,7 @@ fun MaterialQrScreen(
     connectionStatus: Status,
     onNavigateBack: (Destination) -> Unit,
 ) {
+    val context = LocalContext.current
     LaunchedEffect(
         key1 = state,
         block = {
@@ -67,6 +71,22 @@ fun MaterialQrScreen(
             }
         }
     )
+    LaunchedEffect(
+        key1 = state.truckId,
+        key2 = state.driverId,
+        key3 = state.posId
+    ) {
+        val mediaPlayer = MediaPlayer.create(context, R.raw.ding_sfx)
+
+        if (state.truckId.isNotBlank())
+            mediaPlayer.start()
+
+        if (state.driverId.isNotBlank())
+            mediaPlayer.start()
+
+        if (state.posId.isNotBlank())
+            mediaPlayer.start()
+    }
     ContentBoxWithNotification(
         message = state.notificationMessage,
         isLoading = state.isLoading,
@@ -167,7 +187,8 @@ fun MaterialQrScreen(
                                     leadingIcon = Icons.AutoMirrored.Default.Outbound,
                                     onClearText = {  },
                                     keyboardType = KeyboardType.Decimal,
-                                    hint = "Dalam meter kubik (m³)"
+                                    hint = "Dalam meter kubik (m³)",
+                                    errorState = state.materialVolumeErrorState
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(

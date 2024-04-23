@@ -1,11 +1,14 @@
 package com.system.hasilkarya.truck_fuel.presentation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.system.hasilkarya.core.entities.FuelTruckEntity
 import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.repositories.fuel.truck.TruckFuelRepository
+import com.system.hasilkarya.core.ui.utils.ErrorTextField
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.data.CheckDriverIdResponse
 import com.system.hasilkarya.dashboard.data.CheckStationIdResponse
@@ -23,6 +26,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -166,7 +170,8 @@ class TruckFuelQrScreenViewModel @Inject constructor(
             volume = fuelTruckEntity.volume,
             odometer = fuelTruckEntity.odometer,
             gasOperatorId = fuelTruckEntity.userId,
-            remarks = fuelTruckEntity.remarks
+            remarks = fuelTruckEntity.remarks,
+            date = fuelTruckEntity.date
         )
         val request = repository.postFuels(token, data)
         if (connectionStatus == Status.Available) {
@@ -218,6 +223,7 @@ class TruckFuelQrScreenViewModel @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun onEvent(event: TruckFuelQrScreenEvent) {
         when (event) {
             is TruckFuelQrScreenEvent.OnNavigateForm -> _state.update {
@@ -273,16 +279,40 @@ class TruckFuelQrScreenViewModel @Inject constructor(
             }
 
             is TruckFuelQrScreenEvent.SaveTruckFuelTransaction -> {
-                val data = FuelTruckEntity(
-                    truckId = state.value.truckId,
-                    driverId = state.value.driverId,
-                    stationId = state.value.stationId,
-                    volume = state.value.volume,
-                    userId = state.value.userId,
-                    odometer = state.value.odometer.toDouble(),
-                    remarks = state.value.remarks
-                )
-                postTruckFuel(data, event.connectionStatus)
+                if (state.value.odometer.isEmpty()){
+                    _state.update {
+                        it.copy(
+                            odometerErrorState = ErrorTextField(
+                                isError = !it.odometerErrorState.isError,
+                                errorMessage = "Odometer tidak boleh kosong."
+                            )
+                        )
+                    }
+                } else {
+                    val data = if (event.connectionStatus != Status.Available) {
+                        FuelTruckEntity(
+                            truckId = state.value.truckId,
+                            driverId = state.value.driverId,
+                            stationId = state.value.stationId,
+                            volume = state.value.volume,
+                            userId = state.value.userId,
+                            odometer = state.value.odometer.toDouble(),
+                            remarks = state.value.remarks,
+                            date = LocalDateTime.now().toString()
+                        )
+                    } else {
+                        FuelTruckEntity(
+                            truckId = state.value.truckId,
+                            driverId = state.value.driverId,
+                            stationId = state.value.stationId,
+                            volume = state.value.volume,
+                            userId = state.value.userId,
+                            odometer = state.value.odometer.toDouble(),
+                            remarks = state.value.remarks
+                        )
+                    }
+                    postTruckFuel(data, event.connectionStatus)
+                }
             }
 
             TruckFuelQrScreenEvent.NotificationClear -> _state.update {

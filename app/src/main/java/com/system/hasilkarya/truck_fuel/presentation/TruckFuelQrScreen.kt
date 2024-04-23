@@ -1,6 +1,7 @@
 package com.system.hasilkarya.truck_fuel.presentation
 
 import android.annotation.SuppressLint
+import android.media.MediaPlayer
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -11,7 +12,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.system.hasilkarya.R
 import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
@@ -27,6 +30,7 @@ fun TruckFuelQrScreen(
     connectionStatus: Status,
     onNavigateBack: (Destination) -> Unit,
 ) {
+    val context = LocalContext.current
     LaunchedEffect(
         key1 = state,
         block = {
@@ -41,6 +45,29 @@ fun TruckFuelQrScreen(
             }
         }
     )
+
+    LaunchedEffect(
+        key1 = state.truckId,
+        key2 = state.driverId,
+        key3 = state.stationId
+    ) {
+        val mediaPlayer = MediaPlayer.create(context, R.raw.ding_sfx)
+
+        if (state.truckId.isNotBlank())
+            mediaPlayer.start()
+
+        if (state.driverId.isNotBlank())
+            mediaPlayer.start()
+
+        if (state.stationId.isNotBlank())
+            mediaPlayer.start()
+    }
+    LaunchedEffect(key1 = state.volume) {
+        val mediaPlayer = MediaPlayer.create(context, R.raw.ding_sfx)
+
+        if (state.volume != 0.0)
+            mediaPlayer.start()
+    }
     ContentBoxWithNotification(
         message = state.notificationMessage,
         isLoading = state.isLoading,
@@ -124,6 +151,7 @@ fun TruckFuelQrScreen(
                 AnimatedVisibility(visible = state.currentlyScanning == ScanOptions.None) {
                     FuelInputForm(
                         odometer = state.odometer,
+                        odometerErrorState = state.odometerErrorState,
                         remarks = state.remarks,
                         onOdometerChange = { onEvent(TruckFuelQrScreenEvent.OnOdometerChange(it)) },
                         onOdometerClear = { onEvent(TruckFuelQrScreenEvent.OnClearOdometer) },

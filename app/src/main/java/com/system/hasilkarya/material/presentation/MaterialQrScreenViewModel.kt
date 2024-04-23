@@ -1,5 +1,7 @@
 package com.system.hasilkarya.material.presentation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.system.hasilkarya.core.entities.MaterialEntity
@@ -7,6 +9,7 @@ import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.preferences.AppPreferences
 import com.system.hasilkarya.core.repositories.material.MaterialRepository
+import com.system.hasilkarya.core.ui.utils.ErrorTextField
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.data.CheckDriverIdResponse
 import com.system.hasilkarya.dashboard.data.CheckStationIdResponse
@@ -26,7 +29,9 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDateTime
 import javax.inject.Inject
+
 
 @HiltViewModel
 class MaterialQrScreenViewModel @Inject constructor(
@@ -174,6 +179,7 @@ class MaterialQrScreenViewModel @Inject constructor(
             checkerId = materialEntity.checkerId,
             observationRatio = materialEntity.ratio.toInt(),
             remarks = materialEntity.remarks,
+            date = materialEntity.date
         )
         if (connectionStatus == Status.Available) {
             val request = repository.postMaterial(token, data)
@@ -230,6 +236,7 @@ class MaterialQrScreenViewModel @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun onEvent(event: MaterialQrScreenEvent) {
         when (event) {
             is MaterialQrScreenEvent.OnDriverIdRegistered -> if (event.connectionStatus == Status.Available)
@@ -253,15 +260,40 @@ class MaterialQrScreenViewModel @Inject constructor(
             }
 
             is MaterialQrScreenEvent.SaveMaterial -> {
-                val data = MaterialEntity(
-                    driverId = state.value.driverId,
-                    truckId = state.value.truckId,
-                    stationId = state.value.posId,
-                    ratio = state.value.materialVolume.toDouble(),
-                    remarks = state.value.remarks,
-                    checkerId = state.value.userId,
-                )
-                postMaterial(data, event.connectionStatus)
+                if (state.value.materialVolume.isBlank()){
+                    _state.update {
+                        it.copy(
+                            materialVolumeErrorState = ErrorTextField(
+                                isError = !it.materialVolumeErrorState.isError,
+                                errorMessage = "Volume Material tidak boleh kosong."
+                            )
+                        )
+                    }
+                } else {
+
+                    val data = if (event.connectionStatus != Status.Available) {
+                        MaterialEntity(
+                            driverId = state.value.driverId,
+                            truckId = state.value.truckId,
+                            stationId = state.value.posId,
+                            ratio = state.value.materialVolume.toDouble(),
+                            remarks = state.value.remarks,
+                            checkerId = state.value.userId,
+                            date = LocalDateTime.now().toString(),
+                        )
+                    } else {
+                        MaterialEntity(
+                            driverId = state.value.driverId,
+                            truckId = state.value.truckId,
+                            stationId = state.value.posId,
+                            ratio = state.value.materialVolume.toDouble(),
+                            remarks = state.value.remarks,
+                            checkerId = state.value.userId,
+                            date = "",
+                        )
+                    }
+                    postMaterial(data, event.connectionStatus)
+                }
             }
 
             MaterialQrScreenEvent.OnClearNotification -> _state.update {

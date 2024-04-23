@@ -1,5 +1,6 @@
 package com.system.hasilkarya.profile.presentation
 
+import com.system.hasilkarya.core.ui.theme.AppTheme
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 
 data class ProfileScreenState(
@@ -10,4 +11,5 @@ data class ProfileScreenState(
     val isRequestFailed: FailedRequest = FailedRequest(),
     val notificationMessage: String = "",
     val token: String = "",
+    val theme: AppTheme = AppTheme.Default
 )

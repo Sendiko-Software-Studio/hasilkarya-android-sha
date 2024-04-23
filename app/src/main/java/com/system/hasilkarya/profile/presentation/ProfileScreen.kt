@@ -16,6 +16,8 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.InputChip
+import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -23,6 +25,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -31,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
+import com.system.hasilkarya.core.ui.theme.AppTheme
 import com.system.hasilkarya.core.ui.theme.poppinsFont
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,6 +47,9 @@ fun ProfileScreen(
     onEvent: (ProfileScreenEvent) -> Unit,
     onNavigateBack: (Destination) -> Unit
 ) {
+    var isShowingThemeOptions by remember {
+        mutableStateOf(false)
+    }
     LaunchedEffect(
         key1 = state,
         block = {
@@ -107,7 +117,51 @@ fun ProfileScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(text = "Email: ", fontFamily = poppinsFont)
-                                    Text(text = state.email, fontFamily = poppinsFont, textAlign = TextAlign.End)
+                                    Text(
+                                        text = state.email,
+                                        fontFamily = poppinsFont,
+                                        textAlign = TextAlign.End
+                                    )
+                                }
+                                Divider()
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                                        .clickable {
+                                            isShowingThemeOptions = !isShowingThemeOptions
+                                        },
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(text = "Tema Aplikasi: ", fontFamily = poppinsFont)
+                                }
+                                Row(
+                                    horizontalArrangement = Arrangement.SpaceEvenly,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    AppTheme.entries.forEach { theme ->
+                                        InputChip(
+                                            selected = theme == state.theme,
+                                            onClick = { onEvent(ProfileScreenEvent.OnThemeChanged(theme)) },
+                                            label = {
+                                                Text(
+                                                    modifier = Modifier
+                                                        .padding(
+                                                            vertical = 4.dp,
+                                                            horizontal = 8.dp
+                                                        ),
+                                                    text = theme.name
+                                                )
+                                            },
+                                            colors = InputChipDefaults.inputChipColors(
+                                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                                labelColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                                selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                            )
+                                        )
+                                    }
                                 }
                                 Divider()
                                 Button(
@@ -132,7 +186,7 @@ fun ProfileScreen(
                     item {
                         val uriHandler = LocalUriHandler.current
                         Text(
-                            text = "v1.23r",
+                            text = "v1.27r",
                             fontFamily = poppinsFont,
                             modifier = Modifier
                                 .padding(16.dp)

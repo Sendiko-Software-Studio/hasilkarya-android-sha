@@ -20,5 +20,8 @@ data class PostMaterialRequest(
 	val checkerId: String,
 
 	@field:SerializedName("remarks")
-	val remarks: String
+	val remarks: String,
+
+	@field:SerializedName("date")
+	val date: String
 )

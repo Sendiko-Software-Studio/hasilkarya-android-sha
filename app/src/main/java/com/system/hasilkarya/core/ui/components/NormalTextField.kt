@@ -61,7 +61,7 @@ fun NormalTextField(
             )
         },
         supportingText = {
-            Text(text = errorState.errorMessage, fontFamily = poppinsFont)
+            if (errorState.isError) Text(text = errorState.errorMessage, fontFamily = poppinsFont)
         },
         isError = errorState.isError,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),

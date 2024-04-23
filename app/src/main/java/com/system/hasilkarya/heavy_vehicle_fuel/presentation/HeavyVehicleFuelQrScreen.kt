@@ -1,6 +1,7 @@
 package com.system.hasilkarya.heavy_vehicle_fuel.presentation
 
 import android.annotation.SuppressLint
+import android.media.MediaPlayer
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -11,7 +12,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.system.hasilkarya.R
 import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
@@ -27,6 +30,7 @@ fun HeavyVehicleFuelQrScreen(
     onNavigateBack: (Destination) -> Unit,
     connectionStatus: Status
 ) {
+    val context = LocalContext.current
     LaunchedEffect(
         key1 = state.notificationMessage,
         key2 = state.isPostSuccessful,
@@ -42,6 +46,28 @@ fun HeavyVehicleFuelQrScreen(
             }
         }
     )
+    LaunchedEffect(
+        key1 = state.heavyVehicleId,
+        key2 = state.driverId,
+        key3 = state.stationId
+    ) {
+        val mediaPlayer = MediaPlayer.create(context, R.raw.ding_sfx)
+
+        if (state.heavyVehicleId.isNotBlank())
+            mediaPlayer.start()
+
+        if (state.driverId.isNotBlank())
+            mediaPlayer.start()
+
+        if (state.stationId.isNotBlank())
+            mediaPlayer.start()
+    }
+    LaunchedEffect(key1 = state.volume) {
+        val mediaPlayer = MediaPlayer.create(context, R.raw.ding_sfx)
+
+        if (state.volume != 0.0)
+            mediaPlayer.start()
+    }
     ContentBoxWithNotification(
         message = state.notificationMessage,
         isLoading = state.isLoading,
@@ -151,6 +177,7 @@ fun HeavyVehicleFuelQrScreen(
                 ) {
                     HeavyVehicleFuelInputForm(
                         hourmeter = state.hourmeter,
+                        hourmeterErrorState = state.hourmeterErrorState,
                         remarks = state.remarks,
                         onHourmeterChange = {
                             onEvent(

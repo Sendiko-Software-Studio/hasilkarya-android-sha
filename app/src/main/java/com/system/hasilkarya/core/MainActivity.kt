@@ -4,12 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.system.hasilkarya.core.navigation.Destination
+import com.system.hasilkarya.core.preferences.ThemeViewModel
+import com.system.hasilkarya.core.ui.theme.AppTheme.Dark
+import com.system.hasilkarya.core.ui.theme.AppTheme.Default
+import com.system.hasilkarya.core.ui.theme.AppTheme.Light
 import com.system.hasilkarya.core.ui.theme.HasilKaryaTheme
 import com.system.hasilkarya.dashboard.presentation.DashboardScreen
 import com.system.hasilkarya.dashboard.presentation.DashboardScreenViewModel
@@ -33,7 +38,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            HasilKaryaTheme {
+            val themeViewModel = hiltViewModel<ThemeViewModel>()
+            HasilKaryaTheme(
+                darkTheme = when (themeViewModel.state.collectAsState().value.theme){
+                    Default -> isSystemInDarkTheme()
+                    Dark -> true
+                    Light -> false
+                }
+            ) {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,

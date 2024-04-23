@@ -1,5 +1,6 @@
 package com.system.hasilkarya.core.entities
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -14,4 +15,7 @@ data class FuelHeavyVehicleEntity(
     val volume: Double,
     val hourmeter: Double,
     val remarks: String,
+
+    @ColumnInfo(defaultValue = "0")
+    val date: String
 )

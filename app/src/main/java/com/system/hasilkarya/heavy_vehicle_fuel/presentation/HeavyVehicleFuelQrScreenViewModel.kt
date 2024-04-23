@@ -1,12 +1,15 @@
 package com.system.hasilkarya.heavy_vehicle_fuel.presentation
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.system.hasilkarya.core.entities.FuelHeavyVehicleEntity
 import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.repositories.fuel.heavy_vehicle.HeavyVehicleFuelRepository
+import com.system.hasilkarya.core.ui.utils.ErrorTextField
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.dashboard.data.CheckDriverIdResponse
 import com.system.hasilkarya.dashboard.data.CheckStationIdResponse
@@ -24,6 +27,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -180,7 +184,8 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
             gasOperatorId = heavyVehicleEntity.gasOperatorId,
             volume = heavyVehicleEntity.volume,
             hourmeter = heavyVehicleEntity.hourmeter,
-            remarks = heavyVehicleEntity.remarks
+            remarks = heavyVehicleEntity.remarks,
+            date = heavyVehicleEntity.date
         )
         if (connectionStatus == Status.Available) {
             _state.update { it.copy(isLoading = true) }
@@ -232,6 +237,7 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun onEvent(event: HeavyVehicleFuelQrScreenEvent) {
         when (event) {
             is HeavyVehicleFuelQrScreenEvent.OnNavigateForm -> _state.update {
@@ -300,16 +306,28 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
             }
 
             is HeavyVehicleFuelQrScreenEvent.SaveHeavyVehicleFuelTransaction -> {
-                val data = FuelHeavyVehicleEntity(
-                    heavyVehicleId = state.value.heavyVehicleId,
-                    driverId = state.value.driverId,
-                    stationId = state.value.stationId,
-                    gasOperatorId = state.value.userId,
-                    volume = state.value.volume,
-                    hourmeter = state.value.hourmeter.toDouble(),
-                    remarks = state.value.remarks
-                )
-                postHeavyVehicleFuel(data, event.connectionStatus)
+                if (state.value.hourmeter.isBlank()) {
+                    _state.update {
+                        it.copy(
+                            hourmeterErrorState = ErrorTextField(
+                                isError = !it.hourmeterErrorState.isError,
+                                errorMessage = "Hourmeter tidak bolah kosong."
+                            )
+                        )
+                    }
+                } else {
+                    val data = FuelHeavyVehicleEntity(
+                        heavyVehicleId = state.value.heavyVehicleId,
+                        driverId = state.value.driverId,
+                        stationId = state.value.stationId,
+                        gasOperatorId = state.value.userId,
+                        volume = state.value.volume,
+                        hourmeter = state.value.hourmeter.toDouble(),
+                        remarks = state.value.remarks,
+                        date = LocalDateTime.now().toString()
+                    )
+                    postHeavyVehicleFuel(data, event.connectionStatus)
+                }
             }
         }
     }

@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.system.hasilkarya.core.ui.theme.AppTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -15,6 +16,21 @@ class AppPreferences @Inject constructor(private val dataStore: DataStore<Prefer
     private val userIdKey = stringPreferencesKey("user_id")
     private val emailKey = stringPreferencesKey("email")
     private val roleKey = stringPreferencesKey("role")
+    private val themeKey = stringPreferencesKey(AppTheme.Default.name)
+    
+    suspend fun setTheme(theme: AppTheme) {
+        dataStore.edit {
+            it[themeKey] = theme.name
+        }
+    }
+
+    fun getTheme(): Flow<AppTheme> {
+        return dataStore.data.map {
+            if (it[themeKey]?.isNotBlank() == true){
+                enumValueOf(it[themeKey]!!)
+            } else AppTheme.Default
+        }
+    }
 
     suspend fun setRole(role: String) {
         dataStore.edit {
