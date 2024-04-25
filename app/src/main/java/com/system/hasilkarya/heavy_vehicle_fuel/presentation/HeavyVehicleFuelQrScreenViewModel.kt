@@ -54,6 +54,7 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), HeavyVehicleFuelQrScreenState())
 
+    // checking ids
     private fun checkHeavyVehicleId(heavyVehicleId: String) {
         _state.update { it.copy(isLoading = true) }
         val token = "Bearer ${state.value.token}"
@@ -172,6 +173,7 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
         )
     }
 
+    // post data
     private fun postHeavyVehicleFuel(
         heavyVehicleEntity: FuelHeavyVehicleEntity,
         connectionStatus: Status
@@ -237,98 +239,137 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun onEvent(event: HeavyVehicleFuelQrScreenEvent) {
-        when (event) {
-            is HeavyVehicleFuelQrScreenEvent.OnNavigateForm -> _state.update {
-                it.copy(currentlyScanning = event.scanOptions)
-            }
+    // state related methods
+    private fun onNavigateForm(scanOptions: ScanOptions) {
+        _state.update { it.copy(currentlyScanning = scanOptions) }
+    }
 
-            is HeavyVehicleFuelQrScreenEvent.OnHeavyVehicleIdRegistered -> {
-                if (event.connectionStatus == Status.Available) {
-                    checkHeavyVehicleId(event.vHId)
-                } else _state.update {
-                    it.copy(
-                        heavyVehicleId = event.vHId,
-                        currentlyScanning = ScanOptions.Driver
-                    )
-                }
-            }
+    private fun onHeavyVehicleIdRegistered(vHId: String, connectionStatus: Status) {
+        if (connectionStatus == Status.Available) {
+            checkHeavyVehicleId(vHId)
+        } else _state.update {
+            it.copy(
+                heavyVehicleId = vHId,
+                currentlyScanning = ScanOptions.Driver
+            )
+        }
+    }
 
-            is HeavyVehicleFuelQrScreenEvent.OnDriverIdRegistered -> {
-                if (event.connectionStatus == Status.Available) {
-                    checkDriverId(event.driverId)
-                } else _state.update {
-                    it.copy(
-                        driverId = event.driverId,
-                        currentlyScanning = ScanOptions.Pos
-                    )
-                }
-            }
-
-            is HeavyVehicleFuelQrScreenEvent.OnStationIdRegistered -> {
-                if (event.connectionStatus == Status.Available) {
-                    checkStationId(event.stationId)
-                } else _state.update {
-                    it.copy(
-                        stationId = event.stationId,
-                        currentlyScanning = ScanOptions.Volume
-                    )
-                }
-            }
-
-            is HeavyVehicleFuelQrScreenEvent.OnVolumeRegistered -> {
-                if (event.volume == null) {
-                    _state.update { it.copy(notificationMessage = "Maaf, Qr invalid.") }
-                } else _state.update {
-                    it.copy(volume = event.volume, currentlyScanning = ScanOptions.None)
-                }
-            }
-
-            is HeavyVehicleFuelQrScreenEvent.OnHourmeterChange -> _state.update {
-                it.copy(hourmeter = event.odometer)
-            }
-
-            HeavyVehicleFuelQrScreenEvent.OnClearHourmeter -> _state.update {
-                it.copy(hourmeter = "")
-            }
-
-            is HeavyVehicleFuelQrScreenEvent.OnRemarksChange -> _state.update {
-                it.copy(remarks = event.remarks)
-            }
-
-            HeavyVehicleFuelQrScreenEvent.OnClearRemarks -> _state.update {
-                it.copy(remarks = "")
-            }
-
-            HeavyVehicleFuelQrScreenEvent.NotificationClear -> _state.update {
-                it.copy(notificationMessage = "", isRequestFailed = FailedRequest())
-            }
-
-            is HeavyVehicleFuelQrScreenEvent.SaveHeavyVehicleFuelTransaction -> {
-                if (state.value.hourmeter.isBlank()) {
-                    _state.update {
-                        it.copy(
-                            hourmeterErrorState = ErrorTextField(
-                                isError = !it.hourmeterErrorState.isError,
-                                errorMessage = "Hourmeter tidak bolah kosong."
-                            )
-                        )
-                    }
-                } else {
-                    val data = FuelHeavyVehicleEntity(
-                        heavyVehicleId = state.value.heavyVehicleId,
-                        driverId = state.value.driverId,
-                        stationId = state.value.stationId,
-                        gasOperatorId = state.value.userId,
-                        volume = state.value.volume,
-                        hourmeter = state.value.hourmeter.toDouble(),
-                        remarks = state.value.remarks,
-                        date = LocalDateTime.now().toString()
-                    )
-                    postHeavyVehicleFuel(data, event.connectionStatus)
-                }
+    private fun onDriverIdRegistered(driverId: String, connectionStatus: Status) {
+        if (connectionStatus == Status.Available) {
+            checkDriverId(driverId)
+        } else {
+            _state.update {
+                it.copy(
+                    driverId = driverId,
+                    currentlyScanning = ScanOptions.Pos
+                )
             }
         }
     }
+
+    private fun onStationIdRegistered(stationId: String, connectionStatus: Status) {
+        if (connectionStatus == Status.Available) {
+            checkStationId(stationId)
+        } else _state.update {
+            it.copy(
+                stationId = stationId,
+                currentlyScanning = ScanOptions.Volume
+            )
+        }
+    }
+
+    private fun onVolumeRegistered(volume: Double?) {
+        if (volume == null) {
+            _state.update { it.copy(notificationMessage = "Maaf, Qr invalid.") }
+        } else {
+            _state.update { it.copy(volume = volume, currentlyScanning = ScanOptions.None) }
+        }
+    }
+
+    private fun onHourMeterChange(odometer: String) {
+        _state.update {
+            it.copy(hourmeter = odometer)
+        }
+    }
+
+    private fun onClearHourMeter() {
+        _state.update {
+            it.copy(hourmeter = "")
+        }
+    }
+
+    private fun onRemarksChange(remarks: String) {
+        _state.update {
+            it.copy(remarks = remarks)
+        }
+    }
+
+    private fun onClearRemarks() {
+        _state.update {
+            it.copy(remarks = "")
+        }
+    }
+
+    private fun onNotificationClear() {
+        _state.update {
+            it.copy(notificationMessage = "")
+        }
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun saveHeavyVehicleFuelTransaction(connectionStatus: Status) {
+        if (state.value.hourmeter.isBlank()) {
+            _state.update {
+                it.copy(
+                    hourmeterErrorState = ErrorTextField(
+                        isError = !it.hourmeterErrorState.isError,
+                        errorMessage = "Hourmeter tidak bolah kosong."
+                    )
+                )
+            }
+        } else {
+            val data = FuelHeavyVehicleEntity(
+                heavyVehicleId = state.value.heavyVehicleId,
+                driverId = state.value.driverId,
+                stationId = state.value.stationId,
+                gasOperatorId = state.value.userId,
+                volume = state.value.volume,
+                hourmeter = state.value.hourmeter.toDouble(),
+                remarks = state.value.remarks,
+                date = LocalDateTime.now().toString()
+            )
+            postHeavyVehicleFuel(data, connectionStatus)
+        }
+    }
+
+    // event handler
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun onEvent(event: HeavyVehicleFuelQrScreenEvent) {
+        when (event) {
+            is HeavyVehicleFuelQrScreenEvent.OnNavigateForm -> onNavigateForm(event.scanOptions)
+
+            is HeavyVehicleFuelQrScreenEvent.OnHeavyVehicleIdRegistered -> onHeavyVehicleIdRegistered(event.vHId, event.connectionStatus)
+
+            is HeavyVehicleFuelQrScreenEvent.OnDriverIdRegistered -> onDriverIdRegistered(event.driverId, event.connectionStatus)
+
+            is HeavyVehicleFuelQrScreenEvent.OnStationIdRegistered -> onStationIdRegistered(event.stationId, event.connectionStatus)
+
+            is HeavyVehicleFuelQrScreenEvent.OnVolumeRegistered -> onVolumeRegistered(event.volume)
+
+            is HeavyVehicleFuelQrScreenEvent.OnHourmeterChange -> onHourMeterChange(event.odometer)
+
+            HeavyVehicleFuelQrScreenEvent.OnClearHourmeter -> onClearHourMeter()
+
+            is HeavyVehicleFuelQrScreenEvent.OnRemarksChange -> onRemarksChange(event.remarks)
+
+            HeavyVehicleFuelQrScreenEvent.OnClearRemarks -> onClearRemarks()
+
+            HeavyVehicleFuelQrScreenEvent.NotificationClear -> onNotificationClear()
+
+            is HeavyVehicleFuelQrScreenEvent.SaveHeavyVehicleFuelTransaction -> saveHeavyVehicleFuelTransaction(event.connectionStatus)
+        }
+    }
+
 }
