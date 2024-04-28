@@ -489,14 +489,15 @@ class DashboardScreenViewModel @Inject constructor(
         }
     }
 
+    // state related methods
+    private fun clearNotificationState() {
+        _state.update { it.copy(isRequestFailed = FailedRequest()) }
+    }
+
     // onEvent
     fun onEvent(event: DashboardScreenEvent) {
         when (event) {
-            DashboardScreenEvent.ClearNotificationState -> _state.update {
-                it.copy(
-                    isRequestFailed = FailedRequest()
-                )
-            }
+            DashboardScreenEvent.ClearNotificationState -> clearNotificationState()
 
             DashboardScreenEvent.CheckDataAndPost -> {
                 checkAndPostMaterials()
