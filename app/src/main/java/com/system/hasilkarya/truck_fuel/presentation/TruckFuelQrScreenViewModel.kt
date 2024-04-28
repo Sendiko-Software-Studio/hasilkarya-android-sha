@@ -294,8 +294,7 @@ class TruckFuelQrScreenViewModel @Inject constructor(
                 )
             }
         } else {
-            val data = if (connectionStatus != Status.Available) {
-                FuelTruckEntity(
+            val data = FuelTruckEntity(
                     truckId = state.value.truckId,
                     driverId = state.value.driverId,
                     stationId = state.value.stationId,
@@ -305,17 +304,6 @@ class TruckFuelQrScreenViewModel @Inject constructor(
                     remarks = state.value.remarks,
                     date = LocalDateTime.now().toString()
                 )
-            } else {
-                FuelTruckEntity(
-                    truckId = state.value.truckId,
-                    driverId = state.value.driverId,
-                    stationId = state.value.stationId,
-                    volume = state.value.volume,
-                    userId = state.value.userId,
-                    odometer = state.value.odometer.toDouble(),
-                    remarks = state.value.remarks
-                )
-            }
             postTruckFuel(data, connectionStatus)
         }
     }

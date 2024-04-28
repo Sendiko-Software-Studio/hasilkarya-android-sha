@@ -270,28 +270,15 @@ class MaterialQrScreenViewModel @Inject constructor(
                         )
                     }
                 } else {
-
-                    val data = if (event.connectionStatus != Status.Available) {
-                        MaterialEntity(
-                            driverId = state.value.driverId,
-                            truckId = state.value.truckId,
-                            stationId = state.value.posId,
-                            ratio = state.value.materialVolume.toDouble(),
-                            remarks = state.value.remarks,
-                            checkerId = state.value.userId,
-                            date = LocalDateTime.now().toString(),
-                        )
-                    } else {
-                        MaterialEntity(
-                            driverId = state.value.driverId,
-                            truckId = state.value.truckId,
-                            stationId = state.value.posId,
-                            ratio = state.value.materialVolume.toDouble(),
-                            remarks = state.value.remarks,
-                            checkerId = state.value.userId,
-                            date = "",
-                        )
-                    }
+                    val data = MaterialEntity(
+                        driverId = state.value.driverId,
+                        truckId = state.value.truckId,
+                        stationId = state.value.posId,
+                        ratio = state.value.materialVolume.toDouble(),
+                        remarks = state.value.remarks,
+                        checkerId = state.value.userId,
+                        date = LocalDateTime.now().toString(),
+                    )
                     postMaterial(data, event.connectionStatus)
                 }
             }
