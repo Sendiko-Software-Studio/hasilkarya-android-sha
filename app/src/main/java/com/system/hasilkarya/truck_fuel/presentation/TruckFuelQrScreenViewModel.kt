@@ -223,101 +223,128 @@ class TruckFuelQrScreenViewModel @Inject constructor(
         }
     }
 
+    // state related methods
+    private fun onNavigateForm(scanOptions: ScanOptions) {
+        _state.update {
+            it.copy(currentlyScanning = scanOptions)
+        }
+    }
+
+    private fun onTruckIdRegistered(truckId: String, connectionStatus: Status) {
+        if (connectionStatus == Status.Available) {
+            checkTruckId(truckId)
+        } else _state.update {
+            it.copy(truckId = truckId, currentlyScanning = ScanOptions.Driver)
+        }
+    }
+
+    private fun onDriverIdRegistered(driverId: String, connectionStatus: Status) {
+        if (connectionStatus == Status.Available) {
+            checkDriverId(driverId)
+        } else _state.update {
+            it.copy(driverId = driverId, currentlyScanning = ScanOptions.Pos)
+        }
+    }
+
+    private fun onStationIdRegistered(stationId: String, connectionStatus: Status) {
+        if (connectionStatus == Status.Available) {
+            checkStationId(stationId)
+        } else _state.update {
+            it.copy(stationId = stationId, currentlyScanning = ScanOptions.Volume)
+        }
+    }
+
+    private fun onVolumeRegistered(volume: Double?){
+        if (volume == null) {
+            _state.update { it.copy(notificationMessage = "Maaf, Qr invalid.") }
+        } else _state.update {
+            it.copy(volume = volume, currentlyScanning = ScanOptions.None)
+        }
+    }
+
+    private fun onOdometerChange(odometer: String) = _state.update {
+        it.copy(odometer = odometer)
+    }
+
+    private fun onClearOdometer() = _state.update {
+        it.copy(odometer = "")
+    }
+
+    private fun onRemarksChange(remarks: String) = _state.update {
+        it.copy(remarks = remarks)
+    }
+
+    private fun onClearRemarks() = _state.update {
+        it.copy(remarks = "")
+    }
+
+    private fun onClearNotification() = _state.update {
+        it.copy(notificationMessage = "")
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun saveTruckFuelTransaction(connectionStatus: Status) {
+        if (state.value.odometer.isEmpty()){
+            _state.update {
+                it.copy(
+                    odometerErrorState = ErrorTextField(
+                        isError = !it.odometerErrorState.isError,
+                        errorMessage = "Odometer tidak boleh kosong."
+                    )
+                )
+            }
+        } else {
+            val data = if (connectionStatus != Status.Available) {
+                FuelTruckEntity(
+                    truckId = state.value.truckId,
+                    driverId = state.value.driverId,
+                    stationId = state.value.stationId,
+                    volume = state.value.volume,
+                    userId = state.value.userId,
+                    odometer = state.value.odometer.toDouble(),
+                    remarks = state.value.remarks,
+                    date = LocalDateTime.now().toString()
+                )
+            } else {
+                FuelTruckEntity(
+                    truckId = state.value.truckId,
+                    driverId = state.value.driverId,
+                    stationId = state.value.stationId,
+                    volume = state.value.volume,
+                    userId = state.value.userId,
+                    odometer = state.value.odometer.toDouble(),
+                    remarks = state.value.remarks
+                )
+            }
+            postTruckFuel(data, connectionStatus)
+        }
+    }
+
+    // event handler
     @RequiresApi(Build.VERSION_CODES.O)
     fun onEvent(event: TruckFuelQrScreenEvent) {
         when (event) {
-            is TruckFuelQrScreenEvent.OnNavigateForm -> _state.update {
-                it.copy(currentlyScanning = event.scanOptions)
-            }
+            TruckFuelQrScreenEvent.NotificationClear -> onClearNotification()
 
-            is TruckFuelQrScreenEvent.OnTruckIdRegistered -> {
-                if (event.connectionStatus == Status.Available) {
-                    checkTruckId(event.truckId)
-                } else _state.update {
-                    it.copy(truckId = event.truckId, currentlyScanning = ScanOptions.Driver)
-                }
-            }
+            TruckFuelQrScreenEvent.OnClearRemarks -> onClearRemarks()
 
-            is TruckFuelQrScreenEvent.OnDriverIdRegistered -> {
-                if (event.connectionStatus == Status.Available) {
-                    checkDriverId(event.driverId)
-                } else _state.update {
-                    it.copy(driverId = event.driverId, currentlyScanning = ScanOptions.Pos)
-                }
-            }
+            is TruckFuelQrScreenEvent.OnNavigateForm -> onNavigateForm(event.scanOptions)
 
-            is TruckFuelQrScreenEvent.OnStationIdRegistered -> {
-                if (event.connectionStatus == Status.Available) {
-                    checkStationId(event.stationId)
-                } else _state.update {
-                    it.copy(stationId = event.stationId, currentlyScanning = ScanOptions.Volume)
-                }
-            }
+            is TruckFuelQrScreenEvent.OnTruckIdRegistered -> onTruckIdRegistered(event.truckId, event.connectionStatus)
 
-            is TruckFuelQrScreenEvent.OnVolumeRegistered -> {
-                if (event.volume == null) {
-                    _state.update { it.copy(notificationMessage = "Maaf, Qr invalid.") }
-                } else _state.update {
-                    it.copy(volume = event.volume, currentlyScanning = ScanOptions.None)
-                }
-            }
+            is TruckFuelQrScreenEvent.OnDriverIdRegistered -> onDriverIdRegistered(event.driverId, event.connectionStatus)
 
-            is TruckFuelQrScreenEvent.OnOdometerChange -> _state.update {
-                it.copy(odometer = event.odometer)
-            }
+            is TruckFuelQrScreenEvent.OnStationIdRegistered -> onStationIdRegistered(event.stationId, event.connectionStatus)
 
-            TruckFuelQrScreenEvent.OnClearOdometer -> _state.update {
-                it.copy(odometer = "")
-            }
+            is TruckFuelQrScreenEvent.OnVolumeRegistered -> onVolumeRegistered(event.volume)
 
-            is TruckFuelQrScreenEvent.OnRemarksChange -> _state.update {
-                it.copy(remarks = event.remarks)
-            }
+            is TruckFuelQrScreenEvent.OnOdometerChange -> onOdometerChange(event.odometer)
 
-            TruckFuelQrScreenEvent.OnClearRemarks -> _state.update {
-                it.copy(remarks = "")
-            }
+            TruckFuelQrScreenEvent.OnClearOdometer -> onClearOdometer()
 
-            is TruckFuelQrScreenEvent.SaveTruckFuelTransaction -> {
-                if (state.value.odometer.isEmpty()){
-                    _state.update {
-                        it.copy(
-                            odometerErrorState = ErrorTextField(
-                                isError = !it.odometerErrorState.isError,
-                                errorMessage = "Odometer tidak boleh kosong."
-                            )
-                        )
-                    }
-                } else {
-                    val data = if (event.connectionStatus != Status.Available) {
-                        FuelTruckEntity(
-                            truckId = state.value.truckId,
-                            driverId = state.value.driverId,
-                            stationId = state.value.stationId,
-                            volume = state.value.volume,
-                            userId = state.value.userId,
-                            odometer = state.value.odometer.toDouble(),
-                            remarks = state.value.remarks,
-                            date = LocalDateTime.now().toString()
-                        )
-                    } else {
-                        FuelTruckEntity(
-                            truckId = state.value.truckId,
-                            driverId = state.value.driverId,
-                            stationId = state.value.stationId,
-                            volume = state.value.volume,
-                            userId = state.value.userId,
-                            odometer = state.value.odometer.toDouble(),
-                            remarks = state.value.remarks
-                        )
-                    }
-                    postTruckFuel(data, event.connectionStatus)
-                }
-            }
+            is TruckFuelQrScreenEvent.OnRemarksChange -> onRemarksChange(event.remarks)
 
-            TruckFuelQrScreenEvent.NotificationClear -> _state.update {
-                it.copy(notificationMessage = "")
-            }
+            is TruckFuelQrScreenEvent.SaveTruckFuelTransaction -> saveTruckFuelTransaction(event.connectionStatus)
 
         }
     }
