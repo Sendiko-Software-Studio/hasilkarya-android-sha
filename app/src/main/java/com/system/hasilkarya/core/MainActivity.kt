@@ -145,7 +145,7 @@ class MainActivity : ComponentActivity() {
                                 TruckFuelQrScreen(
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
-                                    connectionStatus = viewModel.connectionStatus.collectAsState().value.connectionStatus,
+                                    connectionStatus = viewModel._connectionStatus.collectAsState().value.connectionStatus,
                                     onNavigateBack = {
                                         navController.navigate(it.name){
                                             popUpTo(it.name) { inclusive = true }

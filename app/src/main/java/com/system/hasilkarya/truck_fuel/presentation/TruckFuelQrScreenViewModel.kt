@@ -1,6 +1,7 @@
 package com.system.hasilkarya.truck_fuel.presentation
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -38,7 +39,7 @@ class TruckFuelQrScreenViewModel @Inject constructor(
     private val _state = MutableStateFlow(TruckFuelQrScreenState())
     private val _userId = repository.getUserId()
     private val _token = repository.getToken()
-    val connectionStatus =
+    val _connectionStatus =
         combine(connectionObserver.observe(), _state) { connectionStatus, state ->
             state.copy(connectionStatus = connectionStatus)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TruckFuelQrScreenState())
@@ -231,6 +232,7 @@ class TruckFuelQrScreenViewModel @Inject constructor(
     }
 
     private fun onTruckIdRegistered(truckId: String, connectionStatus: Status) {
+        Log.i("TRUCK", "onTruckIdRegistered: $connectionStatus")
         if (connectionStatus == Status.Available) {
             checkTruckId(truckId)
         } else _state.update {
