@@ -6,7 +6,7 @@ import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
 sealed class MaterialQrScreenEvent {
     data class OnDriverIdRegistered(val driverId: String, val connectionStatus: Status): MaterialQrScreenEvent()
     data class OnTruckIdRegistered(val truckId: String, val connectionStatus: Status): MaterialQrScreenEvent()
-    data class OnPosIdRegistered(val posId: String, val connectionStatus: Status): MaterialQrScreenEvent()
+    data class OnStationIdRegistered(val stationId: String, val connectionStatus: Status): MaterialQrScreenEvent()
     data class OnVolumeChange(val volume: String): MaterialQrScreenEvent()
     data class OnNewRemarks(val remarks: String): MaterialQrScreenEvent()
     data class OnClearRemarks(val remarks: String = ""): MaterialQrScreenEvent()

@@ -11,6 +11,7 @@ import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.repositories.fuel.heavy_vehicle.HeavyVehicleFuelRepository
 import com.system.hasilkarya.core.ui.utils.ErrorTextField
 import com.system.hasilkarya.core.ui.utils.FailedRequest
+import com.system.hasilkarya.core.utils.commaToPeriod
 import com.system.hasilkarya.dashboard.data.CheckDriverIdResponse
 import com.system.hasilkarya.dashboard.data.CheckStationIdResponse
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
@@ -18,6 +19,7 @@ import com.system.hasilkarya.heavy_vehicle_fuel.data.CheckHeavyVehicleIdResponse
 import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelRequest
 import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -68,11 +70,18 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
                     Log.i("DEBUG", "onResponse: active")
                     _state.update { it.copy(isLoading = false) }
                     when (response.code()) {
-                        200 -> _state.update {
-                            it.copy(
-                                heavyVehicleId = heavyVehicleId,
-                                currentlyScanning = ScanOptions.Driver
-                            )
+                        200 -> {
+                            viewModelScope.launch {
+                                _state.update {
+                                    it.copy(
+                                        heavyVehicleId = heavyVehicleId,
+                                    )
+                                }
+                                delay(1000)
+                                _state.update {
+                                    it.copy(currentlyScanning = ScanOptions.Driver)
+                                }
+                            }
                         }
 
                         else -> _state.update {
@@ -109,8 +118,16 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
                 ) {
                     _state.update { it.copy(isLoading = false) }
                     when (response.code()) {
-                        200 -> _state.update {
-                            it.copy(driverId = driverId, currentlyScanning = ScanOptions.Pos)
+                        200 -> {
+                            viewModelScope.launch {
+                                _state.update {
+                                    it.copy(driverId = driverId)
+                                }
+                                delay(1000)
+                                _state.update {
+                                    it.copy(currentlyScanning = ScanOptions.Pos)
+                                }
+                            }
                         }
 
                         else -> _state.update {
@@ -147,8 +164,16 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
                 ) {
                     _state.update { it.copy(isLoading = false) }
                     when (response.code()) {
-                        200 -> _state.update {
-                            it.copy(stationId = stationId, currentlyScanning = ScanOptions.Volume)
+                        200 -> {
+                            viewModelScope.launch {
+                                _state.update {
+                                    it.copy(stationId = stationId)
+                                }
+                                delay(1000)
+                                _state.update {
+                                    it.copy(currentlyScanning = ScanOptions.Volume)
+                                }
+                            }
                         }
 
                         else -> _state.update {
@@ -247,43 +272,40 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
     private fun onHeavyVehicleIdRegistered(vHId: String, connectionStatus: Status) {
         if (connectionStatus == Status.Available) {
             checkHeavyVehicleId(vHId)
-        } else _state.update {
-            it.copy(
-                heavyVehicleId = vHId,
-                currentlyScanning = ScanOptions.Driver
-            )
+        } else viewModelScope.launch {
+            _state.update { it.copy(heavyVehicleId = vHId) }
+            delay(1000)
+            _state.update { it.copy(currentlyScanning = ScanOptions.Driver) }
         }
     }
 
     private fun onDriverIdRegistered(driverId: String, connectionStatus: Status) {
         if (connectionStatus == Status.Available) {
             checkDriverId(driverId)
-        } else {
-            _state.update {
-                it.copy(
-                    driverId = driverId,
-                    currentlyScanning = ScanOptions.Pos
-                )
-            }
+        } else viewModelScope.launch {
+            _state.update { it.copy(driverId = driverId) }
+            delay(1000)
+            _state.update { it.copy(currentlyScanning = ScanOptions.Pos) }
         }
     }
 
     private fun onStationIdRegistered(stationId: String, connectionStatus: Status) {
         if (connectionStatus == Status.Available) {
             checkStationId(stationId)
-        } else _state.update {
-            it.copy(
-                stationId = stationId,
-                currentlyScanning = ScanOptions.Volume
-            )
+        } else viewModelScope.launch {
+            _state.update { it.copy(stationId = stationId) }
+            delay(1000)
+            _state.update { it.copy(currentlyScanning = ScanOptions.Volume) }
         }
     }
 
     private fun onVolumeRegistered(volume: Double?) {
         if (volume == null) {
             _state.update { it.copy(notificationMessage = "Maaf, Qr invalid.") }
-        } else {
-            _state.update { it.copy(volume = volume, currentlyScanning = ScanOptions.None) }
+        } else viewModelScope.launch {
+            _state.update { it.copy(volume = volume) }
+            delay(1000)
+            _state.update { it.copy(currentlyScanning = ScanOptions.None) }
         }
     }
 
@@ -336,7 +358,7 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
                 stationId = state.value.stationId,
                 gasOperatorId = state.value.userId,
                 volume = state.value.volume,
-                hourmeter = state.value.hourmeter.toDouble(),
+                hourmeter = state.value.hourmeter.commaToPeriod().toDouble(),
                 remarks = state.value.remarks,
                 date = LocalDateTime.now().toString()
             )
