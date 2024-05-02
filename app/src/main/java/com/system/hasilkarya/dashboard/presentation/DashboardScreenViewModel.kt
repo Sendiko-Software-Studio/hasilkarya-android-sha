@@ -93,7 +93,7 @@ class DashboardScreenViewModel @Inject constructor(
         return request.execute().code() == 200
     }
 
-    // checking datas
+    // checking && posting offline datas
     private fun checkAndPostMaterials() {
         val materials = state.value.materials
         materials.forEach {
@@ -106,11 +106,8 @@ class DashboardScreenViewModel @Inject constructor(
         fuels.forEach {
             postTruckFuel(it)
         }
-    }
-
-    private fun checkAndPostHeavyFuels() {
-        val fuels = state.value.heavyFuels
-        fuels.forEach {
+        val heavyFuels = state.value.heavyFuels
+        heavyFuels.forEach {
             postHeavyVehicleFuel(it)
         }
     }
@@ -223,7 +220,7 @@ class DashboardScreenViewModel @Inject constructor(
                                 _state.update {
                                     it.copy(
                                         isPostSuccessful = true,
-                                        materials = state.value.materials - material
+                                        materials = state.value.materials
                                     )
                                 }
                             }
@@ -275,7 +272,7 @@ class DashboardScreenViewModel @Inject constructor(
                                 viewModelScope.launch {
                                     truckFuelRepository.deleteFuel(fuelTruckEntity)
                                     _state.update {
-                                        it.copy(fuels = it.fuels - fuelTruckEntity)
+                                        it.copy(fuels = it.fuels)
                                     }
                                 }
                                 _state.update {
@@ -359,7 +356,7 @@ class DashboardScreenViewModel @Inject constructor(
                             200 -> {
                                 viewModelScope.launch { truckFuelRepository.deleteFuel(fuelTruckEntity) }
                                 _state.update {
-                                    it.copy(isPostSuccessful = true, fuels = it.fuels - fuelTruckEntity)
+                                    it.copy(isPostSuccessful = true)
                                 }
                             }
                             else -> viewModelScope.launch {
@@ -408,11 +405,11 @@ class DashboardScreenViewModel @Inject constructor(
                         when(response.code()) {
                             201 -> {
                                 viewModelScope.launch { heavyVehicleFuelRepository.deleteHeavyVehicleFuel(heavyVehicleEntity) }
-                                _state.update { it.copy(isPostSuccessful = true, heavyFuels = it.heavyFuels - heavyVehicleEntity) }
+                                _state.update { it.copy(isPostSuccessful = true) }
                             }
                             else -> viewModelScope.launch {
                                 postHeavyVehicleFuelLog(heavyVehicleEntity)
-                                _state.update { it.copy(isPostSuccessful = true, heavyFuels = it.heavyFuels - heavyVehicleEntity) }
+                                _state.update { it.copy(isPostSuccessful = true) }
                             }
                         }
                     }
@@ -470,13 +467,14 @@ class DashboardScreenViewModel @Inject constructor(
                         when(response.code()) {
                             200 -> viewModelScope.launch {
                                 heavyVehicleFuelRepository.deleteHeavyVehicleFuel(heavyVehicleEntity)
-                                _state.update { it.copy(isPostSuccessful = true, heavyFuels = it.heavyFuels - heavyVehicleEntity) }
+                                _state.update { it.copy(isPostSuccessful = true ) }
                             }
 
                             else -> viewModelScope.launch {
                                 heavyVehicleFuelRepository.storeHeavyVehicleFuel(heavyVehicleEntity)
                             }
                         }
+                        
                     }
 
                     override fun onFailure(call: Call<HeavyVehicleLogResponse>, t: Throwable) {
@@ -499,10 +497,9 @@ class DashboardScreenViewModel @Inject constructor(
         when (event) {
             DashboardScreenEvent.ClearNotificationState -> clearNotificationState()
 
-            DashboardScreenEvent.CheckDataAndPost -> {
+            DashboardScreenEvent.CheckDataAndPost -> viewModelScope.launch(Dispatchers.IO) {
                 checkAndPostMaterials()
                 checkAndPostFuels()
-                checkAndPostHeavyFuels()
             }
         }
     }
