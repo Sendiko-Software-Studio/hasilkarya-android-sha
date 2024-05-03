@@ -71,7 +71,7 @@ fun HeavyVehicleFuelQrScreen(
                         },
                         navigateBack = { onNavigateBack(Destination.DashboardScreen) },
                         title = "Alat Berat",
-                        textButton = "Lanjut scan driver"
+                        isValid = state.heavyVehicleId.isNotBlank()
                     )
                 }
                 AnimatedVisibility(
@@ -96,7 +96,7 @@ fun HeavyVehicleFuelQrScreen(
                             )
                         },
                         title = "Driver",
-                        textButton = "Lanjut scan pos"
+                        isValid = state.driverId.isNotBlank()
                     )
                 }
                 AnimatedVisibility(
@@ -121,7 +121,7 @@ fun HeavyVehicleFuelQrScreen(
                             )
                         },
                         title = "Pos",
-                        textButton = "Lanjut scan BBM"
+                        isValid = state.stationId.isNotBlank()
                     )
                 }
                 AnimatedVisibility(
@@ -143,7 +143,7 @@ fun HeavyVehicleFuelQrScreen(
                             )
                         },
                         title = "Jumlah BBM",
-                        textButton = "Lanjut isi data"
+                        isValid = state.volume != 0.0
                     )
                 }
                 AnimatedVisibility(

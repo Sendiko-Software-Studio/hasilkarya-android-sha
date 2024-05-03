@@ -55,7 +55,7 @@ fun QrScanComponent(
     onResult: (String) -> Unit,
     navigateBack: () -> Unit,
     title: String,
-    textButton: String,
+    isValid: Boolean,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -171,14 +171,14 @@ fun QrScanComponent(
                             horizontal = 24.dp
                         )
                         .fillMaxWidth(),
-                    text = if (result.isNotBlank()) "Scan QR berhasil!" else "Scan QR $title",
+                    text = if (isValid) "Scan QR berhasil!" else "Scan QR $title",
                     fontSize = 20.sp,
                     textAlign = TextAlign.Center,
                     fontFamily = poppinsFont
                 )
                 Spacer(modifier = Modifier.size(16.dp))
                 AnimatedVisibility(
-                    visible = result.isNotBlank(),
+                    visible = isValid,
                     modifier = Modifier.padding(bottom = 32.dp),
                     enter = fadeIn() + expandVertically(),
                     exit = fadeOut() + shrinkVertically(),

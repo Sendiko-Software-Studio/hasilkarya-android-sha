@@ -70,7 +70,7 @@ fun TruckFuelQrScreen(
                         },
                         navigateBack = { onNavigateBack(Destination.DashboardScreen) },
                         title = "Truck",
-                        textButton = "Lanjut scan driver"
+                        isValid = state.truckId.isNotBlank()
                     )
                 }
                 AnimatedVisibility(
@@ -89,7 +89,7 @@ fun TruckFuelQrScreen(
                         },
                         navigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Truck)) },
                         title = "Driver",
-                        textButton = "Lanjut scan pos"
+                        isValid = state.driverId.isNotBlank()
                     )
                 }
                 AnimatedVisibility(
@@ -108,7 +108,7 @@ fun TruckFuelQrScreen(
                         },
                         navigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Driver)) },
                         title = "Pos",
-                        textButton = "Lanjut scan BBM"
+                        isValid = state.stationId.isNotBlank()
                     )
                 }
                 AnimatedVisibility(
@@ -120,7 +120,7 @@ fun TruckFuelQrScreen(
                         onResult = { onEvent(TruckFuelQrScreenEvent.OnVolumeRegistered(it.toDoubleOrNull())) },
                         navigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Pos)) },
                         title = "Jumlah BBM",
-                        textButton = "Lanjut isi data"
+                        isValid = state.volume != 0.0
                     )
                 }
                 AnimatedVisibility(visible = state.currentlyScanning == ScanOptions.None) {

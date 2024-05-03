@@ -96,7 +96,7 @@ fun MaterialQrScreen(
                                 onNavigateBack(Destination.DashboardScreen)
                             },
                             title = "Truck",
-                            textButton = "Lanjut scan driver"
+                            isValid = state.truckId.isNotBlank()
                         )
                     }
                 )
@@ -113,7 +113,7 @@ fun MaterialQrScreen(
                                 onEvent(MaterialQrScreenEvent.OnNavigateForm(Truck))
                             },
                             title = "Driver",
-                            textButton = "Lanjut scan pos"
+                            isValid = state.driverId.isNotBlank(),
                         )
                     }
                 )
@@ -130,7 +130,7 @@ fun MaterialQrScreen(
                                 onEvent(MaterialQrScreenEvent.OnNavigateForm(Truck))
                             },
                             title = "Pos",
-                            textButton = "Lanjut isi data"
+                            isValid = state.stationId.isNotBlank(),
                         )
                     }
                 )

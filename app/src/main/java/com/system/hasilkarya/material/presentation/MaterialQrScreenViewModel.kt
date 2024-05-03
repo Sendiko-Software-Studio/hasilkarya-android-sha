@@ -63,7 +63,6 @@ class MaterialQrScreenViewModel @Inject constructor(
         _state.update { it.copy(isLoading = true) }
         val token = "Bearer ${state.value.token}"
         val request = repository.checkTruckId(token, truckId)
-        var success = false
         request.enqueue(
             object : Callback<CheckTruckIdResponse> {
                 override fun onResponse(
@@ -165,7 +164,7 @@ class MaterialQrScreenViewModel @Inject constructor(
                         200 -> {
                             viewModelScope.launch {
                                 _state.update {
-                                    it.copy(posId = stationId)
+                                    it.copy(stationId = stationId)
                                 }
                                 delay(1000)
                                 _state.update {
@@ -292,7 +291,7 @@ class MaterialQrScreenViewModel @Inject constructor(
         if (connectionStatus == Status.Available)
             checkStationId(stationId)
         else viewModelScope.launch {
-            _state.update { it.copy(posId = stationId) }
+            _state.update { it.copy(stationId = stationId) }
             delay(1000)
             _state.update { it.copy(currentlyScanning = None) }
         }
@@ -343,7 +342,7 @@ class MaterialQrScreenViewModel @Inject constructor(
             val data = MaterialEntity(
                 driverId = state.value.driverId,
                 truckId = state.value.truckId,
-                stationId = state.value.posId,
+                stationId = state.value.stationId,
                 ratio = state.value.materialVolume.commaToPeriod().toDouble(),
                 remarks = state.value.remarks,
                 checkerId = state.value.userId,
