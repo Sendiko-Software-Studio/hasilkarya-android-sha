@@ -1,5 +1,6 @@
 package com.system.hasilkarya.dashboard.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.system.hasilkarya.core.entities.FuelHeavyVehicleEntity
@@ -58,7 +59,8 @@ class DashboardScreenViewModel @Inject constructor(
         state.copy(
             materials = materials,
             fuels = fuels,
-            heavyFuels = heavyFuels
+            heavyFuels = heavyFuels,
+            totalData = materials.size + fuels.size + heavyFuels.size
         )
     }
     val state = combine(_token, _name, _role, _dataList, _state) { token, name, role, dataList, state ->
@@ -68,7 +70,8 @@ class DashboardScreenViewModel @Inject constructor(
             role = role,
             materials = dataList.materials,
             fuels = dataList.fuels,
-            heavyFuels = dataList.heavyFuels
+            heavyFuels = dataList.heavyFuels,
+            totalData = dataList.totalData
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), DashboardScreenState())
 
@@ -94,14 +97,15 @@ class DashboardScreenViewModel @Inject constructor(
     }
 
     // checking && posting offline datas
-    private fun checkAndPostMaterials() {
+    private fun checkAndPostDatas() {
+        if (state.value.isPostSuccessful){
+            return
+        }
         val materials = state.value.materials
+        Log.i("POST_OFFLINE", "checkAndPostDatas: ONCE")
         materials.forEach {
             postMaterial(it)
         }
-    }
-
-    private fun checkAndPostFuels() {
         val fuels = state.value.fuels
         fuels.forEach {
             postTruckFuel(it)
@@ -498,8 +502,7 @@ class DashboardScreenViewModel @Inject constructor(
             DashboardScreenEvent.ClearNotificationState -> clearNotificationState()
 
             DashboardScreenEvent.CheckDataAndPost -> viewModelScope.launch(Dispatchers.IO) {
-                checkAndPostMaterials()
-                checkAndPostFuels()
+                checkAndPostDatas()
             }
         }
     }

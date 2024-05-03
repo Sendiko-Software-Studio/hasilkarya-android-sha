@@ -18,4 +18,5 @@ data class DashboardScreenState(
     val role: String = "",
     val fuels: List<FuelTruckEntity> = emptyList(),
     val heavyFuels: List<FuelHeavyVehicleEntity> = emptyList(),
+    val totalData: Int = 0,
 )
