@@ -14,8 +14,8 @@ import com.system.hasilkarya.core.repositories.material.MaterialDao
 
 @Database(
     entities = [MaterialEntity::class, FuelTruckEntity::class, FuelHeavyVehicleEntity::class],
-    version = 5,
-    autoMigrations = [AutoMigration(from = 4, to = 5)]
+    version = 6,
+    autoMigrations = [AutoMigration(from = 5, to = 6)]
 )
 abstract class AppDatabase: RoomDatabase() {
     abstract val materialDao: MaterialDao
