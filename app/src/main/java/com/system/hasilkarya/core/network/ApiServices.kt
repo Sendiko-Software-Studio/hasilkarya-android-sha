@@ -51,8 +51,14 @@ interface ApiServices {
         @Header("Authorization") token: String
     ): Call<CheckTruckIdResponse>
 
-    @GET("station/check-availability/{id}")
-    fun checkStationId(
+    @GET("station/check-availability/gas/{id}")
+    fun checkGasStationId(
+        @Path("id") stationId: String,
+        @Header("Authorization") token: String
+    ): Call<CheckStationIdResponse>
+
+    @GET("station/check-availability/mine/{id}")
+    fun checkMineStationId(
         @Path("id") stationId: String,
         @Header("Authorization") token: String
     ): Call<CheckStationIdResponse>
