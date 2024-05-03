@@ -20,7 +20,7 @@ class MaterialRepository @Inject constructor(
     fun getMaterials() = dao.getAllMaterial()
     fun checkDriverId(token: String, driverId: String) = apiServices.checkDriverId(driverId, token)
     fun checkTruckId(token: String, truckId: String) = apiServices.checkTruckId(truckId, token)
-    fun checkStationId(token: String, stationId: String) = apiServices.checkStationId(stationId, token)
+    fun checkStationId(token: String, stationId: String) = apiServices.checkMineStationId(stationId, token)
     fun getToken() = preferences.getToken()
     fun getName() = preferences.getName()
     fun getRole() = preferences.getRole()

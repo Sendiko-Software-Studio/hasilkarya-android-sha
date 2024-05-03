@@ -20,7 +20,7 @@ class HeavyVehicleFuelRepository @Inject constructor(
     fun getHeavyVehicleFuels() = dao.getHeavyVehicleFuels()
     fun checkHeavyVehicleId(token: String, heavyVehicleId: String) = apiServices.checkHeavyVehicleId(heavyVehicleId, token)
     fun checkDriverId(token: String, driverId: String) = apiServices.checkDriverId(driverId, token)
-    fun checkStationId(token: String, stationId: String) = apiServices.checkStationId(stationId, token)
+    fun checkStationId(token: String, stationId: String) = apiServices.checkGasStationId(stationId, token)
     fun postHeavyVehicleFuel(token: String, heavyVehicleFuelRequest: HeavyVehicleFuelRequest) = apiServices.postFuelHeavyVehicle(token, heavyVehicleFuelRequest)
     fun postHeavyVehicleFuelLog(token: String, heavyVehicleFuelLogRequest: HeavyVehicleFuelLogRequest) = apiServices.postFuelHeavyVehicleLog(token, heavyVehicleFuelLogRequest)
 }

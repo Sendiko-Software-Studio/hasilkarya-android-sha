@@ -21,6 +21,6 @@ class TruckFuelRepository @Inject constructor(
     fun postFuels(token: String, truckFuelRequest: TruckFuelRequest) = apiServices.postFuelTruck(token, truckFuelRequest)
     fun checkDriverId(token: String, driverId: String) = apiServices.checkDriverId(driverId, token)
     fun checkTruckId(token: String, truckId: String) = apiServices.checkTruckId(truckId, token)
-    fun checkStationId(token: String, stationId: String) = apiServices.checkStationId(stationId, token)
+    fun checkStationId(token: String, stationId: String) = apiServices.checkGasStationId(stationId, token)
     fun postToLog(token: String, truckFuelRequest: TruckFuelLogRequest) = apiServices.postFuelLog(token, truckFuelRequest)
 }
