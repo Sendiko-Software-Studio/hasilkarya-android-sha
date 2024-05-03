@@ -7,7 +7,9 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "fuel_heavy_vehicle")
 data class FuelHeavyVehicleEntity(
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(defaultValue = "0")
+    val id: Int = 0,
     val heavyVehicleId: String,
     val stationId: String,
     val driverId: String,

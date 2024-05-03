@@ -6,9 +6,12 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "material")
 data class MaterialEntity(
-    @PrimaryKey
-    val driverId: String,
+
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(defaultValue = "0")
+    val id: Int = 0,
     val truckId: String,
+    val driverId: String,
     val stationId: String,
     val checkerId: String,
     val ratio: Double,
