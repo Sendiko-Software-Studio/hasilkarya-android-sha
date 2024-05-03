@@ -1,5 +1,6 @@
 package com.system.hasilkarya.dashboard.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.system.hasilkarya.core.entities.FuelHeavyVehicleEntity
@@ -58,7 +59,8 @@ class DashboardScreenViewModel @Inject constructor(
         state.copy(
             materials = materials,
             fuels = fuels,
-            heavyFuels = heavyFuels
+            heavyFuels = heavyFuels,
+            totalData = materials.size + fuels.size + heavyFuels.size
         )
     }
     val state = combine(_token, _name, _role, _dataList, _state) { token, name, role, dataList, state ->
@@ -68,7 +70,8 @@ class DashboardScreenViewModel @Inject constructor(
             role = role,
             materials = dataList.materials,
             fuels = dataList.fuels,
-            heavyFuels = dataList.heavyFuels
+            heavyFuels = dataList.heavyFuels,
+            totalData = dataList.totalData
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), DashboardScreenState())
 
@@ -93,24 +96,22 @@ class DashboardScreenViewModel @Inject constructor(
         return request.execute().code() == 200
     }
 
-    // checking datas
-    private fun checkAndPostMaterials() {
+    // checking && posting offline datas
+    private fun checkAndPostDatas() {
+        if (state.value.isPostSuccessful){
+            return
+        }
         val materials = state.value.materials
+        Log.i("POST_OFFLINE", "checkAndPostDatas: ONCE")
         materials.forEach {
             postMaterial(it)
         }
-    }
-
-    private fun checkAndPostFuels() {
         val fuels = state.value.fuels
         fuels.forEach {
             postTruckFuel(it)
         }
-    }
-
-    private fun checkAndPostHeavyFuels() {
-        val fuels = state.value.heavyFuels
-        fuels.forEach {
+        val heavyFuels = state.value.heavyFuels
+        heavyFuels.forEach {
             postHeavyVehicleFuel(it)
         }
     }
@@ -223,7 +224,7 @@ class DashboardScreenViewModel @Inject constructor(
                                 _state.update {
                                     it.copy(
                                         isPostSuccessful = true,
-                                        materials = state.value.materials - material
+                                        materials = state.value.materials
                                     )
                                 }
                             }
@@ -275,7 +276,7 @@ class DashboardScreenViewModel @Inject constructor(
                                 viewModelScope.launch {
                                     truckFuelRepository.deleteFuel(fuelTruckEntity)
                                     _state.update {
-                                        it.copy(fuels = it.fuels - fuelTruckEntity)
+                                        it.copy(fuels = it.fuels)
                                     }
                                 }
                                 _state.update {
@@ -359,7 +360,7 @@ class DashboardScreenViewModel @Inject constructor(
                             200 -> {
                                 viewModelScope.launch { truckFuelRepository.deleteFuel(fuelTruckEntity) }
                                 _state.update {
-                                    it.copy(isPostSuccessful = true, fuels = it.fuels - fuelTruckEntity)
+                                    it.copy(isPostSuccessful = true)
                                 }
                             }
                             else -> viewModelScope.launch {
@@ -408,11 +409,11 @@ class DashboardScreenViewModel @Inject constructor(
                         when(response.code()) {
                             201 -> {
                                 viewModelScope.launch { heavyVehicleFuelRepository.deleteHeavyVehicleFuel(heavyVehicleEntity) }
-                                _state.update { it.copy(isPostSuccessful = true, heavyFuels = it.heavyFuels - heavyVehicleEntity) }
+                                _state.update { it.copy(isPostSuccessful = true) }
                             }
                             else -> viewModelScope.launch {
                                 postHeavyVehicleFuelLog(heavyVehicleEntity)
-                                _state.update { it.copy(isPostSuccessful = true, heavyFuels = it.heavyFuels - heavyVehicleEntity) }
+                                _state.update { it.copy(isPostSuccessful = true) }
                             }
                         }
                     }
@@ -470,13 +471,14 @@ class DashboardScreenViewModel @Inject constructor(
                         when(response.code()) {
                             200 -> viewModelScope.launch {
                                 heavyVehicleFuelRepository.deleteHeavyVehicleFuel(heavyVehicleEntity)
-                                _state.update { it.copy(isPostSuccessful = true, heavyFuels = it.heavyFuels - heavyVehicleEntity) }
+                                _state.update { it.copy(isPostSuccessful = true ) }
                             }
 
                             else -> viewModelScope.launch {
                                 heavyVehicleFuelRepository.storeHeavyVehicleFuel(heavyVehicleEntity)
                             }
                         }
+                        
                     }
 
                     override fun onFailure(call: Call<HeavyVehicleLogResponse>, t: Throwable) {
@@ -489,19 +491,18 @@ class DashboardScreenViewModel @Inject constructor(
         }
     }
 
+    // state related methods
+    private fun clearNotificationState() {
+        _state.update { it.copy(isRequestFailed = FailedRequest()) }
+    }
+
     // onEvent
     fun onEvent(event: DashboardScreenEvent) {
         when (event) {
-            DashboardScreenEvent.ClearNotificationState -> _state.update {
-                it.copy(
-                    isRequestFailed = FailedRequest()
-                )
-            }
+            DashboardScreenEvent.ClearNotificationState -> clearNotificationState()
 
-            DashboardScreenEvent.CheckDataAndPost -> {
-                checkAndPostMaterials()
-                checkAndPostFuels()
-                checkAndPostHeavyFuels()
+            DashboardScreenEvent.CheckDataAndPost -> viewModelScope.launch(Dispatchers.IO) {
+                checkAndPostDatas()
             }
         }
     }

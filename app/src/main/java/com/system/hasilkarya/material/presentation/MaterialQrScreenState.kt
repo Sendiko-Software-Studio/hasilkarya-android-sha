@@ -9,7 +9,7 @@ data class MaterialQrScreenState(
     val currentlyScanning: ScanOptions = ScanOptions.Truck,
     val driverId: String = "",
     val truckId: String = "",
-    val posId: String = "",
+    val stationId: String = "",
     val materialVolume: String = "",
     val materialVolumeErrorState: ErrorTextField = ErrorTextField(),
     val remarks: String = "",

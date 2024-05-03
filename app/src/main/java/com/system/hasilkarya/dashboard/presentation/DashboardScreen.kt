@@ -1,7 +1,6 @@
 package com.system.hasilkarya.dashboard.presentation
 
 import android.Manifest
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.expandVertically
@@ -25,7 +24,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -49,36 +47,21 @@ fun DashboardScreen(
     onEvent: (DashboardScreenEvent) -> Unit,
     onNavigate: (Destination) -> Unit,
 ) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     LaunchedEffect(
         key1 = cameraPermissionState.hasPermission,
-        key2 = state.materials,
-        key3 = connectionStatus,
         block = {
-            Log.i("FUELS", "DashboardScreen: ${state.fuels}")
-
             if (!cameraPermissionState.hasPermission)
                 cameraPermissionState.launchPermissionRequest()
-
-            if (connectionStatus == Status.Available && state.materials.isNotEmpty()) {
-                onEvent(DashboardScreenEvent.CheckDataAndPost)
-            }
-
         }
     )
-
     LaunchedEffect(
-        key1 = state.fuels,
-        key2 = state.heavyFuels,
+        key1 = state.totalData,
+        key2 = connectionStatus,
         block = {
-            if (connectionStatus == Status.Available && state.fuels.isNotEmpty()){
+            if (state.totalData != 0 && connectionStatus == Status.Available)
                 onEvent(DashboardScreenEvent.CheckDataAndPost)
-            }
-            if (connectionStatus == Status.Available && state.heavyFuels.isNotEmpty()){
-                onEvent(DashboardScreenEvent.CheckDataAndPost)
-            }
         }
     )
     Scaffold(
@@ -158,28 +141,14 @@ fun DashboardScreen(
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
                     AnimatedVisibility(
-                        visible = state.materials.isNotEmpty(),
+                        visible = state.totalData != 0,
                         enter = expandHorizontally(),
                         exit = shrinkHorizontally()
                     ) {
                         UnsentItemCard(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            itemCount = state.materials.size
-                        )
-                    }
-                }
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    AnimatedVisibility(
-                        visible = state.fuels.isNotEmpty() || state.heavyFuels.isNotEmpty(),
-                        enter = expandHorizontally(),
-                        exit = shrinkHorizontally()
-                    ) {
-                        UnsentItemCard(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            itemCount = state.fuels.size + state.heavyFuels.size
+                            itemCount = state.totalData
                         )
                     }
                 }
