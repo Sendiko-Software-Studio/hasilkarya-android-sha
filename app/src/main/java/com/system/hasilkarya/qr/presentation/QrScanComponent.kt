@@ -106,9 +106,11 @@ fun QrScanComponent(
                                         val barcodeAnalyser = BarcodeAnalyzer { barcodes ->
                                             barcodes.forEach { barcode ->
                                                 barcode.rawValue?.let { barcodeValue ->
-                                                    onResult(barcodeValue)
-                                                    result = barcodeValue
-                                                    ding(context)
+                                                    if (!isValid) {
+                                                        onResult(barcodeValue)
+                                                        result = barcodeValue
+                                                        ding(context)
+                                                    }
                                                 }
                                             }
                                         }
