@@ -125,7 +125,7 @@ class DashboardScreenViewModel @Inject constructor(
             truckId = materialEntity.truckId,
             stationId = materialEntity.stationId,
             checkerId = materialEntity.checkerId,
-            observationRatio = materialEntity.ratio.toInt(),
+            observationRatio = materialEntity.ratio,
             remarks = materialEntity.remarks,
             date = materialEntity.date
         )
@@ -167,7 +167,10 @@ class DashboardScreenViewModel @Inject constructor(
                     }
 
                     override fun onFailure(call: Call<PostMaterialResponse>, t: Throwable) {
-                        viewModelScope.launch { materialRepository.saveMaterial(materialEntity) }
+                        viewModelScope.launch {
+                            Log.i("DEBUG", "DashboardViewModel, PostMaterial onFailure: $materialEntity")
+                            materialRepository.saveMaterial(materialEntity)
+                        }
                         _state.update {
                             it.copy(
                                 isLoading = false
@@ -178,7 +181,10 @@ class DashboardScreenViewModel @Inject constructor(
                 }
             )
         } else {
-            viewModelScope.launch { materialRepository.saveMaterial(materialEntity) }
+            viewModelScope.launch {
+                Log.i("DEBUG", "DashboardViewModel, PostMaterial Offline: $materialEntity")
+                materialRepository.saveMaterial(materialEntity)
+            }
             _state.update {
                 it.copy(
                     isLoading = false,
@@ -206,7 +212,9 @@ class DashboardScreenViewModel @Inject constructor(
                 stationId = material.stationId,
                 checkerId = material.checkerId,
                 errorLog = message,
-                remarks = material.remarks
+                remarks = material.remarks,
+                date = material.date,
+                ratio = material.ratio
             )
 
             val request = materialRepository.postToLog(token, data)
@@ -230,13 +238,17 @@ class DashboardScreenViewModel @Inject constructor(
                             }
 
                             else -> viewModelScope.launch {
+                                Log.i("DEBUG", "DashboardViewModel, PostMaterialToLog Failed: $material")
                                 materialRepository.saveMaterial(material)
                             }
                         }
                     }
 
                     override fun onFailure(call: Call<PostToLogResponse>, t: Throwable) {
-                        viewModelScope.launch { materialRepository.saveMaterial(material) }
+                        viewModelScope.launch {
+                            Log.i("DEBUG", "DashboardViewModel, PostMaterialToLog onFailure: $material")
+                            materialRepository.saveMaterial(material)
+                        }
                         _state.update { it.copy(
                             isLoading = false,
                             isRequestFailed = FailedRequest(true),
