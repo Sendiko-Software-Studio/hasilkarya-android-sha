@@ -11,7 +11,7 @@ data class PostMaterialRequest(
 	val driverId: String,
 
 	@field:SerializedName("observation_ratio")
-	val observationRatio: Int,
+	val observationRatio: Double,
 
 	@field:SerializedName("station_id")
 	val stationId: String,

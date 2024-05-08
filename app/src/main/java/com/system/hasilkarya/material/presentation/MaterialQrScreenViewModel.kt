@@ -1,6 +1,7 @@
 package com.system.hasilkarya.material.presentation
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -203,7 +204,7 @@ class MaterialQrScreenViewModel @Inject constructor(
             truckId = materialEntity.truckId,
             stationId = materialEntity.stationId,
             checkerId = materialEntity.checkerId,
-            observationRatio = materialEntity.ratio.toInt(),
+            observationRatio = materialEntity.ratio,
             remarks = materialEntity.remarks,
             date = materialEntity.date
         )

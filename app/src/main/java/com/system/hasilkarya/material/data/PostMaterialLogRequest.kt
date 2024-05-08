@@ -21,4 +21,10 @@ data class PostMaterialLogRequest(
 
 	@field:SerializedName("remarks")
 	val remarks: String,
+
+	@field:SerializedName("date")
+	val date: String,
+
+	@field:SerializedName("observation_ratio")
+	val ratio: Double
 )

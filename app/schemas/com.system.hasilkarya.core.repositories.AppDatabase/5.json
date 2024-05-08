@@ -1,0 +1,197 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 5,
+    "identityHash": "fec825004a83cb9d34eabb624dbdda1d",
+    "entities": [
+      {
+        "tableName": "material",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`truckId` TEXT NOT NULL, `driverId` TEXT NOT NULL, `stationId` TEXT NOT NULL, `checkerId` TEXT NOT NULL, `ratio` REAL NOT NULL, `remarks` TEXT NOT NULL, `date` TEXT NOT NULL DEFAULT '0', PRIMARY KEY(`truckId`))",
+        "fields": [
+          {
+            "fieldPath": "truckId",
+            "columnName": "truckId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "driverId",
+            "columnName": "driverId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "stationId",
+            "columnName": "stationId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "checkerId",
+            "columnName": "checkerId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ratio",
+            "columnName": "ratio",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "remarks",
+            "columnName": "remarks",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'0'"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "truckId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "fuel_truck",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`truckId` TEXT NOT NULL, `driverId` TEXT NOT NULL, `stationId` TEXT NOT NULL, `userId` TEXT NOT NULL, `volume` REAL NOT NULL, `odometer` REAL NOT NULL, `remarks` TEXT NOT NULL, `date` TEXT NOT NULL DEFAULT '0', PRIMARY KEY(`truckId`))",
+        "fields": [
+          {
+            "fieldPath": "truckId",
+            "columnName": "truckId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "driverId",
+            "columnName": "driverId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "stationId",
+            "columnName": "stationId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "volume",
+            "columnName": "volume",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "odometer",
+            "columnName": "odometer",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "remarks",
+            "columnName": "remarks",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'0'"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "truckId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "fuel_heavy_vehicle",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`heavyVehicleId` TEXT NOT NULL, `stationId` TEXT NOT NULL, `driverId` TEXT NOT NULL, `gasOperatorId` TEXT NOT NULL, `volume` REAL NOT NULL, `hourmeter` REAL NOT NULL, `remarks` TEXT NOT NULL, `date` TEXT NOT NULL DEFAULT '0', PRIMARY KEY(`heavyVehicleId`))",
+        "fields": [
+          {
+            "fieldPath": "heavyVehicleId",
+            "columnName": "heavyVehicleId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "stationId",
+            "columnName": "stationId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "driverId",
+            "columnName": "driverId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gasOperatorId",
+            "columnName": "gasOperatorId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "volume",
+            "columnName": "volume",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hourmeter",
+            "columnName": "hourmeter",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "remarks",
+            "columnName": "remarks",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'0'"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "heavyVehicleId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fec825004a83cb9d34eabb624dbdda1d')"
+    ]
+  }
+}
