@@ -1,7 +1,9 @@
 package com.system.hasilkarya.qr.presentation
 
+import android.hardware.camera2.CameraManager
 import android.util.Log
 import android.view.ViewGroup
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
@@ -13,26 +15,33 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.FlashlightOff
+import androidx.compose.material.icons.filled.FlashlightOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -42,6 +51,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.google.common.util.concurrent.ListenableFuture
 import com.system.hasilkarya.R
 import com.system.hasilkarya.core.ui.theme.poppinsFont
@@ -60,9 +72,8 @@ fun QrScanComponent(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     var preview by remember { mutableStateOf<Preview?>(null) }
-    var result by remember {
-        mutableStateOf("")
-    }
+    var result by remember { mutableStateOf("") }
+    var isFlashOn = MutableLiveData<Boolean>()
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -127,12 +138,16 @@ fun QrScanComponent(
 
                                         try {
                                             cameraProvider.unbindAll()
-                                            cameraProvider.bindToLifecycle(
+                                            val camera = cameraProvider.bindToLifecycle(
                                                 lifecycleOwner,
                                                 cameraSelector,
                                                 preview,
                                                 imageAnalysis
                                             )
+                                            isFlashOn.observe(lifecycleOwner) {
+                                                Log.i("DEBUG", "FlashState: $it")
+                                                toggleFash(camera, it)
+                                            }
                                         } catch (e: Exception) {
                                             Log.d("TAG", "CameraPreview: ${e.localizedMessage}")
                                         }
@@ -148,16 +163,44 @@ fun QrScanComponent(
                         )
                     },
                 )
-                IconButton(
-                    onClick = { navigateBack() },
-                    content = {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "kembali",
-                        )
-                    },
-                    modifier = Modifier.padding(top = 24.dp)
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 24.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    IconButton(
+                        onClick = { navigateBack() },
+                        content = {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "kembali",
+                            )
+                        },
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.background),
+                    )
+                    IconButton(
+                        onClick = {
+                            if (isFlashOn.value == true) {
+                                isFlashOn.value = false
+                            } else {
+                                isFlashOn.value = true
+                            }
+                        },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.FlashlightOn,
+                                contentDescription = "senter",
+                            )
+                        },
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.background),
+                    )
+                }
             }
         )
 
@@ -195,4 +238,8 @@ fun QrScanComponent(
             }
         )
     }
+}
+
+fun toggleFash(camera: Camera, isOn: Boolean) {
+    camera.cameraControl.enableTorch(isOn)
 }
