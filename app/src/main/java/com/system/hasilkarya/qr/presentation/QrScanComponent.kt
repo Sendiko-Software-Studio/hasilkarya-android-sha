@@ -184,11 +184,7 @@ fun QrScanComponent(
                     )
                     IconButton(
                         onClick = {
-                            if (isFlashOn.value == true) {
-                                isFlashOn.value = false
-                            } else {
-                                isFlashOn.value = true
-                            }
+                            isFlashOn.value = isFlashOn.value != true
                         },
                         content = {
                             Icon(
