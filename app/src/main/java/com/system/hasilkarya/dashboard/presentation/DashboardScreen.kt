@@ -107,7 +107,7 @@ fun DashboardScreen(
             content = {
                 item {
                     AnimatedVisibility(
-                        visible = state.role == "checker",
+                        visible = state.role == "checker" || state.role == "admin",
                         enter = expandHorizontally(),
                         exit = shrinkHorizontally()
                     ) {
@@ -122,7 +122,7 @@ fun DashboardScreen(
                         }
                     }
                     AnimatedVisibility(
-                        visible = state.role == "gas-operator",
+                        visible = state.role == "gas-operator"  || state.role == "admin",
                         enter = expandHorizontally(),
                         exit = shrinkHorizontally()
                     ) {
