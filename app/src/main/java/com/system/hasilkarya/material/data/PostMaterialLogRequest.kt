@@ -26,5 +26,5 @@ data class PostMaterialLogRequest(
 	val date: String,
 
 	@field:SerializedName("observation_ratio")
-	val ratio: Double
+	val ratio: String
 )
