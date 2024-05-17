@@ -151,7 +151,8 @@ fun ProfileScreen(
                                                             vertical = 4.dp,
                                                             horizontal = 8.dp
                                                         ),
-                                                    text = theme.name
+                                                    text = theme.name,
+                                                    fontFamily = poppinsFont
                                                 )
                                             },
                                             colors = InputChipDefaults.inputChipColors(
