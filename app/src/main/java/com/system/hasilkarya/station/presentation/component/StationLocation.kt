@@ -1,4 +1,4 @@
-package com.system.hasilkarya.dashboard.presentation.component
+package com.system.hasilkarya.station.presentation.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.system.hasilkarya.core.ui.theme.poppinsFont
 
 @Composable
 fun StationLocation(
@@ -28,18 +29,19 @@ fun StationLocation(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "Anda bertugas di: ")
+            Text(text = "Anda bertugas di: ", fontFamily = poppinsFont)
             TextButton(
                 onClick = onButtonClick,
                 content = {
-                    Text(text = "Ganti Pos")
+                    Text(text = "Ganti Pos", fontFamily = poppinsFont)
                 }
             )
         }
         Text(
             text = stationName,
             fontSize = 24.sp,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
+            fontFamily = poppinsFont
         )
         Spacer(modifier = Modifier.height(16.dp))
     }
