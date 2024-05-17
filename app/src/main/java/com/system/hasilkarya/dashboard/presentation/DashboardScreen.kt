@@ -23,7 +23,6 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,9 +35,10 @@ import com.system.hasilkarya.R
 import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.theme.poppinsFont
+import com.system.hasilkarya.station.presentation.component.ListStationBottomSheet
 import com.system.hasilkarya.dashboard.presentation.component.MenuCard
 import com.system.hasilkarya.dashboard.presentation.component.MenuCardExpendable
-import com.system.hasilkarya.dashboard.presentation.component.StationLocation
+import com.system.hasilkarya.station.presentation.component.StationLocation
 import com.system.hasilkarya.dashboard.presentation.component.UnsentItemCard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
@@ -99,6 +99,19 @@ fun DashboardScreen(
             )
         },
     ) { paddingValues ->
+        ListStationBottomSheet(
+            listStation = state.stations,
+            isVisible = state.isShowingStationList,
+            onItemClick = {
+                onEvent(DashboardScreenEvent.SetStationSheet(!state.isShowingStationList))
+            },
+            onNavigate = {
+                onEvent(DashboardScreenEvent.SetStationSheet(!state.isShowingStationList))
+            },
+            onDismiss = {
+                onEvent(DashboardScreenEvent.SetStationSheet(!state.isShowingStationList))
+            }
+        )
         LazyColumn(
             contentPadding = PaddingValues(
                 top = paddingValues.calculateTopPadding(),
@@ -109,9 +122,11 @@ fun DashboardScreen(
             content = {
                 item {
                     StationLocation(
-                        stationName = "Quarry One",
+                        stationName = if (state.activeStation == null)
+                            "Tidak ada."
+                        else "${state.activeStation.name}, ${state.activeStation.regency}, ${state.activeStation.province}.",
                         onButtonClick = {
-
+                            onEvent(DashboardScreenEvent.SetStationSheet(!state.isShowingStationList))
                         }
                     )
                 }
@@ -132,7 +147,7 @@ fun DashboardScreen(
                         }
                     }
                     AnimatedVisibility(
-                        visible = state.role == "gas-operator"  || state.role == "admin",
+                        visible = state.role == "gas-operator" || state.role == "admin",
                         enter = expandHorizontally(),
                         exit = shrinkHorizontally()
                     ) {

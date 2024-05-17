@@ -11,6 +11,7 @@ import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.repositories.fuel.heavy_vehicle.HeavyVehicleFuelRepository
 import com.system.hasilkarya.core.repositories.fuel.truck.TruckFuelRepository
 import com.system.hasilkarya.core.repositories.material.MaterialRepository
+import com.system.hasilkarya.core.repositories.station.StationRepository
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelLogRequest
 import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelRequest
@@ -42,6 +43,7 @@ class DashboardScreenViewModel @Inject constructor(
     private val materialRepository: MaterialRepository,
     private val truckFuelRepository: TruckFuelRepository,
     private val heavyVehicleFuelRepository: HeavyVehicleFuelRepository,
+    private val stationRepository: StationRepository,
     connectionObserver: NetworkConnectivityObserver
 ) : ViewModel() {
 
@@ -52,26 +54,37 @@ class DashboardScreenViewModel @Inject constructor(
     private val _materials = materialRepository.getMaterials()
     private val _fuels = truckFuelRepository.getFuels()
     private val _heavyFuels = heavyVehicleFuelRepository.getHeavyVehicleFuels()
+    private val _stations = stationRepository.getAllStations()
     val connectionStatus = combine(connectionObserver.observe(), _state) { connectionStatus, state ->
         state.copy(connectionStatus = connectionStatus)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), DashboardScreenState())
-    private val _dataList = combine(_materials, _fuels, _heavyFuels, _state) { materials, fuels, heavyFuels, state ->
+    private val _dataList = combine(_materials, _fuels, _heavyFuels, _stations, _state) { materials, fuels, heavyFuels, stations, state ->
         state.copy(
             materials = materials,
             fuels = fuels,
             heavyFuels = heavyFuels,
-            totalData = materials.size + fuels.size + heavyFuels.size
+            totalData = materials.size + fuels.size + heavyFuels.size,
+            stations = stations
         )
     }
-    val state = combine(_token, _name, _role, _dataList, _state) { token, name, role, dataList, state ->
+    private val _userState = combine(_token, _name, _role, _state) { token, name, role, state ->
         state.copy(
             token = token,
             name = name,
-            role = role,
+            role = role
+        )
+    }
+    val state = combine(_userState, _dataList, _state) { userState, dataList, state ->
+        state.copy(
+            token = userState.token,
+            name = userState.name,
+            role = userState.role,
             materials = dataList.materials,
             fuels = dataList.fuels,
             heavyFuels = dataList.heavyFuels,
-            totalData = dataList.totalData
+            totalData = dataList.totalData,
+            stations = dataList.stations,
+            activeStation = dataList.stations.find { it.isActive }
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), DashboardScreenState())
 
@@ -508,6 +521,10 @@ class DashboardScreenViewModel @Inject constructor(
         _state.update { it.copy(isRequestFailed = FailedRequest()) }
     }
 
+    private fun setStationSheet(isVisible: Boolean) {
+        _state.update { it.copy(isShowingStationList = isVisible) }
+    }
+
     // onEvent
     fun onEvent(event: DashboardScreenEvent) {
         when (event) {
@@ -516,6 +533,8 @@ class DashboardScreenViewModel @Inject constructor(
             DashboardScreenEvent.CheckDataAndPost -> viewModelScope.launch(Dispatchers.IO) {
                 checkAndPostDatas()
             }
+
+            is DashboardScreenEvent.SetStationSheet -> setStationSheet(event.isVisible)
         }
     }
 }

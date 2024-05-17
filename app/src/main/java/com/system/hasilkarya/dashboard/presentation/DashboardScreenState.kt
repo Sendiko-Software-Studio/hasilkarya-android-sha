@@ -3,6 +3,7 @@ package com.system.hasilkarya.dashboard.presentation
 import com.system.hasilkarya.core.entities.FuelHeavyVehicleEntity
 import com.system.hasilkarya.core.entities.FuelTruckEntity
 import com.system.hasilkarya.core.entities.MaterialEntity
+import com.system.hasilkarya.core.entities.StationEntity
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 
@@ -19,4 +20,7 @@ data class DashboardScreenState(
     val fuels: List<FuelTruckEntity> = emptyList(),
     val heavyFuels: List<FuelHeavyVehicleEntity> = emptyList(),
     val totalData: Int = 0,
+    val stations: List<StationEntity> = emptyList(),
+    val activeStation: StationEntity? = StationEntity(),
+    val isShowingStationList: Boolean = false,
 )
