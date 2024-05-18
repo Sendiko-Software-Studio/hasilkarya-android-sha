@@ -61,143 +61,145 @@ fun ProfileScreen(
     ContentBoxWithNotification(
         message = state.notificationMessage,
         isLoading = state.isLoading,
-        isErrorNotification = state.isRequestFailed.isFailed
-    ) {
-        val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-        Scaffold(
-            topBar = {
-                LargeTopAppBar(
-                    title = { Text(text = "Profile", fontFamily = poppinsFont) },
-                    navigationIcon = {
-                        IconButton(onClick = { onNavigateBack(Destination.DashboardScreen) }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "kembali"
-                            )
-                        }
-                    },
-                    scrollBehavior = scrollBehavior,
-                    colors = TopAppBarDefaults.largeTopAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        scrolledContainerColor = MaterialTheme.colorScheme.background,
-                        titleContentColor = MaterialTheme.colorScheme.onBackground,
-                        actionIconContentColor = MaterialTheme.colorScheme.onBackground
-                    )
-                )
-            }
-        ) {
-            LazyColumn(
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                contentPadding = it,
-                content = {
-                    item {
-                        Card(
-                            modifier = Modifier.padding(16.dp)
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.SpaceBetween,
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp, vertical = 16.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(text = "Nama: ", fontFamily = poppinsFont)
-                                    Text(text = state.name, fontFamily = poppinsFont)
-                                }
-                                Divider()
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(text = "Email: ", fontFamily = poppinsFont)
-                                    Text(
-                                        text = state.email,
-                                        fontFamily = poppinsFont,
-                                        textAlign = TextAlign.End
-                                    )
-                                }
-                                Divider()
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                                        .clickable {
-                                            isShowingThemeOptions = !isShowingThemeOptions
-                                        },
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(text = "Tema Aplikasi: ", fontFamily = poppinsFont)
-                                }
-                                Row(
-                                    horizontalArrangement = Arrangement.SpaceEvenly,
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    AppTheme.entries.forEach { theme ->
-                                        InputChip(
-                                            selected = theme == state.theme,
-                                            onClick = { onEvent(ProfileScreenEvent.OnThemeChanged(theme)) },
-                                            label = {
-                                                Text(
-                                                    modifier = Modifier
-                                                        .padding(
-                                                            vertical = 4.dp,
-                                                            horizontal = 8.dp
-                                                        ),
-                                                    text = theme.name,
-                                                    fontFamily = poppinsFont
-                                                )
-                                            },
-                                            colors = InputChipDefaults.inputChipColors(
-                                                containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                                                labelColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                                                selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
-                                            )
-                                        )
-                                    }
-                                }
-                                Divider()
-                                Button(
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.error,
-                                        contentColor = MaterialTheme.colorScheme.onError,
-                                    ),
-                                    onClick = { onEvent(ProfileScreenEvent.OnLogout) },
-                                    content = {
-                                        Text(
-                                            text = "Logout",
-                                            fontFamily = poppinsFont
-                                        )
-                                    },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp)
+        isErrorNotification = state.isRequestFailed.isFailed,
+        content = {
+            val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+            Scaffold(
+                topBar = {
+                    LargeTopAppBar(
+                        title = { Text(text = "Profile", fontFamily = poppinsFont) },
+                        navigationIcon = {
+                            IconButton(onClick = { onNavigateBack(Destination.DashboardScreen) }) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowBack,
+                                    contentDescription = "kembali"
                                 )
                             }
+                        },
+                        scrollBehavior = scrollBehavior,
+                        colors = TopAppBarDefaults.largeTopAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.background,
+                            scrolledContainerColor = MaterialTheme.colorScheme.background,
+                            titleContentColor = MaterialTheme.colorScheme.onBackground,
+                            actionIconContentColor = MaterialTheme.colorScheme.onBackground
+                        )
+                    )
+                }
+            ) {
+                LazyColumn(
+                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                    contentPadding = it,
+                    content = {
+                        item {
+                            Card(
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.SpaceBetween,
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp, vertical = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(text = "Nama: ", fontFamily = poppinsFont)
+                                        Text(text = state.name, fontFamily = poppinsFont)
+                                    }
+                                    Divider()
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(text = "Email: ", fontFamily = poppinsFont)
+                                        Text(
+                                            text = state.email,
+                                            fontFamily = poppinsFont,
+                                            textAlign = TextAlign.End
+                                        )
+                                    }
+                                    Divider()
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                                            .clickable {
+                                                isShowingThemeOptions = !isShowingThemeOptions
+                                            },
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(text = "Tema Aplikasi: ", fontFamily = poppinsFont)
+                                    }
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceEvenly,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        AppTheme.entries.forEach { theme ->
+                                            InputChip(
+                                                selected = theme == state.theme,
+                                                onClick = { onEvent(ProfileScreenEvent.OnThemeChanged(theme)) },
+                                                label = {
+                                                    Text(
+                                                        modifier = Modifier
+                                                            .padding(
+                                                                vertical = 4.dp,
+                                                                horizontal = 8.dp
+                                                            ),
+                                                        text = theme.name,
+                                                        fontFamily = poppinsFont
+                                                    )
+                                                },
+                                                colors = InputChipDefaults.inputChipColors(
+                                                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                                    labelColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                                                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                                )
+                                            )
+                                        }
+                                    }
+                                    Divider()
+                                    Button(
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = MaterialTheme.colorScheme.error,
+                                            contentColor = MaterialTheme.colorScheme.onError,
+                                        ),
+                                        onClick = { onEvent(ProfileScreenEvent.OnLogout) },
+                                        content = {
+                                            Text(
+                                                text = "Logout",
+                                                fontFamily = poppinsFont
+                                            )
+                                        },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp)
+                                    )
+                                }
+                            }
+                        }
+                        item {
+                            val uriHandler = LocalUriHandler.current
+                            Text(
+                                text = "v1.30r",
+                                fontFamily = poppinsFont,
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .fillMaxWidth()
+                                    .clickable { uriHandler.openUri("https://github.com/Sendiko-Software-Studio") },
+                                textAlign = TextAlign.Center
+                            )
                         }
                     }
-                    item {
-                        val uriHandler = LocalUriHandler.current
-                        Text(
-                            text = "v1.30r",
-                            fontFamily = poppinsFont,
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .fillMaxWidth()
-                                .clickable { uriHandler.openUri("https://github.com/Sendiko-Software-Studio") },
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-            )
+                )
+            }
         }
-    }
+    )
+
 }

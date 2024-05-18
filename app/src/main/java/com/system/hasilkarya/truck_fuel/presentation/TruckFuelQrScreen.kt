@@ -46,103 +46,104 @@ fun TruckFuelQrScreen(
     ContentBoxWithNotification(
         message = state.notificationMessage,
         isLoading = state.isLoading,
-        isErrorNotification = state.isRequestFailed.isFailed
-    ) {
-        Scaffold { _ ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp)
-            ) {
-                AnimatedVisibility(
-                    visible = state.currentlyScanning == ScanOptions.Truck,
-                    enter = slideInHorizontally(),
-                    exit = slideOutHorizontally()
+        isErrorNotification = state.isRequestFailed.isFailed,
+        content = {
+            Scaffold { _ ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp)
                 ) {
-                    QrScanComponent(
-                        onResult = {
-                            onEvent(
-                                TruckFuelQrScreenEvent.OnTruckIdRegistered(
-                                    it,
-                                    connectionStatus
+                    AnimatedVisibility(
+                        visible = state.currentlyScanning == ScanOptions.Truck,
+                        enter = slideInHorizontally(),
+                        exit = slideOutHorizontally()
+                    ) {
+                        QrScanComponent(
+                            onResult = {
+                                onEvent(
+                                    TruckFuelQrScreenEvent.OnTruckIdRegistered(
+                                        it,
+                                        connectionStatus
+                                    )
                                 )
-                            )
-                        },
-                        navigateBack = { onNavigateBack(Destination.DashboardScreen) },
-                        title = "Truck",
-                        isValid = state.truckId.isNotBlank()
-                    )
-                }
-                AnimatedVisibility(
-                    visible = state.currentlyScanning == ScanOptions.Driver,
-                    enter = slideInHorizontally(),
-                    exit = slideOutHorizontally()
-                ) {
-                    QrScanComponent(
-                        onResult = {
-                            onEvent(
-                                TruckFuelQrScreenEvent.OnDriverIdRegistered(
-                                    it,
-                                    connectionStatus
+                            },
+                            navigateBack = { onNavigateBack(Destination.DashboardScreen) },
+                            title = "Truck",
+                            isValid = state.truckId.isNotBlank()
+                        )
+                    }
+                    AnimatedVisibility(
+                        visible = state.currentlyScanning == ScanOptions.Driver,
+                        enter = slideInHorizontally(),
+                        exit = slideOutHorizontally()
+                    ) {
+                        QrScanComponent(
+                            onResult = {
+                                onEvent(
+                                    TruckFuelQrScreenEvent.OnDriverIdRegistered(
+                                        it,
+                                        connectionStatus
+                                    )
                                 )
-                            )
-                        },
-                        navigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Truck)) },
-                        title = "Driver",
-                        isValid = state.driverId.isNotBlank()
-                    )
-                }
-                AnimatedVisibility(
-                    visible = state.currentlyScanning == ScanOptions.Pos,
-                    enter = slideInHorizontally(),
-                    exit = slideOutHorizontally()
-                ) {
-                    QrScanComponent(
-                        onResult = {
-                            onEvent(
-                                TruckFuelQrScreenEvent.OnStationIdRegistered(
-                                    it,
-                                    connectionStatus
+                            },
+                            navigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Truck)) },
+                            title = "Driver",
+                            isValid = state.driverId.isNotBlank()
+                        )
+                    }
+                    AnimatedVisibility(
+                        visible = state.currentlyScanning == ScanOptions.Pos,
+                        enter = slideInHorizontally(),
+                        exit = slideOutHorizontally()
+                    ) {
+                        QrScanComponent(
+                            onResult = {
+                                onEvent(
+                                    TruckFuelQrScreenEvent.OnStationIdRegistered(
+                                        it,
+                                        connectionStatus
+                                    )
                                 )
-                            )
-                        },
-                        navigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Driver)) },
-                        title = "Pos",
-                        isValid = state.stationId.isNotBlank()
-                    )
-                }
-                AnimatedVisibility(
-                    visible = state.currentlyScanning == ScanOptions.Volume,
-                    enter = slideInHorizontally(),
-                    exit = slideOutHorizontally()
-                ) {
-                    QrScanComponent(
-                        onResult = { onEvent(TruckFuelQrScreenEvent.OnVolumeRegistered(it.toDoubleOrNull())) },
-                        navigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Pos)) },
-                        title = "Jumlah BBM",
-                        isValid = state.volume != 0.0
-                    )
-                }
-                AnimatedVisibility(visible = state.currentlyScanning == ScanOptions.None) {
-                    FuelInputForm(
-                        odometer = state.odometer,
-                        odometerErrorState = state.odometerErrorState,
-                        remarks = state.remarks,
-                        onOdometerChange = { onEvent(TruckFuelQrScreenEvent.OnOdometerChange(it)) },
-                        onOdometerClear = { onEvent(TruckFuelQrScreenEvent.OnClearOdometer) },
-                        onRemarksChange = { onEvent(TruckFuelQrScreenEvent.OnRemarksChange(it)) },
-                        onRemarksClear = { onEvent(TruckFuelQrScreenEvent.OnClearRemarks) },
-                        onNavigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(it)) },
-                        onSubmit = {
-                            onEvent(
-                                TruckFuelQrScreenEvent.SaveTruckFuelTransaction(
-                                    connectionStatus
+                            },
+                            navigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Driver)) },
+                            title = "Pos",
+                            isValid = state.stationId.isNotBlank()
+                        )
+                    }
+                    AnimatedVisibility(
+                        visible = state.currentlyScanning == ScanOptions.Volume,
+                        enter = slideInHorizontally(),
+                        exit = slideOutHorizontally()
+                    ) {
+                        QrScanComponent(
+                            onResult = { onEvent(TruckFuelQrScreenEvent.OnVolumeRegistered(it.toDoubleOrNull())) },
+                            navigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Pos)) },
+                            title = "Jumlah BBM",
+                            isValid = state.volume != 0.0
+                        )
+                    }
+                    AnimatedVisibility(visible = state.currentlyScanning == ScanOptions.None) {
+                        FuelInputForm(
+                            odometer = state.odometer,
+                            odometerErrorState = state.odometerErrorState,
+                            remarks = state.remarks,
+                            onOdometerChange = { onEvent(TruckFuelQrScreenEvent.OnOdometerChange(it)) },
+                            onOdometerClear = { onEvent(TruckFuelQrScreenEvent.OnClearOdometer) },
+                            onRemarksChange = { onEvent(TruckFuelQrScreenEvent.OnRemarksChange(it)) },
+                            onRemarksClear = { onEvent(TruckFuelQrScreenEvent.OnClearRemarks) },
+                            onNavigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(it)) },
+                            onSubmit = {
+                                onEvent(
+                                    TruckFuelQrScreenEvent.SaveTruckFuelTransaction(
+                                        connectionStatus
+                                    )
                                 )
-                            )
-                        }
-                    )
+                            }
+                        )
+                    }
                 }
             }
         }
-    }
+    )
 }
