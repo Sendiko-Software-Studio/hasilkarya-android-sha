@@ -78,10 +78,6 @@ fun MaterialQrScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(
-                            start = 8.dp,
-                            end = 8.dp
-                        )
                 ) {
                     AnimatedVisibility(
                         visible = state.currentlyScanning == Truck,

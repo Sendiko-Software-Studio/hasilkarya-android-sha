@@ -53,7 +53,6 @@ fun HeavyVehicleFuelQrScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 8.dp)
                 ) {
                     AnimatedVisibility(
                         visible = state.currentlyScanning == ScanOptions.HeavyVehicle,
