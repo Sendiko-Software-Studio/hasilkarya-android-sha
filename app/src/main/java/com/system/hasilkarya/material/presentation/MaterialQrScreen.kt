@@ -43,6 +43,7 @@ import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.None
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.Pos
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.Truck
 import com.system.hasilkarya.qr.presentation.QrScanComponent
+import com.system.hasilkarya.station.presentation.component.StationLocation
 import kotlinx.coroutines.delay
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -51,7 +52,6 @@ import kotlinx.coroutines.delay
 fun MaterialQrScreen(
     state: MaterialQrScreenState,
     onEvent: (MaterialQrScreenEvent) -> Unit,
-    connectionStatus: Status,
     onNavigateBack: (Destination) -> Unit,
 ) {
     val context = LocalContext.current
@@ -86,47 +86,13 @@ fun MaterialQrScreen(
                         content = {
                             QrScanComponent(
                                 onResult = {
-                                    onEvent(MaterialQrScreenEvent.OnTruckIdRegistered(it, connectionStatus))
+                                    onEvent(MaterialQrScreenEvent.OnTruckIdRegistered(it))
                                 },
                                 navigateBack = {
                                     onNavigateBack(Destination.DashboardScreen)
                                 },
                                 title = "Truck",
                                 isValid = state.truckId.isNotBlank()
-                            )
-                        }
-                    )
-                    AnimatedVisibility(
-                        visible = state.currentlyScanning == Driver,
-                        enter = slideInHorizontally(),
-                        exit = slideOutHorizontally(),
-                        content = {
-                            QrScanComponent(
-                                onResult = {
-                                    onEvent(MaterialQrScreenEvent.OnDriverIdRegistered(it, connectionStatus))
-                                },
-                                navigateBack = {
-                                    onEvent(MaterialQrScreenEvent.OnNavigateForm(Truck))
-                                },
-                                title = "Driver",
-                                isValid = state.driverId.isNotBlank(),
-                            )
-                        }
-                    )
-                    AnimatedVisibility(
-                        visible = state.currentlyScanning == Pos,
-                        enter = slideInHorizontally(),
-                        exit = slideOutHorizontally(),
-                        content = {
-                            QrScanComponent(
-                                onResult = {
-                                    onEvent(MaterialQrScreenEvent.OnStationIdRegistered(it, connectionStatus))
-                                },
-                                navigateBack = {
-                                    onEvent(MaterialQrScreenEvent.OnNavigateForm(Truck))
-                                },
-                                title = "Pos",
-                                isValid = state.stationId.isNotBlank(),
                             )
                         }
                     )
@@ -152,11 +118,19 @@ fun MaterialQrScreen(
                                 Column(
                                     modifier = Modifier.padding(8.dp)
                                 ) {
+                                    StationLocation(
+                                        modifier = Modifier.padding(horizontal = 8.dp),
+                                        stationName = state.stationName,
+                                        onButtonClick = {
+                                            onNavigateBack(Destination.StationQrScreen)
+                                        }
+                                    )
                                     Text(
                                         text = "Masukkan volume material",
                                         fontFamily = poppinsFont,
                                         fontSize = 18.sp,
-                                        fontWeight = FontWeight.Medium
+                                        fontWeight = FontWeight.Medium,
+                                        modifier = Modifier.padding(8.dp)
                                     )
                                     NormalTextField(
                                         modifier = Modifier.fillMaxWidth(),
@@ -168,12 +142,12 @@ fun MaterialQrScreen(
                                         hint = "Dalam meter kubik (m³)",
                                         errorState = state.materialVolumeErrorState
                                     )
-                                    Spacer(modifier = Modifier.height(8.dp))
                                     Text(
                                         text = "Tambah keterangan",
                                         fontFamily = poppinsFont,
                                         fontSize = 18.sp,
-                                        fontWeight = FontWeight.Medium
+                                        fontWeight = FontWeight.Medium,
+                                        modifier = Modifier.padding(8.dp)
                                     )
                                     NormalTextField(
                                         modifier = Modifier
@@ -190,7 +164,7 @@ fun MaterialQrScreen(
                                     Button(
                                         modifier = Modifier.fillMaxWidth(),
                                         onClick = {
-                                            onEvent(MaterialQrScreenEvent.SaveMaterial(connectionStatus))
+                                            onEvent(MaterialQrScreenEvent.SaveMaterial)
                                         }
                                     ) {
                                         Text(text = "Simpan data", fontFamily = poppinsFont)
