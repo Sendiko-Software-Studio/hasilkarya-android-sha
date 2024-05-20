@@ -9,12 +9,10 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
@@ -27,16 +25,10 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
@@ -48,7 +40,6 @@ import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.theme.poppinsFont
 import com.system.hasilkarya.dashboard.presentation.component.MenuCard
-import com.system.hasilkarya.dashboard.presentation.component.MenuCardExpendable
 import com.system.hasilkarya.station.presentation.component.StationLocation
 import com.system.hasilkarya.dashboard.presentation.component.UnsentItemCard
 
@@ -62,6 +53,7 @@ fun DashboardScreen(
 ) {
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val noStation = state.activeStation == null
 
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     LaunchedEffect(
@@ -115,9 +107,9 @@ fun DashboardScreen(
     ) { paddingValues ->
         Column {
             StationLocation(
-                stationName = if (state.activeStation == null)
+                stationName = if (noStation)
                     "Tidak ada."
-                else "${state.activeStation.name}, ${state.activeStation.province}.",
+                else "${state.activeStation!!.name}, ${state.activeStation.province}.",
                 onButtonClick = {
                     onNavigate(Destination.StationQrScreen)
                 },
@@ -142,7 +134,7 @@ fun DashboardScreen(
                                 onClickAction = {
                                     onNavigate(Destination.MaterialQrScreen)
                                 },
-                                enabled = state.activeStation != null
+                                enabled = !noStation
                             )
                         }
                     }
@@ -178,11 +170,11 @@ fun DashboardScreen(
             ) {
                 UnsentItemCard(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth().padding(16.dp),
                     itemCount = state.totalData
                 )
             }
-            if (state.activeStation == null) {
+            if (noStation) {
                 Snackbar(
                     content = {
                         Text(text = "Mohon pilih Pos terlebih dulu.")
