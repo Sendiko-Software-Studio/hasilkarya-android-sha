@@ -105,7 +105,7 @@ interface ApiServices {
         @Header("Authorization") token: String
     ): Call<CheckHeavyVehicleIdResponse>
 
-    @GET("station/{id}")
+    @GET("checker/station/{id}")
     fun getStation(
         @Path("id") stationId: String,
         @Header("Authorization") token: String
