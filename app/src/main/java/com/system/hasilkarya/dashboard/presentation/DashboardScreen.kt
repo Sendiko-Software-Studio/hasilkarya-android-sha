@@ -7,12 +7,16 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Sync
@@ -22,11 +26,19 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -35,7 +47,6 @@ import com.system.hasilkarya.R
 import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.theme.poppinsFont
-import com.system.hasilkarya.station.presentation.component.ListStationBottomSheet
 import com.system.hasilkarya.dashboard.presentation.component.MenuCard
 import com.system.hasilkarya.dashboard.presentation.component.MenuCardExpendable
 import com.system.hasilkarya.station.presentation.component.StationLocation
@@ -49,6 +60,8 @@ fun DashboardScreen(
     onEvent: (DashboardScreenEvent) -> Unit,
     onNavigate: (Destination) -> Unit,
 ) {
+
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     LaunchedEffect(
@@ -95,89 +108,88 @@ fun DashboardScreen(
                     scrolledContainerColor = MaterialTheme.colorScheme.background,
                     titleContentColor = MaterialTheme.colorScheme.onBackground,
                     actionIconContentColor = MaterialTheme.colorScheme.onBackground
-                )
+                ),
+                scrollBehavior = scrollBehavior
             )
         },
     ) { paddingValues ->
-        ListStationBottomSheet(
-            listStation = state.stations,
-            isVisible = state.isShowingStationList,
-            onItemClick = {
-                onEvent(DashboardScreenEvent.SetStationSheet(!state.isShowingStationList))
-            },
-            onNavigate = {
-                onEvent(DashboardScreenEvent.SetStationSheet(!state.isShowingStationList))
-            },
-            onDismiss = {
-                onEvent(DashboardScreenEvent.SetStationSheet(!state.isShowingStationList))
-            }
-        )
-        LazyColumn(
-            contentPadding = PaddingValues(
-                top = paddingValues.calculateTopPadding(),
-                start = 16.dp,
-                end = 16.dp
-            ),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            content = {
-                item {
-                    StationLocation(
-                        stationName = if (state.activeStation == null)
-                            "Tidak ada."
-                        else "${state.activeStation.name}, ${state.activeStation.regency}, ${state.activeStation.province}.",
-                        onButtonClick = {
-                            onEvent(DashboardScreenEvent.SetStationSheet(!state.isShowingStationList))
-                        }
-                    )
-                }
-                item {
-                    AnimatedVisibility(
-                        visible = state.role == "checker" || state.role == "admin",
-                        enter = expandHorizontally(),
-                        exit = shrinkHorizontally()
-                    ) {
-                        Row {
+        Column {
+            StationLocation(
+                stationName = if (state.activeStation == null)
+                    "Tidak ada."
+                else "${state.activeStation.name}, ${state.activeStation.province}.",
+                onButtonClick = {
+                    onNavigate(Destination.StationQrScreen)
+                },
+                modifier = Modifier.padding(
+                    top = paddingValues.calculateTopPadding(),
+                    start = 16.dp,
+                    end = 16.dp
+                )
+            )
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                content = {
+                    if (state.role == "checker" || state.role == "admin"){
+                        item {
                             MenuCard(
                                 text = "Scan Material Movement",
                                 icon = painterResource(id = R.drawable.scan_material_movement),
                                 onClickAction = {
                                     onNavigate(Destination.MaterialQrScreen)
                                 },
+                                enabled = state.activeStation != null
                             )
                         }
                     }
-                    AnimatedVisibility(
-                        visible = state.role == "gas-operator" || state.role == "admin",
-                        enter = expandHorizontally(),
-                        exit = shrinkHorizontally()
-                    ) {
-                        MenuCardExpendable(
-                            text = "Scan Transaksi BBM",
-                            icon = painterResource(id = R.drawable.scan_gas),
-                            onClickAction1 = {
-                                onNavigate(Destination.GasQrScreen)
-                            },
-                            onClickAction2 = {
-                                onNavigate(Destination.GasHVQrScreen)
-                            }
-                        )
+                    if (state.role == "gas-operator" || state.role == "admin"){
+                        item {
+                            MenuCard(
+                                text = "Scan Transaksi BBM Truk",
+                                icon = painterResource(id = R.drawable.scan_truck),
+                                onClickAction = {
+                                    onNavigate(Destination.GasQrScreen)
+                                },
+                            )
+                        }
+                    }
+                    if (state.role == "gas-operator" || state.role == "admin") {
+                        item {
+                            MenuCard(
+                                text = "Scan Transaksi BBM Alat Berat",
+                                icon = painterResource(id = R.drawable.scan_exca),
+                                onClickAction = {
+                                    onNavigate(Destination.GasHVQrScreen)
+                                },
+                            )
+                        }
                     }
                 }
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    AnimatedVisibility(
-                        visible = state.totalData != 0,
-                        enter = expandHorizontally(),
-                        exit = shrinkHorizontally()
-                    ) {
-                        UnsentItemCard(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            itemCount = state.totalData
-                        )
-                    }
-                }
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            AnimatedVisibility(
+                visible = state.totalData != 0,
+                enter = expandHorizontally(),
+                exit = shrinkHorizontally()
+            ) {
+                UnsentItemCard(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    itemCount = state.totalData
+                )
             }
-        )
+            if (state.activeStation == null) {
+                Snackbar(
+                    content = {
+                        Text(text = "Mohon pilih Pos terlebih dulu.")
+                    },
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        }
     }
 }
