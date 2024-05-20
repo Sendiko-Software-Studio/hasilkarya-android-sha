@@ -17,4 +17,8 @@ class StationRepository(private val dao: StationDao, private val apiServices: Ap
 
     fun getStationFromApi(id: String, token: String) = apiServices.getStation(id, token)
 
+    fun checkMineStationId(id: String, token: String) = apiServices.checkMineStationId(id, token)
+
+    fun checkGasStationId(id: String, token: String) = apiServices.checkGasStationId(id, token)
+
 }
