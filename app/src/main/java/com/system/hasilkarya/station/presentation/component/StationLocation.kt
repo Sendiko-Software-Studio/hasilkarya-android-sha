@@ -23,9 +23,9 @@ fun StationLocation(
     stationName: String,
     onButtonClick: () -> Unit,
 ) {
-    Column {
+    Column(modifier) {
         Row(
-            modifier = modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
