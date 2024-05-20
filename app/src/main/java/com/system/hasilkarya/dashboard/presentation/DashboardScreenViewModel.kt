@@ -84,7 +84,7 @@ class DashboardScreenViewModel @Inject constructor(
             heavyFuels = dataList.heavyFuels,
             totalData = dataList.totalData,
             stations = dataList.stations,
-            activeStation = dataList.stations.find { it.isActive }
+            activeStation = if (dataList.stations.isNotEmpty()) dataList.stations[0] else null
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), DashboardScreenState())
 
