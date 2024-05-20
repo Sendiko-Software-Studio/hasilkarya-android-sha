@@ -1,32 +1,50 @@
 package com.system.hasilkarya.station.presentation
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.network.Status
+import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
 import com.system.hasilkarya.qr.presentation.QrScanComponent
-import com.system.hasilkarya.truck_fuel.presentation.TruckFuelQrScreenEvent
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun StationQrScreen(
     modifier: Modifier = Modifier,
-    state: StationQrState,
+    state: StationQrScreenState,
     connectionStatus: Status,
-    onNavigateBack: (Destination) -> Unit,
+    onNavigateBack: () -> Unit,
+    onEvent: (StationQrScreenEvent) -> Unit,
 ) {
 
-    Scaffold {
-        QrScanComponent(
-            onResult = {
-
-            },
-            navigateBack = { onNavigateBack(Destination.DashboardScreen) },
-            title = "Pos",
-            isValid = state.stationId.isNotBlank()
-        )
+    LaunchedEffect(state.isRequestSuccess) {
+        if (state.isRequestSuccess) {
+            onNavigateBack()
+        }
     }
+    ContentBoxWithNotification(
+        modifier = modifier.fillMaxSize(),
+        message = state.notificationMessage,
+        isLoading = state.isLoading,
+        isErrorNotification = state.isRequestFailed,
+        content = {
+            Scaffold {
+                QrScanComponent(
+                    onResult = {
+                        onEvent(StationQrScreenEvent.OnQrCodeScanned(it, connectionStatus))
+                    },
+                    navigateBack = { onNavigateBack() },
+                    title = "Pos",
+                    isValid = state.stationId.isNotBlank()
+                )
+            }
+        }
+    )
 
 }
