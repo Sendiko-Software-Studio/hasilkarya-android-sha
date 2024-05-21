@@ -120,7 +120,11 @@ fun MaterialQrScreen(
                                 ) {
                                     StationLocation(
                                         modifier = Modifier.padding(horizontal = 8.dp),
-                                        stationName = state.stationName,
+                                        stationName = if (state.stationName == "Station berhasil disimpan.") {
+                                            "Pos baru disimpan."
+                                        } else {
+                                            "${state.stationName}."
+                                        },
                                         onButtonClick = {
                                             onNavigateBack(Destination.StationQrScreen)
                                         }

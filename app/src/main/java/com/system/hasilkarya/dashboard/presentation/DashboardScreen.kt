@@ -109,7 +109,13 @@ fun DashboardScreen(
             StationLocation(
                 stationName = if (noStation)
                     "Tidak ada."
-                else "${state.activeStation!!.name}, ${state.activeStation.province}.",
+                else {
+                    if (state.activeStation!!.name == "Station berhasil disimpan.") {
+                        "Pos baru disimpan."
+                    } else {
+                        "${state.activeStation.name}, ${state.activeStation.province}."
+                    }
+                },
                 onButtonClick = {
                     onNavigate(Destination.StationQrScreen)
                 },
@@ -126,7 +132,7 @@ fun DashboardScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 content = {
-                    if (state.role == "checker" || state.role == "admin"){
+                    if (state.role == "checker" || state.role == "admin") {
                         item {
                             MenuCard(
                                 text = "Scan Material Movement",
@@ -138,7 +144,7 @@ fun DashboardScreen(
                             )
                         }
                     }
-                    if (state.role == "gas-operator" || state.role == "admin"){
+                    if (state.role == "gas-operator" || state.role == "admin") {
                         item {
                             MenuCard(
                                 text = "Scan Transaksi BBM Truk",
@@ -170,7 +176,8 @@ fun DashboardScreen(
             ) {
                 UnsentItemCard(
                     modifier = Modifier
-                        .fillMaxWidth().padding(16.dp),
+                        .fillMaxWidth()
+                        .padding(16.dp),
                     itemCount = state.totalData
                 )
             }

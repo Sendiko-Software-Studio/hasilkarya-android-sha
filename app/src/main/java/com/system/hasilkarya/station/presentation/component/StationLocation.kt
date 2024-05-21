@@ -33,7 +33,10 @@ fun StationLocation(
             TextButton(
                 onClick = onButtonClick,
                 content = {
-                    Text(text = if (stationName == "Tidak ada.") "Pilih pos" else "Ganti Pos", fontFamily = poppinsFont)
+                    Text(
+                        text = if (stationName == "Tidak ada.") "Pilih pos" else "Ganti Pos",
+                        fontFamily = poppinsFont
+                    )
                 }
             )
         }
