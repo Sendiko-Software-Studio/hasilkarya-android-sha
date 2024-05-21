@@ -47,135 +47,135 @@ fun HeavyVehicleFuelQrScreen(
     ContentBoxWithNotification(
         message = state.notificationMessage,
         isLoading = state.isLoading,
-        isErrorNotification = state.isRequestFailed.isFailed
-    ) {
-        Scaffold { _ ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp)
-            ) {
-                AnimatedVisibility(
-                    visible = state.currentlyScanning == ScanOptions.HeavyVehicle,
-                    enter = slideInHorizontally(),
-                    exit = slideOutHorizontally()
+        isErrorNotification = state.isRequestFailed.isFailed,
+        content = {
+            Scaffold { _ ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
                 ) {
-                    QrScanComponent(
-                        onResult = {
-                            onEvent(
-                                HeavyVehicleFuelQrScreenEvent.OnHeavyVehicleIdRegistered(
-                                    it,
-                                    connectionStatus
+                    AnimatedVisibility(
+                        visible = state.currentlyScanning == ScanOptions.HeavyVehicle,
+                        enter = slideInHorizontally(),
+                        exit = slideOutHorizontally()
+                    ) {
+                        QrScanComponent(
+                            onResult = {
+                                onEvent(
+                                    HeavyVehicleFuelQrScreenEvent.OnHeavyVehicleIdRegistered(
+                                        it,
+                                        connectionStatus
+                                    )
                                 )
-                            )
-                        },
-                        navigateBack = { onNavigateBack(Destination.DashboardScreen) },
-                        title = "Alat Berat",
-                        isValid = state.heavyVehicleId.isNotBlank()
-                    )
-                }
-                AnimatedVisibility(
-                    visible = state.currentlyScanning == ScanOptions.Driver,
-                    enter = slideInHorizontally(),
-                    exit = slideOutHorizontally()
-                ) {
-                    QrScanComponent(
-                        onResult = {
-                            onEvent(
-                                HeavyVehicleFuelQrScreenEvent.OnDriverIdRegistered(
-                                    it,
-                                    connectionStatus
+                            },
+                            navigateBack = { onNavigateBack(Destination.DashboardScreen) },
+                            title = "Alat Berat",
+                            isValid = state.heavyVehicleId.isNotBlank()
+                        )
+                    }
+                    AnimatedVisibility(
+                        visible = state.currentlyScanning == ScanOptions.Driver,
+                        enter = slideInHorizontally(),
+                        exit = slideOutHorizontally()
+                    ) {
+                        QrScanComponent(
+                            onResult = {
+                                onEvent(
+                                    HeavyVehicleFuelQrScreenEvent.OnDriverIdRegistered(
+                                        it,
+                                        connectionStatus
+                                    )
                                 )
-                            )
-                        },
-                        navigateBack = {
-                            onEvent(
-                                HeavyVehicleFuelQrScreenEvent.OnNavigateForm(
-                                    ScanOptions.HeavyVehicle
+                            },
+                            navigateBack = {
+                                onEvent(
+                                    HeavyVehicleFuelQrScreenEvent.OnNavigateForm(
+                                        ScanOptions.HeavyVehicle
+                                    )
                                 )
-                            )
-                        },
-                        title = "Driver",
-                        isValid = state.driverId.isNotBlank()
-                    )
-                }
-                AnimatedVisibility(
-                    visible = state.currentlyScanning == ScanOptions.Pos,
-                    enter = slideInHorizontally(),
-                    exit = slideOutHorizontally()
-                ) {
-                    QrScanComponent(
-                        onResult = {
-                            onEvent(
-                                HeavyVehicleFuelQrScreenEvent.OnStationIdRegistered(
-                                    it,
-                                    connectionStatus
+                            },
+                            title = "Driver",
+                            isValid = state.driverId.isNotBlank()
+                        )
+                    }
+                    AnimatedVisibility(
+                        visible = state.currentlyScanning == ScanOptions.Pos,
+                        enter = slideInHorizontally(),
+                        exit = slideOutHorizontally()
+                    ) {
+                        QrScanComponent(
+                            onResult = {
+                                onEvent(
+                                    HeavyVehicleFuelQrScreenEvent.OnStationIdRegistered(
+                                        it,
+                                        connectionStatus
+                                    )
                                 )
-                            )
-                        },
-                        navigateBack = {
-                            onEvent(
-                                HeavyVehicleFuelQrScreenEvent.OnNavigateForm(
-                                    ScanOptions.Driver
+                            },
+                            navigateBack = {
+                                onEvent(
+                                    HeavyVehicleFuelQrScreenEvent.OnNavigateForm(
+                                        ScanOptions.Driver
+                                    )
                                 )
-                            )
-                        },
-                        title = "Pos",
-                        isValid = state.stationId.isNotBlank()
-                    )
-                }
-                AnimatedVisibility(
-                    visible = state.currentlyScanning == ScanOptions.Volume,
-                    enter = slideInHorizontally(),
-                    exit = slideOutHorizontally()
-                ) {
-                    QrScanComponent(
-                        onResult = {
-                            onEvent(
-                                HeavyVehicleFuelQrScreenEvent.OnVolumeRegistered(it.toDoubleOrNull())
-                            )
-                        },
-                        navigateBack = {
-                            onEvent(
-                                HeavyVehicleFuelQrScreenEvent.OnNavigateForm(
-                                    ScanOptions.Pos
+                            },
+                            title = "Pos",
+                            isValid = state.stationId.isNotBlank()
+                        )
+                    }
+                    AnimatedVisibility(
+                        visible = state.currentlyScanning == ScanOptions.Volume,
+                        enter = slideInHorizontally(),
+                        exit = slideOutHorizontally()
+                    ) {
+                        QrScanComponent(
+                            onResult = {
+                                onEvent(
+                                    HeavyVehicleFuelQrScreenEvent.OnVolumeRegistered(it.toDoubleOrNull())
                                 )
-                            )
-                        },
-                        title = "Jumlah BBM",
-                        isValid = state.volume != 0.0
-                    )
-                }
-                AnimatedVisibility(
-                    visible = state.currentlyScanning == ScanOptions.None,
-                    enter = slideInHorizontally(),
-                    exit = slideOutHorizontally()
-                ) {
-                    HeavyVehicleFuelInputForm(
-                        hourmeter = state.hourmeter,
-                        hourmeterErrorState = state.hourmeterErrorState,
-                        remarks = state.remarks,
-                        onHourmeterChange = {
-                            onEvent(
-                                HeavyVehicleFuelQrScreenEvent.OnHourmeterChange(
-                                    it
+                            },
+                            navigateBack = {
+                                onEvent(
+                                    HeavyVehicleFuelQrScreenEvent.OnNavigateForm(
+                                        ScanOptions.Pos
+                                    )
                                 )
-                            )
-                        },
-                        onHourmeterClear = { onEvent(HeavyVehicleFuelQrScreenEvent.OnClearHourmeter) },
-                        onRemarksChange = { onEvent(HeavyVehicleFuelQrScreenEvent.OnRemarksChange(it)) },
-                        onRemarksClear = { onEvent(HeavyVehicleFuelQrScreenEvent.OnClearRemarks) },
-                        onNavigateBack = { onEvent(HeavyVehicleFuelQrScreenEvent.OnNavigateForm(it)) },
-                        onSubmit = {
-                            onEvent(
-                                HeavyVehicleFuelQrScreenEvent.SaveHeavyVehicleFuelTransaction(
-                                    connectionStatus
+                            },
+                            title = "Jumlah BBM",
+                            isValid = state.volume != 0.0
+                        )
+                    }
+                    AnimatedVisibility(
+                        visible = state.currentlyScanning == ScanOptions.None,
+                        enter = slideInHorizontally(),
+                        exit = slideOutHorizontally()
+                    ) {
+                        HeavyVehicleFuelInputForm(
+                            hourmeter = state.hourmeter,
+                            hourmeterErrorState = state.hourmeterErrorState,
+                            remarks = state.remarks,
+                            onHourmeterChange = {
+                                onEvent(
+                                    HeavyVehicleFuelQrScreenEvent.OnHourmeterChange(
+                                        it
+                                    )
                                 )
-                            )
-                        }
-                    )
+                            },
+                            onHourmeterClear = { onEvent(HeavyVehicleFuelQrScreenEvent.OnClearHourmeter) },
+                            onRemarksChange = { onEvent(HeavyVehicleFuelQrScreenEvent.OnRemarksChange(it)) },
+                            onRemarksClear = { onEvent(HeavyVehicleFuelQrScreenEvent.OnClearRemarks) },
+                            onNavigateBack = { onEvent(HeavyVehicleFuelQrScreenEvent.OnNavigateForm(it)) },
+                            onSubmit = {
+                                onEvent(
+                                    HeavyVehicleFuelQrScreenEvent.SaveHeavyVehicleFuelTransaction(
+                                        connectionStatus
+                                    )
+                                )
+                            }
+                        )
+                    }
                 }
             }
         }
-    }
+    )
 }

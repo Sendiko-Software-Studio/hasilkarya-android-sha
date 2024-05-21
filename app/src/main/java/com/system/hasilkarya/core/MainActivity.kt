@@ -1,9 +1,11 @@
 package com.system.hasilkarya.core
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,19 +30,22 @@ import com.system.hasilkarya.profile.presentation.ProfileScreen
 import com.system.hasilkarya.profile.presentation.ProfileScreenViewModel
 import com.system.hasilkarya.splash.presentation.SplashScreen
 import com.system.hasilkarya.splash.presentation.SplashScreenViewModel
+import com.system.hasilkarya.station.presentation.StationQrScreen
+import com.system.hasilkarya.station.presentation.StationQrScreenViewModel
 import com.system.hasilkarya.truck_fuel.presentation.TruckFuelQrScreen
 import com.system.hasilkarya.truck_fuel.presentation.TruckFuelQrScreenViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             val themeViewModel = hiltViewModel<ThemeViewModel>()
             HasilKaryaTheme(
-                darkTheme = when (themeViewModel.state.collectAsState().value.theme){
+                darkTheme = when (themeViewModel.state.collectAsState().value.theme) {
                     Default -> isSystemInDarkTheme()
                     Dark -> true
                     Light -> false
@@ -92,7 +97,8 @@ class MainActivity : ComponentActivity() {
                             route = Destination.DashboardScreen.name,
                             content = {
                                 val viewModel = hiltViewModel<DashboardScreenViewModel>()
-                                val connectionStatus = viewModel.connectionStatus.collectAsState().value.connectionStatus
+                                val connectionStatus =
+                                    viewModel.connectionStatus.collectAsState().value.connectionStatus
                                 DashboardScreen(
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
@@ -110,7 +116,6 @@ class MainActivity : ComponentActivity() {
                                 MaterialQrScreen(
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
-                                    connectionStatus = viewModel.connectionStatus.collectAsState().value.connectionStatus,
                                     onNavigateBack = { route ->
                                         navController.navigate(
                                             route = route.name
@@ -131,7 +136,7 @@ class MainActivity : ComponentActivity() {
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
                                     onNavigateBack = {
-                                        navController.navigate(it.name){
+                                        navController.navigate(it.name) {
                                             popUpTo(it.name) { inclusive = true }
                                         }
                                     }
@@ -147,7 +152,7 @@ class MainActivity : ComponentActivity() {
                                     onEvent = viewModel::onEvent,
                                     connectionStatus = viewModel._connectionStatus.collectAsState().value.connectionStatus,
                                     onNavigateBack = {
-                                        navController.navigate(it.name){
+                                        navController.navigate(it.name) {
                                             popUpTo(it.name) { inclusive = true }
                                         }
                                     }
@@ -162,11 +167,25 @@ class MainActivity : ComponentActivity() {
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
                                     onNavigateBack = {
-                                        navController.navigate(it.name){
+                                        navController.navigate(it.name) {
                                             popUpTo(it.name) { inclusive = true }
                                         }
                                     },
                                     connectionStatus = viewModel.connectionStatus.collectAsState().value.connectionStatus
+                                )
+                            }
+                        )
+                        composable(
+                            route = Destination.StationQrScreen.name,
+                            content = {
+                                val viewModel = hiltViewModel<StationQrScreenViewModel>()
+                                StationQrScreen(
+                                    state = viewModel.state.collectAsState().value,
+                                    connectionStatus = viewModel.state.collectAsState().value.connectionStatus,
+                                    onNavigateBack = {
+                                        navController.popBackStack()
+                                    },
+                                    onEvent = viewModel::onEvent
                                 )
                             }
                         )

@@ -55,66 +55,67 @@ fun LoginScreen(
    ContentBoxWithNotification(
        message = state.notificationMessage,
        isErrorNotification = state.isRequestFailed.isFailed,
-       isLoading = state.isLoading
-   ) {
-       Scaffold {
-           Column(
-               modifier = Modifier
-                   .fillMaxSize()
-                   .padding(horizontal = 16.dp),
-               verticalArrangement = Arrangement.Center,
-           ) {
-               Text(
-                   text = "Login",
-                   fontSize = 24.sp,
-                   modifier = Modifier.padding(vertical = 8.dp),
-                   fontWeight = FontWeight.Bold,
-                   fontFamily = poppinsFont
-               )
-               Text(
-                   text = "Silahkan login menggunakan email dan password.",
-                   fontSize = 16.sp,
-                   modifier = Modifier.padding(vertical = 8.dp),
-                   fontFamily = poppinsFont
-               )
-               Spacer(modifier = Modifier.size(8.dp))
-               NormalTextField(
-                   modifier = Modifier.fillMaxWidth(),
-                   value = state.emailText,
-                   leadingIcon = Icons.Default.Email,
-                   hint = "Contoh: contoh@gmail.com",
-                   errorState = state.emailErrorState,
-                   onNewValue = {
-                       onEvent(LoginScreenEvent.OnEmailChange(it))
-                   },
-                   onClearText = {
-                       onEvent(LoginScreenEvent.OnEmailClear)
-                   },
-                   keyboardType = KeyboardType.Email
-               )
-               PasswordTextField(
-                   modifier = Modifier.fillMaxWidth(),
-                   value = state.passwordText,
-                   leadingIcon = Icons.Default.Lock,
-                   isVisible = state.isPasswordVisible,
-                   hint = "Masukkan password anda",
-                   errorState = state.passwordErrorState,
-                   onNewValue = {
-                       onEvent(LoginScreenEvent.OnPasswordChange(it))
-                   },
-                   onVisibiltyToggle = {
-                       onEvent(LoginScreenEvent.OnPasswordVisibilityChange(it))
-                   }
-               )
-               Spacer(modifier = Modifier.size(4.dp))
-               Button(
-                   modifier = Modifier.fillMaxWidth(),
-                   onClick = { onEvent(LoginScreenEvent.OnLoginClick) },
-                   content = {
-                       Text(text = "Login", fontFamily = poppinsFont)
-                   }
-               )
+       isLoading = state.isLoading,
+       content = {
+           Scaffold {
+               Column(
+                   modifier = Modifier
+                       .fillMaxSize()
+                       .padding(horizontal = 16.dp),
+                   verticalArrangement = Arrangement.Center,
+               ) {
+                   Text(
+                       text = "Login",
+                       fontSize = 24.sp,
+                       modifier = Modifier.padding(vertical = 8.dp),
+                       fontWeight = FontWeight.Bold,
+                       fontFamily = poppinsFont
+                   )
+                   Text(
+                       text = "Silahkan login menggunakan email dan password.",
+                       fontSize = 16.sp,
+                       modifier = Modifier.padding(vertical = 8.dp),
+                       fontFamily = poppinsFont
+                   )
+                   Spacer(modifier = Modifier.size(8.dp))
+                   NormalTextField(
+                       modifier = Modifier.fillMaxWidth(),
+                       value = state.emailText,
+                       leadingIcon = Icons.Default.Email,
+                       hint = "Contoh: contoh@gmail.com",
+                       errorState = state.emailErrorState,
+                       onNewValue = {
+                           onEvent(LoginScreenEvent.OnEmailChange(it))
+                       },
+                       onClearText = {
+                           onEvent(LoginScreenEvent.OnEmailClear)
+                       },
+                       keyboardType = KeyboardType.Email
+                   )
+                   PasswordTextField(
+                       modifier = Modifier.fillMaxWidth(),
+                       value = state.passwordText,
+                       leadingIcon = Icons.Default.Lock,
+                       isVisible = state.isPasswordVisible,
+                       hint = "Masukkan password anda",
+                       errorState = state.passwordErrorState,
+                       onNewValue = {
+                           onEvent(LoginScreenEvent.OnPasswordChange(it))
+                       },
+                       onVisibiltyToggle = {
+                           onEvent(LoginScreenEvent.OnPasswordVisibilityChange(it))
+                       }
+                   )
+                   Spacer(modifier = Modifier.size(4.dp))
+                   Button(
+                       modifier = Modifier.fillMaxWidth(),
+                       onClick = { onEvent(LoginScreenEvent.OnLoginClick) },
+                       content = {
+                           Text(text = "Login", fontFamily = poppinsFont)
+                       }
+                   )
+               }
            }
        }
-   }
+   )
 }

@@ -43,6 +43,7 @@ import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.None
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.Pos
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.Truck
 import com.system.hasilkarya.qr.presentation.QrScanComponent
+import com.system.hasilkarya.station.presentation.component.StationLocation
 import kotlinx.coroutines.delay
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -51,7 +52,6 @@ import kotlinx.coroutines.delay
 fun MaterialQrScreen(
     state: MaterialQrScreenState,
     onEvent: (MaterialQrScreenEvent) -> Unit,
-    connectionStatus: Status,
     onNavigateBack: (Destination) -> Unit,
 ) {
     val context = LocalContext.current
@@ -72,132 +72,107 @@ fun MaterialQrScreen(
     ContentBoxWithNotification(
         message = state.notificationMessage,
         isLoading = state.isLoading,
-        isErrorNotification = state.isRequestFailed.isFailed
-    ) {
-        Scaffold { _ ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        start = 8.dp,
-                        end = 8.dp
-                    )
-            ) {
-                AnimatedVisibility(
-                    visible = state.currentlyScanning == Truck,
-                    enter = slideInHorizontally(),
-                    exit = slideOutHorizontally(),
-                    content = {
-                        QrScanComponent(
-                            onResult = {
-                                onEvent(MaterialQrScreenEvent.OnTruckIdRegistered(it, connectionStatus))
-                            },
-                            navigateBack = {
-                                onNavigateBack(Destination.DashboardScreen)
-                            },
-                            title = "Truck",
-                            isValid = state.truckId.isNotBlank()
-                        )
-                    }
-                )
-                AnimatedVisibility(
-                    visible = state.currentlyScanning == Driver,
-                    enter = slideInHorizontally(),
-                    exit = slideOutHorizontally(),
-                    content = {
-                        QrScanComponent(
-                            onResult = {
-                                onEvent(MaterialQrScreenEvent.OnDriverIdRegistered(it, connectionStatus))
-                            },
-                            navigateBack = {
-                                onEvent(MaterialQrScreenEvent.OnNavigateForm(Truck))
-                            },
-                            title = "Driver",
-                            isValid = state.driverId.isNotBlank(),
-                        )
-                    }
-                )
-                AnimatedVisibility(
-                    visible = state.currentlyScanning == Pos,
-                    enter = slideInHorizontally(),
-                    exit = slideOutHorizontally(),
-                    content = {
-                        QrScanComponent(
-                            onResult = {
-                                onEvent(MaterialQrScreenEvent.OnStationIdRegistered(it, connectionStatus))
-                            },
-                            navigateBack = {
-                                onEvent(MaterialQrScreenEvent.OnNavigateForm(Truck))
-                            },
-                            title = "Pos",
-                            isValid = state.stationId.isNotBlank(),
-                        )
-                    }
-                )
-                AnimatedVisibility(visible = state.currentlyScanning == None) {
-                    Scaffold(
-                        topBar = {
-                            TopAppBar(
-                                title = { Text(text = "Masukkan data", fontFamily = poppinsFont) },
-                                navigationIcon = {
-                                    IconButton(onClick = { onEvent(MaterialQrScreenEvent.OnNavigateForm(Pos)) }) {
-                                        Icon(
-                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                            contentDescription = "kembali"
-                                        )
-                                    }
-                                }
+        isErrorNotification = state.isRequestFailed.isFailed,
+        content = {
+            Scaffold { _ ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    AnimatedVisibility(
+                        visible = state.currentlyScanning == Truck,
+                        enter = slideInHorizontally(),
+                        exit = slideOutHorizontally(),
+                        content = {
+                            QrScanComponent(
+                                onResult = {
+                                    onEvent(MaterialQrScreenEvent.OnTruckIdRegistered(it))
+                                },
+                                navigateBack = {
+                                    onNavigateBack(Destination.DashboardScreen)
+                                },
+                                title = "Truck",
+                                isValid = state.truckId.isNotBlank()
                             )
                         }
-                    ) { paddingValues ->
-                        Box(
-                            modifier = Modifier.padding(paddingValues)
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(8.dp)
-                            ) {
-                                Text(
-                                    text = "Masukkan volume material",
-                                    fontFamily = poppinsFont,
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Medium
-                                )
-                                NormalTextField(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    value = state.materialVolume,
-                                    onNewValue = { onEvent(MaterialQrScreenEvent.OnVolumeChange(it)) },
-                                    leadingIcon = Icons.AutoMirrored.Default.Outbound,
-                                    onClearText = {  },
-                                    keyboardType = KeyboardType.Decimal,
-                                    hint = "Dalam meter kubik (m³)",
-                                    errorState = state.materialVolumeErrorState
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = "Tambah keterangan",
-                                    fontFamily = poppinsFont,
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Medium
-                                )
-                                NormalTextField(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(128.dp),
-                                    value = state.remarks,
-                                    onNewValue = { onEvent(MaterialQrScreenEvent.OnNewRemarks(it)) },
-                                    leadingIcon = Icons.AutoMirrored.Filled.TextSnippet,
-                                    onClearText = {  },
-                                    hint = "Keterangan",
-                                    shape = RoundedCornerShape(16.dp),
-                                    singleLine = false,
-                                )
-                                Button(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    onClick = {
-                                        onEvent(MaterialQrScreenEvent.SaveMaterial(connectionStatus))
+                    )
+                    AnimatedVisibility(visible = state.currentlyScanning == None) {
+                        Scaffold(
+                            topBar = {
+                                TopAppBar(
+                                    title = { Text(text = "Masukkan data", fontFamily = poppinsFont) },
+                                    navigationIcon = {
+                                        IconButton(onClick = { onEvent(MaterialQrScreenEvent.OnNavigateForm(Pos)) }) {
+                                            Icon(
+                                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                                contentDescription = "kembali"
+                                            )
+                                        }
                                     }
+                                )
+                            }
+                        ) { paddingValues ->
+                            Box(
+                                modifier = Modifier.padding(paddingValues)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(8.dp)
                                 ) {
-                                    Text(text = "Simpan data", fontFamily = poppinsFont)
+                                    StationLocation(
+                                        modifier = Modifier.padding(horizontal = 8.dp),
+                                        stationName = if (state.stationName == "Station berhasil disimpan.") {
+                                            "Pos baru disimpan."
+                                        } else {
+                                            "${state.stationName}."
+                                        },
+                                        onButtonClick = {
+                                            onNavigateBack(Destination.StationQrScreen)
+                                        }
+                                    )
+                                    Text(
+                                        text = "Masukkan volume material",
+                                        fontFamily = poppinsFont,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        modifier = Modifier.padding(8.dp)
+                                    )
+                                    NormalTextField(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        value = state.materialVolume,
+                                        onNewValue = { onEvent(MaterialQrScreenEvent.OnVolumeChange(it)) },
+                                        leadingIcon = Icons.AutoMirrored.Default.Outbound,
+                                        onClearText = {  },
+                                        keyboardType = KeyboardType.Decimal,
+                                        hint = "Dalam meter kubik (m³)",
+                                        errorState = state.materialVolumeErrorState
+                                    )
+                                    Text(
+                                        text = "Tambah keterangan",
+                                        fontFamily = poppinsFont,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        modifier = Modifier.padding(8.dp)
+                                    )
+                                    NormalTextField(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(128.dp),
+                                        value = state.remarks,
+                                        onNewValue = { onEvent(MaterialQrScreenEvent.OnNewRemarks(it)) },
+                                        leadingIcon = Icons.AutoMirrored.Filled.TextSnippet,
+                                        onClearText = {  },
+                                        hint = "Keterangan",
+                                        shape = RoundedCornerShape(16.dp),
+                                        singleLine = false,
+                                    )
+                                    Button(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        onClick = {
+                                            onEvent(MaterialQrScreenEvent.SaveMaterial)
+                                        }
+                                    ) {
+                                        Text(text = "Simpan data", fontFamily = poppinsFont)
+                                    }
                                 }
                             }
                         }
@@ -205,5 +180,5 @@ fun MaterialQrScreen(
                 }
             }
         }
-    }
+    )
 }

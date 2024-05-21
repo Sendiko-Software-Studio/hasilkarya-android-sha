@@ -15,6 +15,7 @@ import com.system.hasilkarya.material.data.PostMaterialRequest
 import com.system.hasilkarya.material.data.PostMaterialResponse
 import com.system.hasilkarya.material.data.PostToLogResponse
 import com.system.hasilkarya.profile.data.LogoutResponse
+import com.system.hasilkarya.station.data.GetStationResponse
 import com.system.hasilkarya.truck_fuel.data.TruckFuelLogRequest
 import com.system.hasilkarya.truck_fuel.data.TruckFuelLogResponse
 import com.system.hasilkarya.truck_fuel.data.TruckFuelRequest
@@ -103,5 +104,11 @@ interface ApiServices {
         @Path("id") heavyVehicleId: String,
         @Header("Authorization") token: String
     ): Call<CheckHeavyVehicleIdResponse>
+
+    @GET("checker/station/{id}")
+    fun getStation(
+        @Path("id") stationId: String,
+        @Header("Authorization") token: String
+    ): Call<GetStationResponse>
 
 }

@@ -10,6 +10,7 @@ import com.system.hasilkarya.core.network.NetworkConnectivityObserver
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.preferences.AppPreferences
 import com.system.hasilkarya.core.repositories.material.MaterialRepository
+import com.system.hasilkarya.core.repositories.station.StationRepository
 import com.system.hasilkarya.core.ui.utils.ErrorTextField
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.core.utils.commaToPeriod
@@ -40,261 +41,46 @@ import javax.inject.Inject
 @HiltViewModel
 class MaterialQrScreenViewModel @Inject constructor(
     private val repository: MaterialRepository,
-    preferences: AppPreferences,
-    connectionObserver: NetworkConnectivityObserver
+    private val stationRepository: StationRepository,
+    preferences: AppPreferences
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(MaterialQrScreenState())
     private val _token = preferences.getToken()
     private val _userId = preferences.getUserId()
-    val connectionStatus =
-        combine(connectionObserver.observe(), _state) { connectionStatus, state ->
-            state.copy(connectionStatus = connectionStatus)
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), MaterialQrScreenState())
+    private val _station = stationRepository.getAllStations()
     val state = combine(
-        _token, _userId, _state
-    ) { token, userId, state ->
+        _token, _userId, _station, _state
+    ) { token, userId, station, state ->
         state.copy(
             token = token,
             userId = userId,
+            stationId = station.first().stationId,
+            stationName = station.first().name
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), MaterialQrScreenState())
 
-    private fun checkTruckId(truckId: String) {
-        _state.update { it.copy(isLoading = true) }
-        val token = "Bearer ${state.value.token}"
-        val request = repository.checkTruckId(token, truckId)
-        request.enqueue(
-            object : Callback<CheckTruckIdResponse> {
-                override fun onResponse(
-                    call: Call<CheckTruckIdResponse>,
-                    response: Response<CheckTruckIdResponse>
-                ) {
-                    _state.update { it.copy(isLoading = false) }
-                    when (response.code()) {
-                        200 -> viewModelScope.launch {
-                            _state.update {
-                                it.copy(truckId = truckId)
-                            }
-                            delay(1000)
-                            _state.update {
-                                it.copy(currentlyScanning = Driver)
-                            }
-                        }
-
-                        else -> _state.update {
-                            it.copy(
-                                notificationMessage = "Qr invalid, mohon scan ulang",
-                                isRequestFailed = FailedRequest(isFailed = true)
-                            )
-                        }
-                    }
-                }
-
-                override fun onFailure(call: Call<CheckTruckIdResponse>, t: Throwable) {
-                    _state.update {
-                        it.copy(
-                            notificationMessage = "Qr invalid, mohon scan ulang",
-                            isRequestFailed = FailedRequest(isFailed = true)
-                        )
-                    }
-                }
-
-            }
-        )
-    }
-
-    private fun checkDriverId(driverId: String) {
-        _state.update { it.copy(isLoading = true) }
-        val token = "Bearer ${state.value.token}"
-        val request = repository.checkDriverId(token, driverId)
-        request.enqueue(
-            object : Callback<CheckDriverIdResponse> {
-                override fun onResponse(
-                    call: Call<CheckDriverIdResponse>,
-                    response: Response<CheckDriverIdResponse>
-                ) {
-                    _state.update { it.copy(isLoading = false) }
-                    when (response.code()) {
-                        200 -> {
-                            viewModelScope.launch {
-                                _state.update {
-                                    it.copy(driverId = driverId)
-                                }
-                                delay(1000)
-                                _state.update {
-                                    it.copy(currentlyScanning = Pos)
-                                }
-                            }
-                        }
-
-                        else -> _state.update {
-                            it.copy(
-                                notificationMessage = "Qr invalid, mohon scan ulang",
-                                isRequestFailed = FailedRequest(isFailed = true)
-                            )
-                        }
-                    }
-                }
-
-                override fun onFailure(call: Call<CheckDriverIdResponse>, t: Throwable) {
-                    _state.update {
-                        it.copy(
-                            notificationMessage = "Qr invalid, mohon scan ulang",
-                            isRequestFailed = FailedRequest(isFailed = true)
-                        )
-                    }
-                }
-
-            }
-        )
-    }
-
-    private fun checkStationId(stationId: String) {
-        _state.update { it.copy(isLoading = true) }
-        val token = "Bearer ${state.value.token}"
-        val request = repository.checkStationId(token, stationId)
-        request.enqueue(
-            object : Callback<CheckStationIdResponse> {
-                override fun onResponse(
-                    call: Call<CheckStationIdResponse>,
-                    response: Response<CheckStationIdResponse>
-                ) {
-                    _state.update { it.copy(isLoading = false) }
-                    when (response.code()) {
-                        200 -> {
-                            viewModelScope.launch {
-                                _state.update {
-                                    it.copy(stationId = stationId)
-                                }
-                                delay(1000)
-                                _state.update {
-                                    it.copy(currentlyScanning = None)
-                                }
-                            }
-                        }
-
-                        else -> _state.update {
-                            it.copy(
-                                notificationMessage = "Qr invalid, mohon scan ulang",
-                                isRequestFailed = FailedRequest(isFailed = true)
-                            )
-                        }
-                    }
-                }
-
-                override fun onFailure(call: Call<CheckStationIdResponse>, t: Throwable) {
-                    _state.update {
-                        it.copy(
-                            notificationMessage = "Qr invalid, mohon scan ulang",
-                            isRequestFailed = FailedRequest(isFailed = true)
-                        )
-                    }
-                }
-
-            }
-        )
-    }
-
-    private fun postMaterial(materialEntity: MaterialEntity, connectionStatus: Status) {
-        _state.update { it.copy(isLoading = true) }
-        val token = "Bearer ${state.value.token}"
-        val data = PostMaterialRequest(
-            driverId = materialEntity.driverId,
-            truckId = materialEntity.truckId,
-            stationId = materialEntity.stationId,
-            checkerId = materialEntity.checkerId,
-            observationRatio = materialEntity.ratio,
-            remarks = materialEntity.remarks,
-            date = materialEntity.date
-        )
-        if (connectionStatus == Status.Available) {
-            val request = repository.postMaterial(token, data)
-            request.enqueue(
-                object : Callback<PostMaterialResponse> {
-                    override fun onResponse(
-                        call: Call<PostMaterialResponse>,
-                        response: Response<PostMaterialResponse>
-                    ) {
-                        _state.update { it.copy(isLoading = false) }
-                        when (response.code()) {
-                            201 -> {
-                                _state.update {
-                                    it.copy(
-                                        isPostSuccessful = true,
-                                        notificationMessage = "Data tersimpan!",
-                                    )
-                                }
-                            }
-
-                            else -> {
-                                _state.update {
-                                    it.copy(
-                                        notificationMessage = "Duh, ada yang salah",
-                                        isRequestFailed = FailedRequest(isFailed = true),
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    override fun onFailure(call: Call<PostMaterialResponse>, t: Throwable) {
-                        viewModelScope.launch { repository.saveMaterial(materialEntity) }
-                        _state.update {
-                            it.copy(
-                                isLoading = false,
-                                notificationMessage = "Data berhasil tersimpan!",
-                                isPostSuccessful = true
-                            )
-                        }
-                    }
-
-                }
+    private fun postMaterial(materialEntity: MaterialEntity) {
+        viewModelScope.launch { repository.saveMaterial(materialEntity) }
+        _state.update {
+            it.copy(
+                notificationMessage = "Data berhasil tersimpan!",
+                isLoading = false,
+                isPostSuccessful = true
             )
-        } else {
-            viewModelScope.launch { repository.saveMaterial(materialEntity) }
-            _state.update {
-                it.copy(
-                    notificationMessage = "Data berhasil tersimpan!",
-                    isLoading = false,
-                    isPostSuccessful = true
-                )
-            }
         }
     }
 
     // state related methods
-    private fun onTruckIdRegistered(truckId: String, connectionStatus: Status) {
-        if (connectionStatus == Status.Available)
-            checkTruckId(truckId)
-        else viewModelScope.launch {
+    private fun onTruckIdRegistered(truckId: String) {
+        viewModelScope.launch {
             _state.update {
                 it.copy(truckId = truckId)
             }
             delay(1000)
             _state.update {
-                it.copy(currentlyScanning = Driver)
+                it.copy(currentlyScanning = None)
             }
-        }
-    }
-
-    private fun onDriverIdRegistered(driverId: String, connectionStatus: Status) {
-        if (connectionStatus == Status.Available)
-            checkDriverId(driverId)
-        else viewModelScope.launch {
-            _state.update { it.copy(driverId = driverId) }
-            delay(1000)
-            _state.update { it.copy(currentlyScanning = Pos) }
-        }
-    }
-
-    private fun onStationIdRegistered(stationId: String, connectionStatus: Status) {
-        if (connectionStatus == Status.Available)
-            checkStationId(stationId)
-        else viewModelScope.launch {
-            _state.update { it.copy(stationId = stationId) }
-            delay(1000)
-            _state.update { it.copy(currentlyScanning = None) }
         }
     }
 
@@ -329,7 +115,7 @@ class MaterialQrScreenViewModel @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun onSaveMaterial(connectionStatus: Status) {
+    private fun onSaveMaterial() {
         if (state.value.materialVolume.isBlank()) {
             _state.update {
                 it.copy(
@@ -349,24 +135,20 @@ class MaterialQrScreenViewModel @Inject constructor(
                 checkerId = state.value.userId,
                 date = LocalDateTime.now().toString(),
             )
-            postMaterial(data, connectionStatus)
+            postMaterial(data)
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun onEvent(event: MaterialQrScreenEvent) {
         when (event) {
-            is MaterialQrScreenEvent.OnTruckIdRegistered -> onTruckIdRegistered(event.truckId, event.connectionStatus)
-
-            is MaterialQrScreenEvent.OnDriverIdRegistered -> onDriverIdRegistered(event.driverId, event.connectionStatus)
-
-            is MaterialQrScreenEvent.OnStationIdRegistered -> onStationIdRegistered(event.stationId, event.connectionStatus)
+            is MaterialQrScreenEvent.OnTruckIdRegistered -> onTruckIdRegistered(event.truckId)
 
             is MaterialQrScreenEvent.OnVolumeChange -> onVolumeChange(event.volume)
 
             is MaterialQrScreenEvent.OnNewRemarks -> onRemarksChange(event.remarks)
 
-            is MaterialQrScreenEvent.SaveMaterial -> onSaveMaterial(event.connectionStatus)
+            is MaterialQrScreenEvent.SaveMaterial -> onSaveMaterial()
 
             MaterialQrScreenEvent.OnClearNotification -> onClearNotification()
 

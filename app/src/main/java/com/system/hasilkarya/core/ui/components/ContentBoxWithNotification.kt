@@ -35,8 +35,9 @@ fun ContentBoxWithNotification(
     isErrorNotification: Boolean = false,
     isLoading: Boolean = false,
     content: @Composable (() -> Unit),
+    modifier: Modifier = Modifier
 ) {
-    Box {
+    Box(modifier) {
         content()
         Notification(
             message = message,

@@ -8,4 +8,5 @@ enum class Destination {
     ProfileScreen,
     GasQrScreen,
     GasHVQrScreen,
+    StationQrScreen
 }

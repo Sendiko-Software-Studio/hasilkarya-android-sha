@@ -166,7 +166,7 @@ fun QrScanComponent(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 24.dp),
+                        .padding(top = 24.dp, start = 8.dp, end = 8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {

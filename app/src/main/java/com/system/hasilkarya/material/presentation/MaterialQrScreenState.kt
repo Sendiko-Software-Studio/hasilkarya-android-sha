@@ -20,4 +20,5 @@ data class MaterialQrScreenState(
     val notificationMessage: String = "",
     val isRequestFailed: FailedRequest = FailedRequest(),
     val userId: String = "",
+    val stationName: String = ""
 )
