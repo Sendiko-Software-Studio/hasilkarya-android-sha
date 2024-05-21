@@ -84,7 +84,7 @@ class DashboardScreenViewModel @Inject constructor(
             heavyFuels = dataList.heavyFuels,
             totalData = dataList.totalData,
             stations = dataList.stations,
-            activeStation = if (dataList.stations.isNotEmpty()) dataList.stations[0] else null
+            activeStation = dataList.stations.firstOrNull()
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), DashboardScreenState())
 
@@ -111,11 +111,12 @@ class DashboardScreenViewModel @Inject constructor(
 
     // checking && posting offline datas
     private fun checkAndPostDatas() {
-        if (state.value.isPostSuccessful){
+        Log.i("POST_OFFLINE", "checkAndPostDatas: ${state.value.isLoading}")
+        if (state.value.isLoading){
             return
         }
+        _state.update { it.copy(isLoading = true) }
         val materials = state.value.materials
-        Log.i("POST_OFFLINE", "checkAndPostDatas: ONCE")
         materials.forEach {
             postMaterial(it)
         }
@@ -127,11 +128,11 @@ class DashboardScreenViewModel @Inject constructor(
         heavyFuels.forEach {
             postHeavyVehicleFuel(it)
         }
+        _state.update { it.copy(isLoading = false) }
     }
 
     // post material and log
     private fun postMaterial(materialEntity: MaterialEntity) {
-        _state.update { it.copy(isLoading = true) }
         val token = "Bearer ${state.value.token}"
         val data = PostMaterialRequest(
             driverId = materialEntity.driverId,
@@ -150,7 +151,6 @@ class DashboardScreenViewModel @Inject constructor(
                         call: Call<PostMaterialResponse>,
                         response: Response<PostMaterialResponse>
                     ) {
-                        _state.update { it.copy(isLoading = false) }
                         when (response.code()) {
                             201 -> {
                                 viewModelScope.launch {
@@ -184,11 +184,6 @@ class DashboardScreenViewModel @Inject constructor(
                             Log.i("DEBUG", "DashboardViewModel, PostMaterial onFailure: $materialEntity")
                             materialRepository.saveMaterial(materialEntity)
                         }
-                        _state.update {
-                            it.copy(
-                                isLoading = false
-                            )
-                        }
                     }
 
                 }
@@ -198,16 +193,10 @@ class DashboardScreenViewModel @Inject constructor(
                 Log.i("DEBUG", "DashboardViewModel, PostMaterial Offline: $materialEntity")
                 materialRepository.saveMaterial(materialEntity)
             }
-            _state.update {
-                it.copy(
-                    isLoading = false,
-                )
-            }
         }
     }
 
     private fun postMaterialToLog(token: String, material: MaterialEntity) {
-        _state.update { it.copy(isLoading = true) }
         var message = ""
         viewModelScope.launch(Dispatchers.IO) {
             if (!isTruckValid(token, material.truckId))
@@ -238,7 +227,6 @@ class DashboardScreenViewModel @Inject constructor(
                         call: Call<PostToLogResponse>,
                         response: Response<PostToLogResponse>
                     ) {
-                        _state.update { it.copy(isLoading = false) }
                         when(response.code()) {
                             200 -> viewModelScope.launch {
                                 materialRepository.deleteMaterial(material)
@@ -263,7 +251,6 @@ class DashboardScreenViewModel @Inject constructor(
                             materialRepository.saveMaterial(material)
                         }
                         _state.update { it.copy(
-                            isLoading = false,
                             isRequestFailed = FailedRequest(true),
                         ) }
                     }
@@ -275,7 +262,6 @@ class DashboardScreenViewModel @Inject constructor(
 
     // post fuel truck and log
     private fun postTruckFuel(fuelTruckEntity: FuelTruckEntity) {
-        _state.update { it.copy(isLoading = true) }
         val token = "Bearer ${state.value.token}"
         val data = TruckFuelRequest(
             truckId = fuelTruckEntity.truckId,
@@ -295,7 +281,6 @@ class DashboardScreenViewModel @Inject constructor(
                         call: Call<TruckFuelResponse>,
                         response: Response<TruckFuelResponse>
                     ) {
-                        _state.update { it.copy(isLoading = false) }
                         when (response.code()) {
                             201 -> {
                                 viewModelScope.launch {
@@ -348,7 +333,6 @@ class DashboardScreenViewModel @Inject constructor(
     }
 
     private fun postTruckFuelToLog(token: String, fuelTruckEntity: FuelTruckEntity) {
-        _state.update { it.copy(isLoading = true) }
         var message = ""
         viewModelScope.launch(Dispatchers.IO) {
             if (!isTruckValid(token, fuelTruckEntity.truckId))
@@ -380,7 +364,6 @@ class DashboardScreenViewModel @Inject constructor(
                         call: Call<TruckFuelLogResponse>,
                         response: Response<TruckFuelLogResponse>
                     ) {
-                        _state.update { it.copy(isLoading = false) }
                         when(response.code()) {
                             200 -> {
                                 viewModelScope.launch { truckFuelRepository.deleteFuel(fuelTruckEntity) }
@@ -422,7 +405,6 @@ class DashboardScreenViewModel @Inject constructor(
             date = heavyVehicleEntity.date
         )
         if (connectionStatus.value.connectionStatus == Status.Available) {
-            _state.update { it.copy(isLoading = true) }
             val request = heavyVehicleFuelRepository.postHeavyVehicleFuel(token, data)
             request.enqueue(
                 object : Callback<HeavyVehicleFuelResponse> {
@@ -430,7 +412,6 @@ class DashboardScreenViewModel @Inject constructor(
                         call: Call<HeavyVehicleFuelResponse>,
                         response: Response<HeavyVehicleFuelResponse>
                     ) {
-                        _state.update { it.copy(isLoading = false) }
                         when(response.code()) {
                             201 -> {
                                 viewModelScope.launch { heavyVehicleFuelRepository.deleteHeavyVehicleFuel(heavyVehicleEntity) }
@@ -446,7 +427,7 @@ class DashboardScreenViewModel @Inject constructor(
                     override fun onFailure(call: Call<HeavyVehicleFuelResponse>, t: Throwable) {
                         viewModelScope.launch {
                             heavyVehicleFuelRepository.storeHeavyVehicleFuel(heavyVehicleEntity)
-                            _state.update { it.copy(isPostSuccessful = true, isLoading = false) }
+                            _state.update { it.copy(isPostSuccessful = true) }
                         }
                     }
                 }
@@ -460,7 +441,6 @@ class DashboardScreenViewModel @Inject constructor(
     private fun postHeavyVehicleFuelLog(heavyVehicleEntity: FuelHeavyVehicleEntity) {
         val token = "Bearer ${state.value.token}"
         var message = ""
-        _state.update { it.copy(isLoading = true) }
         viewModelScope.launch(Dispatchers.IO) {
             if (!isHeavyVehicleValid(token, heavyVehicleEntity.heavyVehicleId)){
                 message = "Heavy Vehicle ID is not valid, "
@@ -492,7 +472,6 @@ class DashboardScreenViewModel @Inject constructor(
                         call: Call<HeavyVehicleLogResponse>,
                         response: Response<HeavyVehicleLogResponse>
                     ) {
-                        _state.update { it.copy(isLoading = false) }
                         when(response.code()) {
                             200 -> viewModelScope.launch {
                                 heavyVehicleFuelRepository.deleteHeavyVehicleFuel(heavyVehicleEntity)
@@ -508,7 +487,6 @@ class DashboardScreenViewModel @Inject constructor(
 
                     override fun onFailure(call: Call<HeavyVehicleLogResponse>, t: Throwable) {
                         viewModelScope.launch { heavyVehicleFuelRepository.storeHeavyVehicleFuel(heavyVehicleEntity) }
-                        _state.update { it.copy(isPostSuccessful = true) }
                     }
 
                 }
