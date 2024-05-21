@@ -49,8 +49,9 @@ class StationQrScreenViewModel @Inject constructor(
 
     private fun getStation(stationId: String, connectionStatus: Status) {
         _state.update { it.copy(isLoading = true) }
+        Log.i("CONNECTION_STATUS", connectionStatus.name)
         val token = "Bearer ${state.value.token}"
-        if (connectionStatus == Status.Available) {
+        if (state.value.connectionStatus == Status.Available) {
             viewModelScope.launch(Dispatchers.IO) {
                 if (isStationValid(token = token, stationId = stationId)) {
                     val request = stationRepository.getStationFromApi(stationId, token)
@@ -106,12 +107,32 @@ class StationQrScreenViewModel @Inject constructor(
                                         notificationMessage = "Server error."
                                     )
                                 }
+                                val data = StationEntity(
+                                    id = 1,
+                                    name = "Station berhasil disimpan.",
+                                    regency = "",
+                                    province = "",
+                                    stationId = stationId,
+                                )
+                                viewModelScope.launch {
+                                    stationRepository.saveStation(data)
+                                }
                                 clearState()
                             }
 
                         }
                     )
                 } else {
+                    val data = StationEntity(
+                        id = 1,
+                        name = "Station berhasil disimpan.",
+                        regency = "",
+                        province = "",
+                        stationId = stationId,
+                    )
+                    viewModelScope.launch {
+                        stationRepository.saveStation(data)
+                    }
                     _state.update {
                         it.copy(
                             isLoading = false,
@@ -123,11 +144,22 @@ class StationQrScreenViewModel @Inject constructor(
                 }
             }
         } else {
+            val data = StationEntity(
+                id = 1,
+                name = "Station berhasil disimpan.",
+                regency = "",
+                province = "",
+                stationId = stationId,
+            )
+            viewModelScope.launch {
+                stationRepository.saveStation(data)
+            }
             _state.update {
                 it.copy(
                     isLoading = false,
                     isRequestSuccess = true,
-                    notificationMessage = "Pos disimpan."
+                    notificationMessage = "Pos disimpan.",
+                    stationId = stationId
                 )
             }
             clearState()
@@ -135,13 +167,16 @@ class StationQrScreenViewModel @Inject constructor(
     }
 
     private fun clearState() {
-        _state.update {
-            it.copy(
-                notificationMessage = "",
-                isRequestFailed = false,
-                isRequestSuccess = false,
-                isLoading = false,
-            )
+        viewModelScope.launch {
+            delay(1000)
+            _state.update {
+                it.copy(
+                    notificationMessage = "",
+                    isRequestFailed = false,
+                    isRequestSuccess = false,
+                    isLoading = false,
+                )
+            }
         }
     }
 
