@@ -68,6 +68,7 @@ class LoginScreenViewModel @Inject constructor(
                             repository.setToken(response.body()!!.token)
                             repository.setUserId(response.body()!!.userData.userId)
                             repository.setRole(response.body()!!.userData.roles[0])
+                            repository.setPassword(state.value.passwordText)
                             _state.update {
                                 it.copy(isLoginSuccessful = true)
                             }
