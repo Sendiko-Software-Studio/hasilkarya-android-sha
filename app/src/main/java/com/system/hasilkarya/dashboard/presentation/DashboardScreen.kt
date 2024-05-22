@@ -36,7 +36,11 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.system.hasilkarya.R
-import com.system.hasilkarya.core.navigation.Destination
+import com.system.hasilkarya.core.navigation.GasHeavyVehicleScreen
+import com.system.hasilkarya.core.navigation.GasTruckScreen
+import com.system.hasilkarya.core.navigation.MaterialScreen
+import com.system.hasilkarya.core.navigation.ProfileScreen
+import com.system.hasilkarya.core.navigation.StationScreen
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.theme.poppinsFont
 import com.system.hasilkarya.dashboard.presentation.component.MenuCard
@@ -49,7 +53,7 @@ fun DashboardScreen(
     state: DashboardScreenState,
     connectionStatus: Status,
     onEvent: (DashboardScreenEvent) -> Unit,
-    onNavigate: (Destination) -> Unit,
+    onNavigate: (destination: Any) -> Unit,
 ) {
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -88,7 +92,7 @@ fun DashboardScreen(
                     ) {
                         Icon(imageVector = Icons.Default.Sync, contentDescription = "sinkronisasi")
                     }
-                    IconButton(onClick = { onNavigate(Destination.ProfileScreen) }) {
+                    IconButton(onClick = { onNavigate(ProfileScreen) }) {
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = "Settings",
@@ -106,30 +110,32 @@ fun DashboardScreen(
         },
     ) { paddingValues ->
         Column {
-            StationLocation(
-                stationName = if (noStation)
-                    "Tidak ada."
-                else {
-                    if (state.activeStation!!.name == "Station berhasil disimpan.") {
-                        "Pos baru disimpan."
-                    } else {
-                        "${state.activeStation.name}, ${state.activeStation.province}."
-                    }
-                },
-                onButtonClick = {
-                    onNavigate(Destination.StationQrScreen)
-                },
-                modifier = Modifier.padding(
-                    top = paddingValues.calculateTopPadding(),
-                    start = 16.dp,
-                    end = 16.dp
+            if (state.role == "checker"){
+                StationLocation(
+                    stationName = if (noStation)
+                        "Tidak ada."
+                    else {
+                        if (state.activeStation!!.name == "Station berhasil disimpan.") {
+                            "Pos baru disimpan."
+                        } else {
+                            "${state.activeStation.name}, ${state.activeStation.province}."
+                        }
+                    },
+                    onButtonClick = {
+                        onNavigate(StationScreen)
+                    },
+                    modifier = Modifier.padding(
+                        top = paddingValues.calculateTopPadding(),
+                        start = 16.dp,
+                        end = 16.dp
+                    )
                 )
-            )
+            } else Spacer(modifier = Modifier.height(paddingValues.calculateTopPadding() + 16.dp))
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 content = {
                     if (state.role == "checker" || state.role == "admin") {
@@ -138,7 +144,7 @@ fun DashboardScreen(
                                 text = "Scan Material Movement",
                                 icon = painterResource(id = R.drawable.scan_material_movement),
                                 onClickAction = {
-                                    onNavigate(Destination.MaterialQrScreen)
+                                    onNavigate(MaterialScreen)
                                 },
                                 enabled = !noStation
                             )
@@ -150,8 +156,9 @@ fun DashboardScreen(
                                 text = "Scan Transaksi BBM Truk",
                                 icon = painterResource(id = R.drawable.scan_truck),
                                 onClickAction = {
-                                    onNavigate(Destination.GasQrScreen)
+                                    onNavigate(GasTruckScreen)
                                 },
+                                enabled = true
                             )
                         }
                     }
@@ -161,8 +168,9 @@ fun DashboardScreen(
                                 text = "Scan Transaksi BBM Alat Berat",
                                 icon = painterResource(id = R.drawable.scan_exca),
                                 onClickAction = {
-                                    onNavigate(Destination.GasHVQrScreen)
+                                    onNavigate(GasHeavyVehicleScreen)
                                 },
+                                enabled = true
                             )
                         }
                     }
@@ -181,7 +189,7 @@ fun DashboardScreen(
                     itemCount = state.totalData
                 )
             }
-            if (noStation) {
+            if (noStation && state.role == "checker") {
                 Snackbar(
                     content = {
                         Text(text = "Mohon pilih Pos terlebih dulu.")

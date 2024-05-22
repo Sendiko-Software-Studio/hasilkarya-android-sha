@@ -2,13 +2,10 @@ package com.system.hasilkarya.station.presentation
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.system.hasilkarya.core.navigation.Destination
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
 import com.system.hasilkarya.qr.presentation.QrScanComponent

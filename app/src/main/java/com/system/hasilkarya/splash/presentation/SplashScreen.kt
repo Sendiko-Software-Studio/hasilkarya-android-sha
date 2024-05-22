@@ -14,22 +14,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.system.hasilkarya.R
-import com.system.hasilkarya.core.navigation.Destination
+import com.system.hasilkarya.core.navigation.DashboardScreen
+import com.system.hasilkarya.core.navigation.LoginScreen
 import kotlinx.coroutines.delay
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SplashScreen(
     state: SplashScreenState,
-    onNavigate: (Destination) -> Unit
+    onNavigate: (destination: Any) -> Unit
 ) {
     LaunchedEffect(
         key1 = state.token,
         block = {
             delay(1000)
             if (state.token.isNotBlank())
-                onNavigate(Destination.DashboardScreen)
-            else onNavigate(Destination.LoginScreen)
+                onNavigate(DashboardScreen)
+            else onNavigate(LoginScreen)
         }
     )
     Scaffold {

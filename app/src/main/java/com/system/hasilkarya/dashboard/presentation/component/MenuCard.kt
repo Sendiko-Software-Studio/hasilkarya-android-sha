@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.system.hasilkarya.core.ui.theme.poppinsFont
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuCard(
     modifier: Modifier = Modifier,

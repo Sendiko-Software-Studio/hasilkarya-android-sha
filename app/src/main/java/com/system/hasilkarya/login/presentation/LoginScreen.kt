@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.system.hasilkarya.core.navigation.Destination
+import com.system.hasilkarya.core.navigation.DashboardScreen
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
 import com.system.hasilkarya.core.ui.components.NormalTextField
 import com.system.hasilkarya.core.ui.components.PasswordTextField
@@ -33,13 +33,13 @@ import kotlinx.coroutines.delay
 fun LoginScreen(
     state: LoginScreenState,
     onEvent: (LoginScreenEvent) -> Unit,
-    onNavigate: (Destination) -> Unit
+    onNavigate: (destination: Any) -> Unit
 ) {
     LaunchedEffect(
         key1 = state,
         block = {
             if (state.isLoginSuccessful)
-                onNavigate(Destination.DashboardScreen)
+                onNavigate(DashboardScreen)
 
             if (state.isRequestFailed.isFailed){
                 delay(1000)

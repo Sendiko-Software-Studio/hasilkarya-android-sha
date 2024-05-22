@@ -35,7 +35,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.system.hasilkarya.core.navigation.Destination
+import com.system.hasilkarya.core.navigation.DashboardScreen
+import com.system.hasilkarya.core.navigation.SplashScreen
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
 import com.system.hasilkarya.core.ui.theme.AppTheme
 import com.system.hasilkarya.core.ui.theme.poppinsFont
@@ -45,7 +46,7 @@ import com.system.hasilkarya.core.ui.theme.poppinsFont
 fun ProfileScreen(
     state: ProfileScreenState,
     onEvent: (ProfileScreenEvent) -> Unit,
-    onNavigateBack: (Destination) -> Unit
+    onNavigateBack: (destinations: Any) -> Unit
 ) {
     var isShowingThemeOptions by remember {
         mutableStateOf(false)
@@ -54,7 +55,7 @@ fun ProfileScreen(
         key1 = state,
         block = {
             if (state.isPostSuccessful) {
-                onNavigateBack(Destination.SplashScreen)
+                onNavigateBack(SplashScreen)
             }
         }
     )
@@ -69,12 +70,15 @@ fun ProfileScreen(
                     LargeTopAppBar(
                         title = { Text(text = "Profile", fontFamily = poppinsFont) },
                         navigationIcon = {
-                            IconButton(onClick = { onNavigateBack(Destination.DashboardScreen) }) {
-                                Icon(
-                                    imageVector = Icons.Default.ArrowBack,
-                                    contentDescription = "kembali"
-                                )
-                            }
+                            IconButton(
+                                onClick = { onNavigateBack(DashboardScreen) },
+                                content = {
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowBack,
+                                        contentDescription = "kembali"
+                                    )
+                                }
+                            )
                         },
                         scrollBehavior = scrollBehavior,
                         colors = TopAppBarDefaults.largeTopAppBarColors(

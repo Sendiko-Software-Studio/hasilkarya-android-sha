@@ -8,7 +8,6 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,12 +32,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.system.hasilkarya.core.navigation.Destination
-import com.system.hasilkarya.core.network.Status
+import com.system.hasilkarya.core.navigation.DashboardScreen
+import com.system.hasilkarya.core.navigation.StationScreen
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
 import com.system.hasilkarya.core.ui.components.NormalTextField
 import com.system.hasilkarya.core.ui.theme.poppinsFont
-import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.Driver
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.None
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.Pos
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.Truck
@@ -52,7 +50,7 @@ import kotlinx.coroutines.delay
 fun MaterialQrScreen(
     state: MaterialQrScreenState,
     onEvent: (MaterialQrScreenEvent) -> Unit,
-    onNavigateBack: (Destination) -> Unit,
+    onNavigateBack: (destination: Any) -> Unit,
 ) {
     val context = LocalContext.current
     LaunchedEffect(
@@ -60,7 +58,7 @@ fun MaterialQrScreen(
         block = {
             if (state.isPostSuccessful) {
                 delay(1000)
-                onNavigateBack(Destination.DashboardScreen)
+                onNavigateBack(DashboardScreen)
             }
 
             if (state.notificationMessage.isNotBlank()) {
@@ -89,7 +87,7 @@ fun MaterialQrScreen(
                                     onEvent(MaterialQrScreenEvent.OnTruckIdRegistered(it))
                                 },
                                 navigateBack = {
-                                    onNavigateBack(Destination.DashboardScreen)
+                                    onNavigateBack(DashboardScreen)
                                 },
                                 title = "Truck",
                                 isValid = state.truckId.isNotBlank()
@@ -126,7 +124,7 @@ fun MaterialQrScreen(
                                             "${state.stationName}."
                                         },
                                         onButtonClick = {
-                                            onNavigateBack(Destination.StationQrScreen)
+                                            onNavigateBack(StationScreen)
                                         }
                                     )
                                     Text(
