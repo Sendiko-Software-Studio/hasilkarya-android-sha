@@ -3,9 +3,7 @@ package com.system.hasilkarya.dashboard.presentation
 import android.Manifest
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,8 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,7 +44,8 @@ import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.theme.poppinsFont
 import com.system.hasilkarya.dashboard.presentation.component.MenuCard
 import com.system.hasilkarya.station.presentation.component.StationLocation
-import com.system.hasilkarya.dashboard.presentation.component.UnsentItemCard
+import com.system.hasilkarya.dashboard.presentation.component.InfoItemCard
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -55,7 +55,6 @@ fun DashboardScreen(
     onEvent: (DashboardScreenEvent) -> Unit,
     onNavigate: (destination: Any) -> Unit,
 ) {
-
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val noStation = state.activeStation == null
 
@@ -85,13 +84,6 @@ fun DashboardScreen(
                     )
                 },
                 actions = {
-                    AnimatedVisibility(
-                        visible = state.isLoading,
-                        enter = expandHorizontally() + expandVertically(),
-                        exit = shrinkHorizontally() + shrinkVertically()
-                    ) {
-                        Icon(imageVector = Icons.Default.Sync, contentDescription = "sinkronisasi")
-                    }
                     IconButton(onClick = { onNavigate(ProfileScreen) }) {
                         Icon(
                             imageVector = Icons.Default.Settings,
@@ -176,25 +168,82 @@ fun DashboardScreen(
                     }
                 }
             )
-            Spacer(modifier = Modifier.height(16.dp))
             AnimatedVisibility(
                 visible = state.totalData != 0,
                 enter = expandHorizontally(),
                 exit = shrinkHorizontally()
             ) {
-                UnsentItemCard(
+                InfoItemCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    itemCount = state.totalData
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    info = "${state.totalData} data menunggu diupload.",
+                    icon = {
+                        Icon(imageVector = Icons.Default.Info, contentDescription = "info")
+                    }
                 )
             }
             if (noStation && state.role == "checker") {
-                Snackbar(
-                    content = {
-                        Text(text = "Mohon pilih Pos terlebih dulu.")
+                InfoItemCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    info = "Mohon pilih Pos terlebih dulu.",
+                    icon = {
+                        Icon(imageVector = Icons.Default.Info, contentDescription = "info")
+                    }
+                )
+            }
+            AnimatedVisibility(
+                visible = state.isUploading,
+                enter = expandHorizontally(),
+                exit = shrinkHorizontally()
+            ) {
+                Spacer(modifier = Modifier.height(8.dp))
+                InfoItemCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    info = "Sedang mengupload data..",
+                    icon = {
+                        Icon(imageVector = Icons.Default.Info, contentDescription = "info")
+                    }
+                )
+            }
+            AnimatedVisibility(
+                visible = state.isConnecting,
+                enter = expandHorizontally(),
+                exit = shrinkHorizontally()
+            ) {
+                InfoItemCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    info = "Mencoba menghubungi server..",
+                    icon = {
+                        Icon(imageVector = Icons.Default.Info, contentDescription = "info")
+                    }
+                )
+            }
+            AnimatedVisibility(
+                visible = state.isTokenExpired,
+                enter = expandHorizontally(),
+                exit = shrinkHorizontally()
+            ) {
+                InfoItemCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    info = "Maaf, aplikasi tidak bisa terhubung ke server.",
+                    icon = {
+                        TextButton(
+                            onClick = { onEvent(DashboardScreenEvent.RetryLogin) },
+                            content = {
+                                Text(text = "Coba lagi", color = MaterialTheme.colorScheme.onErrorContainer)
+                            }
+                        )
                     },
-                    modifier = Modifier.padding(16.dp)
+                    isError = true
                 )
             }
         }
