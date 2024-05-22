@@ -110,25 +110,27 @@ fun DashboardScreen(
         },
     ) { paddingValues ->
         Column {
-            StationLocation(
-                stationName = if (noStation)
-                    "Tidak ada."
-                else {
-                    if (state.activeStation!!.name == "Station berhasil disimpan.") {
-                        "Pos baru disimpan."
-                    } else {
-                        "${state.activeStation.name}, ${state.activeStation.province}."
-                    }
-                },
-                onButtonClick = {
-                    onNavigate(StationScreen)
-                },
-                modifier = Modifier.padding(
-                    top = paddingValues.calculateTopPadding(),
-                    start = 16.dp,
-                    end = 16.dp
+            if (state.role == "checker"){
+                StationLocation(
+                    stationName = if (noStation)
+                        "Tidak ada."
+                    else {
+                        if (state.activeStation!!.name == "Station berhasil disimpan.") {
+                            "Pos baru disimpan."
+                        } else {
+                            "${state.activeStation.name}, ${state.activeStation.province}."
+                        }
+                    },
+                    onButtonClick = {
+                        onNavigate(StationScreen)
+                    },
+                    modifier = Modifier.padding(
+                        top = paddingValues.calculateTopPadding(),
+                        start = 16.dp,
+                        end = 16.dp
+                    )
                 )
-            )
+            } else Spacer(modifier = Modifier.height(paddingValues.calculateTopPadding() + 16.dp))
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(horizontal = 16.dp),
@@ -187,7 +189,7 @@ fun DashboardScreen(
                     itemCount = state.totalData
                 )
             }
-            if (noStation) {
+            if (noStation && state.role == "checker") {
                 Snackbar(
                     content = {
                         Text(text = "Mohon pilih Pos terlebih dulu.")
