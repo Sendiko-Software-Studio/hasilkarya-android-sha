@@ -16,4 +16,5 @@ class LoginRepository @Inject constructor(
     suspend fun setUserId(userId: String) = preferences.setUserId(userId)
     suspend fun setEmail(email: String) = preferences.setEmail(email)
     suspend fun setRole(role: String) = preferences.setRole(role)
+    suspend fun setPassword(password: String) = preferences.setPassword(password)
 }
