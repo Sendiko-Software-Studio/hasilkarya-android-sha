@@ -132,8 +132,8 @@ fun DashboardScreen(
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 contentPadding = PaddingValues(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 content = {
                     if (state.role == "checker" || state.role == "admin") {
@@ -156,6 +156,7 @@ fun DashboardScreen(
                                 onClickAction = {
                                     onNavigate(GasTruckScreen)
                                 },
+                                enabled = true
                             )
                         }
                     }
@@ -167,6 +168,7 @@ fun DashboardScreen(
                                 onClickAction = {
                                     onNavigate(GasHeavyVehicleScreen)
                                 },
+                                enabled = true
                             )
                         }
                     }
