@@ -36,7 +36,11 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.system.hasilkarya.R
-import com.system.hasilkarya.core.navigation.Destination
+import com.system.hasilkarya.core.navigation.GasHeavyVehicleScreen
+import com.system.hasilkarya.core.navigation.GasTruckScreen
+import com.system.hasilkarya.core.navigation.MaterialScreen
+import com.system.hasilkarya.core.navigation.ProfileScreen
+import com.system.hasilkarya.core.navigation.StationScreen
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.theme.poppinsFont
 import com.system.hasilkarya.dashboard.presentation.component.MenuCard
@@ -49,7 +53,7 @@ fun DashboardScreen(
     state: DashboardScreenState,
     connectionStatus: Status,
     onEvent: (DashboardScreenEvent) -> Unit,
-    onNavigate: (Destination) -> Unit,
+    onNavigate: (destination: Any) -> Unit,
 ) {
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -88,7 +92,7 @@ fun DashboardScreen(
                     ) {
                         Icon(imageVector = Icons.Default.Sync, contentDescription = "sinkronisasi")
                     }
-                    IconButton(onClick = { onNavigate(Destination.ProfileScreen) }) {
+                    IconButton(onClick = { onNavigate(ProfileScreen) }) {
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = "Settings",
@@ -117,7 +121,7 @@ fun DashboardScreen(
                     }
                 },
                 onButtonClick = {
-                    onNavigate(Destination.StationQrScreen)
+                    onNavigate(StationScreen)
                 },
                 modifier = Modifier.padding(
                     top = paddingValues.calculateTopPadding(),
@@ -138,7 +142,7 @@ fun DashboardScreen(
                                 text = "Scan Material Movement",
                                 icon = painterResource(id = R.drawable.scan_material_movement),
                                 onClickAction = {
-                                    onNavigate(Destination.MaterialQrScreen)
+                                    onNavigate(MaterialScreen)
                                 },
                                 enabled = !noStation
                             )
@@ -150,7 +154,7 @@ fun DashboardScreen(
                                 text = "Scan Transaksi BBM Truk",
                                 icon = painterResource(id = R.drawable.scan_truck),
                                 onClickAction = {
-                                    onNavigate(Destination.GasQrScreen)
+                                    onNavigate(GasTruckScreen)
                                 },
                             )
                         }
@@ -161,7 +165,7 @@ fun DashboardScreen(
                                 text = "Scan Transaksi BBM Alat Berat",
                                 icon = painterResource(id = R.drawable.scan_exca),
                                 onClickAction = {
-                                    onNavigate(Destination.GasHVQrScreen)
+                                    onNavigate(GasHeavyVehicleScreen)
                                 },
                             )
                         }

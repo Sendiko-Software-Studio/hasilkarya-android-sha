@@ -12,7 +12,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.system.hasilkarya.core.navigation.Destination
+import com.system.hasilkarya.core.navigation.DashboardScreen
+import com.system.hasilkarya.core.navigation.GasHeavyVehicleScreen
+import com.system.hasilkarya.core.navigation.GasTruckScreen
+import com.system.hasilkarya.core.navigation.LoginScreen
+import com.system.hasilkarya.core.navigation.MaterialScreen
+import com.system.hasilkarya.core.navigation.ProfileScreen
+import com.system.hasilkarya.core.navigation.SplashScreen
+import com.system.hasilkarya.core.navigation.StationScreen
 import com.system.hasilkarya.core.preferences.ThemeViewModel
 import com.system.hasilkarya.core.ui.theme.AppTheme.Dark
 import com.system.hasilkarya.core.ui.theme.AppTheme.Default
@@ -54,47 +61,40 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = Destination.SplashScreen.name,
+                    startDestination = SplashScreen,
                     builder = {
-                        composable(
-                            route = Destination.SplashScreen.name,
+                        composable<SplashScreen>(
                             content = {
                                 val viewModel = hiltViewModel<SplashScreenViewModel>()
                                 SplashScreen(
                                     state = viewModel.state.collectAsState().value,
-                                    onNavigate = { route ->
-                                        navController.navigate(
-                                            route = route.name
-                                        ) {
+                                    onNavigate = { destination ->
+                                        navController.navigate(destination){
                                             popUpTo(
-                                                route.name,
+                                                destination,
                                             ) { inclusive = true }
                                         }
                                     }
                                 )
                             }
                         )
-                        composable(
-                            route = Destination.LoginScreen.name,
+                        composable<LoginScreen>(
                             content = {
                                 val viewModel = hiltViewModel<LoginScreenViewModel>()
                                 LoginScreen(
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
-                                    onNavigate = { route ->
-                                        navController.navigate(
-                                            route = route.name
-                                        ) {
+                                    onNavigate = { destination ->
+                                        navController.navigate(destination) {
                                             popUpTo(
-                                                route.name,
+                                                destination,
                                             ) { inclusive = true }
                                         }
                                     }
                                 )
                             }
                         )
-                        composable(
-                            route = Destination.DashboardScreen.name,
+                        composable<DashboardScreen>(
                             content = {
                                 val viewModel = hiltViewModel<DashboardScreenViewModel>()
                                 val connectionStatus =
@@ -103,80 +103,83 @@ class MainActivity : ComponentActivity() {
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
                                     connectionStatus = connectionStatus,
-                                    onNavigate = { route ->
-                                        navController.navigate(route = route.name)
+                                    onNavigate = { destination ->
+                                        navController.navigate(destination)
                                     }
                                 )
                             }
                         )
-                        composable(
-                            route = Destination.MaterialQrScreen.name,
+                        composable<MaterialScreen>(
                             content = {
                                 val viewModel = hiltViewModel<MaterialQrScreenViewModel>()
                                 MaterialQrScreen(
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
-                                    onNavigateBack = { route ->
-                                        navController.navigate(
-                                            route = route.name
-                                        ) {
+                                    onNavigateBack = { destination ->
+                                        if (destination == DashboardScreen) {
+                                            navController.popBackStack()
+                                        } else navController.navigate(destination) {
                                             popUpTo(
-                                                route.name,
+                                                destination,
                                             ) { inclusive = true }
                                         }
                                     }
                                 )
                             }
                         )
-                        composable(
-                            route = Destination.ProfileScreen.name,
+                        composable<ProfileScreen>(
                             content = {
                                 val viewModel = hiltViewModel<ProfileScreenViewModel>()
                                 ProfileScreen(
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
-                                    onNavigateBack = {
-                                        navController.navigate(it.name) {
-                                            popUpTo(it.name) { inclusive = true }
+                                    onNavigateBack = { destination ->
+                                        if (destination == DashboardScreen) {
+                                            navController.popBackStack()
+                                        } else navController.navigate(destination) {
+                                            popUpTo(
+                                                destination,
+                                            ) { inclusive = true }
                                         }
                                     }
                                 )
                             }
                         )
-                        composable(
-                            route = Destination.GasQrScreen.name,
+                        composable<GasTruckScreen>(
                             content = {
                                 val viewModel = hiltViewModel<TruckFuelQrScreenViewModel>()
                                 TruckFuelQrScreen(
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
                                     connectionStatus = viewModel._connectionStatus.collectAsState().value.connectionStatus,
-                                    onNavigateBack = {
-                                        navController.navigate(it.name) {
-                                            popUpTo(it.name) { inclusive = true }
+                                    onNavigateBack = { destination ->
+                                        if (destination == DashboardScreen) {
+                                            navController.popBackStack()
+                                        } else navController.navigate(destination) {
+                                            popUpTo(destination) { inclusive = true }
                                         }
                                     }
                                 )
                             }
                         )
-                        composable(
-                            route = Destination.GasHVQrScreen.name,
+                        composable<GasHeavyVehicleScreen>(
                             content = {
                                 val viewModel = hiltViewModel<HeavyVehicleFuelQrScreenViewModel>()
                                 HeavyVehicleFuelQrScreen(
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
-                                    onNavigateBack = {
-                                        navController.navigate(it.name) {
-                                            popUpTo(it.name) { inclusive = true }
+                                    onNavigateBack = { destination ->
+                                        if (destination == DashboardScreen) {
+                                            navController.popBackStack()
+                                        } else navController.navigate(destination) {
+                                            popUpTo(destination) { inclusive = true }
                                         }
                                     },
                                     connectionStatus = viewModel.connectionStatus.collectAsState().value.connectionStatus
                                 )
                             }
                         )
-                        composable(
-                            route = Destination.StationQrScreen.name,
+                        composable<StationScreen>(
                             content = {
                                 val viewModel = hiltViewModel<StationQrScreenViewModel>()
                                 StationQrScreen(

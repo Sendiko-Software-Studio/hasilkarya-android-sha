@@ -6,14 +6,12 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import com.system.hasilkarya.core.navigation.Destination
+import com.system.hasilkarya.core.navigation.DashboardScreen
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
@@ -26,7 +24,7 @@ fun TruckFuelQrScreen(
     state: TruckFuelQrScreenState,
     onEvent: (TruckFuelQrScreenEvent) -> Unit,
     connectionStatus: Status,
-    onNavigateBack: (Destination) -> Unit,
+    onNavigateBack: (destination: Any) -> Unit,
 ) {
     val context = LocalContext.current
     LaunchedEffect(
@@ -39,7 +37,7 @@ fun TruckFuelQrScreen(
 
             if (state.isPostSuccessful) {
                 delay(1000)
-                onNavigateBack(Destination.DashboardScreen)
+                onNavigateBack(DashboardScreen)
             }
         }
     )
@@ -67,7 +65,7 @@ fun TruckFuelQrScreen(
                                     )
                                 )
                             },
-                            navigateBack = { onNavigateBack(Destination.DashboardScreen) },
+                            navigateBack = { onNavigateBack(DashboardScreen) },
                             title = "Truck",
                             isValid = state.truckId.isNotBlank()
                         )

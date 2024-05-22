@@ -74,12 +74,16 @@ class StationQrScreenViewModel @Inject constructor(
                                         )
                                         viewModelScope.launch {
                                             stationRepository.saveStation(station)
+                                            _state.update {
+                                                it.copy(
+                                                    notificationMessage = "Pos disimpan.",
+                                                    stationId = stationId
+                                                )
+                                            }
                                             delay(1000)
                                             _state.update {
                                                 it.copy(
                                                     isRequestSuccess = true,
-                                                    notificationMessage = "Pos disimpan.",
-                                                    stationId = stationId
                                                 )
                                             }
                                         }
@@ -106,16 +110,6 @@ class StationQrScreenViewModel @Inject constructor(
                                         isRequestFailed = true,
                                         notificationMessage = "Server error."
                                     )
-                                }
-                                val data = StationEntity(
-                                    id = 1,
-                                    name = "Station berhasil disimpan.",
-                                    regency = "",
-                                    province = "",
-                                    stationId = stationId,
-                                )
-                                viewModelScope.launch {
-                                    stationRepository.saveStation(data)
                                 }
                                 clearState()
                             }
@@ -152,15 +146,20 @@ class StationQrScreenViewModel @Inject constructor(
                 stationId = stationId,
             )
             viewModelScope.launch {
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        notificationMessage = "Pos disimpan.",
+                        stationId = stationId
+                    )
+                }
                 stationRepository.saveStation(data)
-            }
-            _state.update {
-                it.copy(
-                    isLoading = false,
-                    isRequestSuccess = true,
-                    notificationMessage = "Pos disimpan.",
-                    stationId = stationId
-                )
+                delay(1000)
+                _state.update {
+                    it.copy(
+                        isRequestSuccess = true,
+                    )
+                }
             }
             clearState()
         }

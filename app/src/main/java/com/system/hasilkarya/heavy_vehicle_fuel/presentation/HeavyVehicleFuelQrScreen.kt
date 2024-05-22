@@ -6,14 +6,12 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import com.system.hasilkarya.core.navigation.Destination
+import com.system.hasilkarya.core.navigation.DashboardScreen
 import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
@@ -25,7 +23,7 @@ import kotlinx.coroutines.delay
 fun HeavyVehicleFuelQrScreen(
     state: HeavyVehicleFuelQrScreenState,
     onEvent: (HeavyVehicleFuelQrScreenEvent) -> Unit,
-    onNavigateBack: (Destination) -> Unit,
+    onNavigateBack: (destination: Any) -> Unit,
     connectionStatus: Status
 ) {
     val context = LocalContext.current
@@ -40,7 +38,7 @@ fun HeavyVehicleFuelQrScreen(
 
             if (state.isPostSuccessful) {
                 delay(1000)
-                onNavigateBack(Destination.DashboardScreen)
+                onNavigateBack(DashboardScreen)
             }
         }
     )
@@ -68,7 +66,7 @@ fun HeavyVehicleFuelQrScreen(
                                     )
                                 )
                             },
-                            navigateBack = { onNavigateBack(Destination.DashboardScreen) },
+                            navigateBack = { onNavigateBack(DashboardScreen) },
                             title = "Alat Berat",
                             isValid = state.heavyVehicleId.isNotBlank()
                         )
