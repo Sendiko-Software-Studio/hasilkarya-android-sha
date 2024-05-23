@@ -2,6 +2,7 @@ package com.system.hasilkarya.core.network
 
 import com.system.hasilkarya.dashboard.data.CheckDriverIdResponse
 import com.system.hasilkarya.dashboard.data.CheckStationIdResponse
+import com.system.hasilkarya.dashboard.data.CheckTokenResponse
 import com.system.hasilkarya.dashboard.data.CheckTruckIdResponse
 import com.system.hasilkarya.heavy_vehicle_fuel.data.CheckHeavyVehicleIdResponse
 import com.system.hasilkarya.heavy_vehicle_fuel.data.HeavyVehicleFuelLogRequest
@@ -110,5 +111,10 @@ interface ApiServices {
         @Path("id") stationId: String,
         @Header("Authorization") token: String
     ): Call<GetStationResponse>
+
+    @GET("me")
+    fun checkToken(
+        @Header("Authorization") token: String
+    ): Call<CheckTokenResponse>
 
 }

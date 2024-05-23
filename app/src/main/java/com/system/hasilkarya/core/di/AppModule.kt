@@ -15,6 +15,7 @@ import com.system.hasilkarya.core.repositories.material.MaterialDao
 import com.system.hasilkarya.core.repositories.material.MaterialRepository
 import com.system.hasilkarya.core.repositories.station.StationDao
 import com.system.hasilkarya.core.repositories.station.StationRepository
+import com.system.hasilkarya.core.repositories.user.UserRepository
 import com.system.hasilkarya.login.domain.LoginRepository
 import com.system.hasilkarya.profile.domain.ProfileRepository
 import dagger.Module
@@ -143,6 +144,12 @@ object AppModule {
     @Singleton
     fun provideStationRepository(dao: StationDao, apiServices: ApiServices): StationRepository {
         return StationRepository(dao, apiServices)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserRepository(apiServices: ApiServices, appPreferences: AppPreferences): UserRepository {
+        return UserRepository(apiServices, appPreferences)
     }
 
 }
