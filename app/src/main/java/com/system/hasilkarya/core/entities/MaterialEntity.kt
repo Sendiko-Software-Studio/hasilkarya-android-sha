@@ -18,5 +18,8 @@ data class MaterialEntity(
     val remarks: String,
 
     @ColumnInfo(defaultValue = "0")
-    val date: String = ""
+    val date: String = "",
+
+    @ColumnInfo(defaultValue = "false")
+    val isUploaded: String = "false"
 )
