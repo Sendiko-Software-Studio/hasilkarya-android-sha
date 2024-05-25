@@ -4,18 +4,23 @@ import android.Manifest
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,10 +33,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.system.hasilkarya.R
@@ -76,10 +84,10 @@ fun DashboardScreen(
     )
     Scaffold(
         topBar = {
-            LargeTopAppBar(
+            CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Selamat datang, ${state.name}",
+                        text = "Sistem Hasil Karya",
                         fontFamily = poppinsFont
                     )
                 },
@@ -92,160 +100,193 @@ fun DashboardScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     scrolledContainerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground,
-                    actionIconContentColor = MaterialTheme.colorScheme.onBackground
+                    titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
                 ),
                 scrollBehavior = scrollBehavior
             )
         },
     ) { paddingValues ->
         Column {
-            if (state.role == "checker"){
-                StationLocation(
-                    stationName = if (noStation)
-                        "Tidak ada."
-                    else {
-                        if (state.activeStation!!.name == "Station berhasil disimpan.") {
-                            "Pos baru disimpan."
-                        } else {
-                            "${state.activeStation.name}, ${state.activeStation.province}."
-                        }
-                    },
-                    onButtonClick = {
-                        onNavigate(StationScreen)
-                    },
-                    modifier = Modifier.padding(
+            Column(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .fillMaxWidth()
+                    .padding(
                         top = paddingValues.calculateTopPadding(),
                         start = 16.dp,
-                        end = 16.dp
-                    )
+                        end = 16.dp,
+                        bottom = 16.dp
+                    ),
+//                verticalAlignment = Alignment.Bottom
+            ) {
+                Text(
+                    text = "Selamat datang, ",
+                    fontFamily = poppinsFont,
                 )
-            } else Spacer(modifier = Modifier.height(paddingValues.calculateTopPadding() + 16.dp))
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                Text(
+                    text = state.name,
+                    fontFamily = poppinsFont,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+            LazyColumn(
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    end = 16.dp,
+                ),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 content = {
+                    if (state.role == "checker") {
+                        item {
+                            StationLocation(
+                                stationName = if (noStation)
+                                    "Tidak ada."
+                                else {
+                                    if (state.activeStation!!.name == "Station berhasil disimpan.") {
+                                        "Pos baru disimpan."
+                                    } else {
+                                        "${state.activeStation.name}, ${state.activeStation.province}."
+                                    }
+                                },
+                                onButtonClick = {
+                                    onNavigate(StationScreen)
+                                },
+                            )
+                        }
+                    }
                     if (state.role == "checker" || state.role == "admin") {
                         item {
-                            MenuCard(
-                                text = "Scan Material Movement",
-                                icon = painterResource(id = R.drawable.scan_material_movement),
-                                onClickAction = {
-                                    onNavigate(MaterialScreen)
-                                },
-                                enabled = !noStation
-                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                MenuCard(
+                                    text = "Scan Material Movement",
+                                    icon = painterResource(id = R.drawable.scan_material_movement),
+                                    onClickAction = {
+                                        onNavigate(MaterialScreen)
+                                    },
+                                    enabled = !noStation,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Spacer(modifier = Modifier.weight(1f))
+                            }
                         }
                     }
                     if (state.role == "gas-operator" || state.role == "admin") {
                         item {
-                            MenuCard(
-                                text = "Scan Transaksi BBM Truk",
-                                icon = painterResource(id = R.drawable.scan_truck),
-                                onClickAction = {
-                                    onNavigate(GasTruckScreen)
-                                },
-                                enabled = true
+                            Row(
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                MenuCard(
+                                    text = "Scan Transaksi BBM Truk",
+                                    icon = painterResource(id = R.drawable.scan_truck),
+                                    onClickAction = {
+                                        onNavigate(GasTruckScreen)
+                                    },
+                                    enabled = true,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Spacer(modifier = Modifier.width(16.dp))
+                                MenuCard(
+                                    text = "Scan Transaksi BBM Alat Berat",
+                                    icon = painterResource(id = R.drawable.scan_exca),
+                                    onClickAction = {
+                                        onNavigate(GasHeavyVehicleScreen)
+                                    },
+                                    enabled = true,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
+                    }
+                    item {
+                        AnimatedVisibility(
+                            visible = state.totalData != 0,
+                            enter = expandHorizontally(),
+                            exit = shrinkHorizontally()
+                        ) {
+                            InfoItemCard(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                info = "${state.totalData} data menunggu diupload.",
+                                icon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Info,
+                                        contentDescription = "info"
+                                    )
+                                }
                             )
                         }
                     }
-                    if (state.role == "gas-operator" || state.role == "admin") {
+                    if (noStation && state.role == "checker") {
                         item {
-                            MenuCard(
-                                text = "Scan Transaksi BBM Alat Berat",
-                                icon = painterResource(id = R.drawable.scan_exca),
-                                onClickAction = {
-                                    onNavigate(GasHeavyVehicleScreen)
+                            InfoItemCard(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                info = "Mohon pilih Pos terlebih dulu.",
+                                icon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Info,
+                                        contentDescription = "info"
+                                    )
+                                }
+                            )
+                        }
+                    }
+                    item {
+                        AnimatedVisibility(
+                            visible = state.totalData > 0,
+                            enter = expandHorizontally(),
+                            exit = shrinkHorizontally()
+                        ) {
+                            InfoItemCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(),
+                                info = "Sedang mengupload data..",
+                                icon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Info,
+                                        contentDescription = "info"
+                                    )
+                                }
+                            )
+                        }
+                    }
+                    item {
+                        AnimatedVisibility(
+                            visible = state.isTokenExpired,
+                            enter = expandHorizontally(),
+                            exit = shrinkHorizontally()
+                        ) {
+                            InfoItemCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                info = "Maaf, aplikasi tidak bisa terhubung ke server.",
+                                icon = {
+                                    TextButton(
+                                        onClick = { onEvent(DashboardScreenEvent.RetryLogin) },
+                                        content = {
+                                            Text(
+                                                text = "Coba lagi",
+                                                color = MaterialTheme.colorScheme.onErrorContainer
+                                            )
+                                        }
+                                    )
                                 },
-                                enabled = true
+                                isError = true
                             )
                         }
                     }
                 }
             )
-            AnimatedVisibility(
-                visible = state.totalData != 0,
-                enter = expandHorizontally(),
-                exit = shrinkHorizontally()
-            ) {
-                InfoItemCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    info = "${state.totalData} data menunggu diupload.",
-                    icon = {
-                        Icon(imageVector = Icons.Default.Info, contentDescription = "info")
-                    }
-                )
-            }
-            if (noStation && state.role == "checker") {
-                InfoItemCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    info = "Mohon pilih Pos terlebih dulu.",
-                    icon = {
-                        Icon(imageVector = Icons.Default.Info, contentDescription = "info")
-                    }
-                )
-            }
-            AnimatedVisibility(
-                visible = state.isUploading,
-                enter = expandHorizontally(),
-                exit = shrinkHorizontally()
-            ) {
-                Spacer(modifier = Modifier.height(8.dp))
-                InfoItemCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    info = "Sedang mengupload data..",
-                    icon = {
-                        Icon(imageVector = Icons.Default.Info, contentDescription = "info")
-                    }
-                )
-            }
-            AnimatedVisibility(
-                visible = state.isConnecting,
-                enter = expandHorizontally(),
-                exit = shrinkHorizontally()
-            ) {
-                InfoItemCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    info = "Mencoba menghubungi server..",
-                    icon = {
-                        Icon(imageVector = Icons.Default.Info, contentDescription = "info")
-                    }
-                )
-            }
-            AnimatedVisibility(
-                visible = state.isTokenExpired,
-                enter = expandHorizontally(),
-                exit = shrinkHorizontally()
-            ) {
-                InfoItemCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    info = "Maaf, aplikasi tidak bisa terhubung ke server.",
-                    icon = {
-                        TextButton(
-                            onClick = { onEvent(DashboardScreenEvent.RetryLogin) },
-                            content = {
-                                Text(text = "Coba lagi", color = MaterialTheme.colorScheme.onErrorContainer)
-                            }
-                        )
-                    },
-                    isError = true
-                )
-            }
         }
     }
 }

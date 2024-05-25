@@ -222,7 +222,13 @@ class DashboardScreenViewModel @Inject constructor(
         Log.i("CHECK", "checkAndPostDatas: ${state.value.isUploading}")
         val materials = state.value.materials
         materials.forEach {
-            viewModelScope.launch{
+            if (it.isUploaded == "true"){
+                viewModelScope.launch {
+                    materialRepository.deleteMaterial(it)
+                }
+                return@forEach
+            }
+            viewModelScope.launch {
                 val data = MaterialEntity(
                     id = it.id,
                     driverId = it.driverId,
@@ -252,12 +258,6 @@ class DashboardScreenViewModel @Inject constructor(
     // post material and log
     private fun postMaterial(materialEntity: MaterialEntity) {
         val token = "Bearer ${state.value.token}"
-        if (materialEntity.isUploaded == "true"){
-            viewModelScope.launch {
-                materialRepository.deleteMaterial(materialEntity)
-            }
-            return
-        }
         val data = PostMaterialRequest(
             driverId = materialEntity.driverId,
             truckId = materialEntity.truckId,
