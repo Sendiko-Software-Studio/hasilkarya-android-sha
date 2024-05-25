@@ -11,9 +11,9 @@
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 8,
-      "versionName": "1.35r",
-      "outputFile": "sistem.hasil.karya.1_35r.apk"
+      "versionCode": 9,
+      "versionName": "1.36r",
+      "outputFile": "app-release.apk"
     }
   ],
   "elementType": "File",
