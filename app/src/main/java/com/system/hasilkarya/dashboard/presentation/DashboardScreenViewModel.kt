@@ -31,6 +31,7 @@ import com.system.hasilkarya.truck_fuel.data.TruckFuelRequest
 import com.system.hasilkarya.truck_fuel.data.TruckFuelResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collect
@@ -120,7 +121,7 @@ class DashboardScreenViewModel @Inject constructor(
         viewModelScope.launch {
             connectionObserver.observe().collect{ status ->
                 _token.collect{ token ->
-                    checkToken(token = "Bearer$token", connectionStatus = status)
+                    checkToken(token = "Bearer $token", connectionStatus = status)
                 }
             }
         }
@@ -217,9 +218,31 @@ class DashboardScreenViewModel @Inject constructor(
     // checking && posting offline datas
     private fun checkAndPostDatas() {
         _state.update { it.copy(isUploading = true) }
+        Log.i("CHECK", "checkAndPostDatas: ${state.value.materials.size}")
+        Log.i("CHECK", "checkAndPostDatas: ${state.value.isUploading}")
         val materials = state.value.materials
         materials.forEach {
-            postMaterial(it)
+            if (it.isUploaded == "true"){
+                viewModelScope.launch {
+                    materialRepository.deleteMaterial(it)
+                }
+                return@forEach
+            }
+            viewModelScope.launch {
+                val data = MaterialEntity(
+                    id = it.id,
+                    driverId = it.driverId,
+                    truckId = it.truckId,
+                    stationId = it.stationId,
+                    checkerId = it.checkerId,
+                    ratio = it.ratio,
+                    remarks = it.remarks,
+                    isUploaded = "true"
+                )
+                materialRepository.saveMaterial(data)
+                delay(1000)
+                postMaterial(it)
+            }
         }
         val fuels = state.value.fuels
         fuels.forEach {
@@ -229,7 +252,7 @@ class DashboardScreenViewModel @Inject constructor(
         heavyFuels.forEach {
             postHeavyVehicleFuel(it)
         }
-        _state.update { it.copy(isUploading = true) }
+        _state.update { it.copy(isUploading = false) }
     }
 
     // post material and log
@@ -244,55 +267,47 @@ class DashboardScreenViewModel @Inject constructor(
             remarks = materialEntity.remarks,
             date = materialEntity.date
         )
-        if (connectionStatus.value.connectionStatus == Status.Available) {
-            val request = materialRepository.postMaterial(token, data)
-            request.enqueue(
-                object : Callback<PostMaterialResponse> {
-                    override fun onResponse(
-                        call: Call<PostMaterialResponse>,
-                        response: Response<PostMaterialResponse>
-                    ) {
-                        when (response.code()) {
-                            201 -> {
-                                viewModelScope.launch {
-                                    materialRepository.deleteMaterial(materialEntity)
-                                }
-                                _state.update {
-                                    it.copy(
-                                        isPostSuccessful = true,
-                                        materials = state.value.materials - materialEntity
-                                    )
-                                }
+        val request = materialRepository.postMaterial(token, data)
+        request.enqueue(
+            object : Callback<PostMaterialResponse> {
+                override fun onResponse(
+                    call: Call<PostMaterialResponse>,
+                    response: Response<PostMaterialResponse>
+                ) {
+                    when (response.code()) {
+                        201 -> {
+                            viewModelScope.launch {
+                                materialRepository.deleteMaterial(materialEntity)
                             }
-
-                            422 -> viewModelScope.launch {
-                                postMaterialToLog(token, materialEntity)
+                            _state.update {
+                                it.copy(
+                                    isPostSuccessful = true,
+                                    materials = state.value.materials
+                                )
                             }
+                        }
 
-                            else -> {
-                                postMaterialToLog(token, materialEntity)
-                                _state.update {
-                                    it.copy(
-                                        isRequestFailed = FailedRequest(isFailed = true)
-                                    )
-                                }
+                        422 -> viewModelScope.launch {
+                            postMaterialToLog(token, materialEntity)
+                        }
+
+                        else -> {
+                            postMaterialToLog(token, materialEntity)
+                            _state.update {
+                                it.copy(
+                                    isRequestFailed = FailedRequest(isFailed = true)
+                                )
                             }
                         }
                     }
+                }
 
-                    override fun onFailure(call: Call<PostMaterialResponse>, t: Throwable) {
-                        viewModelScope.launch {
-                            materialRepository.saveMaterial(materialEntity)
-                        }
-                    }
+                override fun onFailure(call: Call<PostMaterialResponse>, t: Throwable) {
 
                 }
-            )
-        } else {
-            viewModelScope.launch {
-                materialRepository.saveMaterial(materialEntity)
+
             }
-        }
+        )
     }
 
     private fun postMaterialToLog(token: String, material: MaterialEntity) {

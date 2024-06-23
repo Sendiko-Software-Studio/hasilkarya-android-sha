@@ -68,7 +68,7 @@ fun ProfileScreen(
             Scaffold(
                 topBar = {
                     LargeTopAppBar(
-                        title = { Text(text = "Profile", fontFamily = poppinsFont) },
+                        title = { Text(text = "Settings", fontFamily = poppinsFont) },
                         navigationIcon = {
                             IconButton(
                                 onClick = { onNavigateBack(DashboardScreen) },
@@ -81,12 +81,6 @@ fun ProfileScreen(
                             )
                         },
                         scrollBehavior = scrollBehavior,
-                        colors = TopAppBarDefaults.largeTopAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.background,
-                            scrolledContainerColor = MaterialTheme.colorScheme.background,
-                            titleContentColor = MaterialTheme.colorScheme.onBackground,
-                            actionIconContentColor = MaterialTheme.colorScheme.onBackground
-                        )
                     )
                 }
             ) {
@@ -191,7 +185,7 @@ fun ProfileScreen(
                         item {
                             val uriHandler = LocalUriHandler.current
                             Text(
-                                text = "v1.35r",
+                                text = "v1.36r",
                                 fontFamily = poppinsFont,
                                 modifier = Modifier
                                     .padding(16.dp)

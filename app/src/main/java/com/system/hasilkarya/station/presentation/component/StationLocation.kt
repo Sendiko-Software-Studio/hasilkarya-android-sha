@@ -7,6 +7,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -23,14 +26,18 @@ fun StationLocation(
     stationName: String,
     onButtonClick: () -> Unit,
 ) {
-    Column(modifier) {
+    Card(modifier) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(
+                start = 16.dp,
+                end =  16.dp,
+                top =  8.dp,
+            ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(text = "Anda bertugas di: ", fontFamily = poppinsFont)
-            TextButton(
+            OutlinedButton(
                 onClick = onButtonClick,
                 content = {
                     Text(
@@ -44,7 +51,12 @@ fun StationLocation(
             text = stationName,
             fontSize = 24.sp,
             fontWeight = FontWeight.SemiBold,
-            fontFamily = poppinsFont
+            fontFamily = poppinsFont,
+            modifier = Modifier.padding(
+                start = 16.dp,
+                end =  16.dp,
+                bottom =  8.dp
+            )
         )
         Spacer(modifier = Modifier.height(16.dp))
     }

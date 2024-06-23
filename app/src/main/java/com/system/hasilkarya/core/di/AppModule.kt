@@ -52,8 +52,8 @@ object AppModule {
             logging.setLevel(HttpLoggingInterceptor.Level.BODY)
             it.addInterceptor(logging)
         }
-            .connectTimeout(120, TimeUnit.SECONDS)
-            .readTimeout(120, TimeUnit.SECONDS)
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
             .build()
     }
 

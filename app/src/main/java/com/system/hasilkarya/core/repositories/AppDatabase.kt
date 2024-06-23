@@ -3,6 +3,7 @@ package com.system.hasilkarya.core.repositories
 import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.DeleteTable
+import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
 import com.system.hasilkarya.core.entities.FuelHeavyVehicleEntity
@@ -21,8 +22,8 @@ import com.system.hasilkarya.core.repositories.station.StationDao
         FuelHeavyVehicleEntity::class,
         StationEntity::class
     ],
-    version = 7,
-    autoMigrations = [AutoMigration(from = 6, to = 7)]
+    version = 8,
+    autoMigrations = [AutoMigration(from = 7, to = 8)]
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract val materialDao: MaterialDao

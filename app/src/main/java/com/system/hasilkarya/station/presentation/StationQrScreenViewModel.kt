@@ -38,13 +38,13 @@ class StationQrScreenViewModel @Inject constructor(
         state.copy(connectionStatus = connectionStatus, token = token)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), StationQrScreenState())
 
-    private fun isStationValid(token: String, stationId: String): Boolean {
+    private fun isStationValid(token: String, stationId: String): Int {
         val request = if (state.value.scanningFor == StationType.MINE) {
             stationRepository.checkMineStationId(id = stationId, token = token)
         } else {
             stationRepository.checkGasStationId(id = stationId, token = token)
         }
-        return request.execute().code() == 200
+        return request.execute().code()
     }
 
     private fun getStation(stationId: String, connectionStatus: Status) {
@@ -53,88 +53,83 @@ class StationQrScreenViewModel @Inject constructor(
         val token = "Bearer ${state.value.token}"
         if (state.value.connectionStatus == Status.Available) {
             viewModelScope.launch(Dispatchers.IO) {
-                if (isStationValid(token = token, stationId = stationId)) {
-                    val request = stationRepository.getStationFromApi(stationId, token)
-                    request.enqueue(
-                        object : Callback<GetStationResponse> {
-                            override fun onResponse(
-                                call: Call<GetStationResponse>,
-                                response: Response<GetStationResponse>
-                            ) {
-                                _state.update { it.copy(isLoading = false) }
-                                when (response.code()) {
-                                    200 -> {
-                                        Log.i("RESPONSE_BODY", "${response.body()?.data}")
-                                        val station = StationEntity(
-                                            id = 1,
-                                            name = response.body()?.data?.name ?: "",
-                                            regency = response.body()?.data?.regency ?: "",
-                                            province = response.body()?.data?.province ?: "",
-                                            stationId = response.body()?.data?.id ?: "",
-                                        )
-                                        viewModelScope.launch {
-                                            stationRepository.saveStation(station)
-                                            _state.update {
-                                                it.copy(
-                                                    notificationMessage = "Pos disimpan.",
-                                                    stationId = stationId
-                                                )
-                                            }
-                                            delay(1000)
-                                            _state.update {
-                                                it.copy(
-                                                    isRequestSuccess = true,
-                                                )
-                                            }
-                                        }
-                                        clearState()
-                                    }
-
-                                    else -> {
-                                        _state.update {
-                                            it.copy(
-                                                isLoading = false,
-                                                isRequestFailed = true,
-                                                notificationMessage = "Server error."
+                when (isStationValid(token = token, stationId = stationId)) {
+                    200 -> {
+                        val request = stationRepository.getStationFromApi(stationId, token)
+                        request.enqueue(
+                            object : Callback<GetStationResponse> {
+                                override fun onResponse(
+                                    call: Call<GetStationResponse>,
+                                    response: Response<GetStationResponse>
+                                ) {
+                                    _state.update { it.copy(isLoading = false) }
+                                    when (response.code()) {
+                                        200 -> {
+                                            Log.i("RESPONSE_BODY", "${response.body()?.data}")
+                                            val station = StationEntity(
+                                                id = 1,
+                                                name = response.body()?.data?.name ?: "",
+                                                regency = response.body()?.data?.regency ?: "",
+                                                province = response.body()?.data?.province ?: "",
+                                                stationId = response.body()?.data?.id ?: "",
                                             )
+                                            viewModelScope.launch {
+                                                stationRepository.saveStation(station)
+                                                _state.update {
+                                                    it.copy(
+                                                        notificationMessage = "Pos disimpan.",
+                                                        stationId = stationId
+                                                    )
+                                                }
+                                                delay(1000)
+                                                _state.update {
+                                                    it.copy(
+                                                        isRequestSuccess = true,
+                                                    )
+                                                }
+                                            }
+                                            clearState()
                                         }
-                                        clearState()
+
+                                        else -> {
+                                            _state.update {
+                                                it.copy(
+                                                    isLoading = false,
+                                                    isRequestFailed = true,
+                                                    notificationMessage = "Server error."
+                                                )
+                                            }
+                                            clearState()
+                                        }
                                     }
                                 }
-                            }
 
-                            override fun onFailure(call: Call<GetStationResponse>, t: Throwable) {
-                                _state.update {
-                                    it.copy(
-                                        isLoading = false,
-                                        isRequestFailed = true,
-                                        notificationMessage = "Server error."
-                                    )
+                                override fun onFailure(call: Call<GetStationResponse>, t: Throwable) {
+                                    _state.update {
+                                        it.copy(
+                                            isLoading = false,
+                                            isRequestFailed = true,
+                                            notificationMessage = "Server error."
+                                        )
+                                    }
+                                    clearState()
                                 }
-                                clearState()
-                            }
 
-                        }
-                    )
-                } else {
-                    val data = StationEntity(
-                        id = 1,
-                        name = "Station berhasil disimpan.",
-                        regency = "",
-                        province = "",
-                        stationId = stationId,
-                    )
-                    viewModelScope.launch {
-                        stationRepository.saveStation(data)
-                    }
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            isRequestFailed = true,
-                            notificationMessage = "Maaf QR Invalid."
+                            }
                         )
                     }
-                    clearState()
+
+                    404 -> viewModelScope.launch {
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                isRequestFailed = true,
+                                notificationMessage = "Pos tidak ditemukan."
+                            )
+                        }
+                        delay(1000)
+                        clearState()
+                    }
                 }
             }
         } else {
