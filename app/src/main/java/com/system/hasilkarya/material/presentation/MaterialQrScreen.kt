@@ -52,13 +52,17 @@ fun MaterialQrScreen(
     onEvent: (MaterialQrScreenEvent) -> Unit,
     onNavigateBack: (destination: Any) -> Unit,
 ) {
-    val context = LocalContext.current
     LaunchedEffect(
         key1 = state,
         block = {
             if (state.isPostSuccessful) {
-                delay(1000)
-                onNavigateBack(DashboardScreen)
+                if (state.rapidMode){
+                    delay(1000)
+                    onEvent(MaterialQrScreenEvent.OnNavigateForm(Truck))
+                } else {
+                    delay(1000)
+                    onNavigateBack(DashboardScreen)
+                }
             }
 
             if (state.notificationMessage.isNotBlank()) {
