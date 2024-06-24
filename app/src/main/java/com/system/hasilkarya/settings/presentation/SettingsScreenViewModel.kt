@@ -1,11 +1,11 @@
-package com.system.hasilkarya.profile.presentation
+package com.system.hasilkarya.settings.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.system.hasilkarya.core.ui.theme.AppTheme
 import com.system.hasilkarya.core.ui.utils.FailedRequest
-import com.system.hasilkarya.profile.data.LogoutResponse
-import com.system.hasilkarya.profile.domain.ProfileRepository
+import com.system.hasilkarya.settings.data.LogoutResponse
+import com.system.hasilkarya.settings.domain.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,11 +19,11 @@ import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
-class ProfileScreenViewModel @Inject constructor(
-    private val repository: ProfileRepository
+class SettingsScreenViewModel @Inject constructor(
+    private val repository: SettingsRepository
 ): ViewModel() {
 
-    private val _state = MutableStateFlow(ProfileScreenState())
+    private val _state = MutableStateFlow(SettingsScreenState())
     private val _name = repository.getName()
     private val _token = repository.getToken()
     private val _email = repository.getEmail()
@@ -32,7 +32,7 @@ class ProfileScreenViewModel @Inject constructor(
         _name, _token, _email, _theme, _state
     ) { name, token, email, theme, state ->
         state.copy(name = name, token = token, email = email, theme = theme)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ProfileScreenState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), SettingsScreenState())
 
     private fun logout() {
         _state.update {
@@ -92,10 +92,10 @@ class ProfileScreenViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: ProfileScreenEvent) {
+    fun onEvent(event: SettingsScreenEvent) {
         when(event) {
-            ProfileScreenEvent.OnLogout -> logout()
-            is ProfileScreenEvent.OnThemeChanged -> changeTheme(event.theme)
+            SettingsScreenEvent.OnLogout -> logout()
+            is SettingsScreenEvent.OnThemeChanged -> changeTheme(event.theme)
         }
     }
 

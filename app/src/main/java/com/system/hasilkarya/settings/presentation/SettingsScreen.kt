@@ -1,4 +1,4 @@
-package com.system.hasilkarya.profile.presentation
+package com.system.hasilkarya.settings.presentation
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,9 +43,9 @@ import com.system.hasilkarya.core.ui.theme.poppinsFont
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(
-    state: ProfileScreenState,
-    onEvent: (ProfileScreenEvent) -> Unit,
+fun SettingsScreen(
+    state: SettingsScreenState,
+    onEvent: (SettingsScreenEvent) -> Unit,
     onNavigateBack: (destinations: Any) -> Unit
 ) {
     var isShowingThemeOptions by remember {
@@ -141,7 +141,7 @@ fun ProfileScreen(
                                         AppTheme.entries.forEach { theme ->
                                             InputChip(
                                                 selected = theme == state.theme,
-                                                onClick = { onEvent(ProfileScreenEvent.OnThemeChanged(theme)) },
+                                                onClick = { onEvent(SettingsScreenEvent.OnThemeChanged(theme)) },
                                                 label = {
                                                     Text(
                                                         modifier = Modifier
@@ -168,7 +168,7 @@ fun ProfileScreen(
                                             containerColor = MaterialTheme.colorScheme.error,
                                             contentColor = MaterialTheme.colorScheme.onError,
                                         ),
-                                        onClick = { onEvent(ProfileScreenEvent.OnLogout) },
+                                        onClick = { onEvent(SettingsScreenEvent.OnLogout) },
                                         content = {
                                             Text(
                                                 text = "Logout",

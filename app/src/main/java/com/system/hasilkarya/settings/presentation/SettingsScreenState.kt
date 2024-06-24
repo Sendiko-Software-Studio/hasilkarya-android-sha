@@ -1,9 +1,9 @@
-package com.system.hasilkarya.profile.presentation
+package com.system.hasilkarya.settings.presentation
 
 import com.system.hasilkarya.core.ui.theme.AppTheme
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 
-data class ProfileScreenState(
+data class SettingsScreenState(
     val name: String = "",
     val email: String = "",
     val isPostSuccessful: Boolean = false,

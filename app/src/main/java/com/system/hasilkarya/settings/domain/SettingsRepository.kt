@@ -1,11 +1,11 @@
-package com.system.hasilkarya.profile.domain
+package com.system.hasilkarya.settings.domain
 
 import com.system.hasilkarya.core.network.ApiServices
 import com.system.hasilkarya.core.preferences.AppPreferences
 import com.system.hasilkarya.core.ui.theme.AppTheme
 import javax.inject.Inject
 
-class ProfileRepository @Inject constructor(
+class SettingsRepository @Inject constructor(
     private val preferences: AppPreferences,
     private val apiServices: ApiServices
 ) {

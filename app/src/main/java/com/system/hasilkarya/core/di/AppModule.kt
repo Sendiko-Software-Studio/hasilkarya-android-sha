@@ -17,7 +17,7 @@ import com.system.hasilkarya.core.repositories.station.StationDao
 import com.system.hasilkarya.core.repositories.station.StationRepository
 import com.system.hasilkarya.core.repositories.user.UserRepository
 import com.system.hasilkarya.login.domain.LoginRepository
-import com.system.hasilkarya.profile.domain.ProfileRepository
+import com.system.hasilkarya.settings.domain.SettingsRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -130,8 +130,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideProfileRepository(appPreferences: AppPreferences, apiServices: ApiServices): ProfileRepository {
-        return ProfileRepository(appPreferences, apiServices)
+    fun provideProfileRepository(appPreferences: AppPreferences, apiServices: ApiServices): SettingsRepository {
+        return SettingsRepository(appPreferences, apiServices)
     }
 
     @Provides

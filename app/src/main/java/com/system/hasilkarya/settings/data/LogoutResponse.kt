@@ -1,4 +1,4 @@
-package com.system.hasilkarya.profile.data
+package com.system.hasilkarya.settings.data
 
 import com.google.gson.annotations.SerializedName
 
