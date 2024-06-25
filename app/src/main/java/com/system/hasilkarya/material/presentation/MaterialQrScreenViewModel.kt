@@ -111,7 +111,8 @@ class MaterialQrScreenViewModel @Inject constructor(
                 notificationMessage = "",
                 remarks = "",
                 materialVolume = "",
-                materialVolumeErrorState = ErrorTextField()
+                materialVolumeErrorState = ErrorTextField(),
+                isPostSuccessful = false
             )
         }
     }
