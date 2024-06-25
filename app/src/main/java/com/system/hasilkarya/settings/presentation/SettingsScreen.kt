@@ -1,44 +1,53 @@
 package com.system.hasilkarya.settings.presentation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
-import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.system.hasilkarya.core.navigation.DashboardScreen
 import com.system.hasilkarya.core.navigation.SplashScreen
 import com.system.hasilkarya.core.ui.components.ContentBoxWithNotification
 import com.system.hasilkarya.core.ui.theme.AppTheme
+import com.system.hasilkarya.core.ui.theme.HasilKaryaTheme
 import com.system.hasilkarya.core.ui.theme.poppinsFont
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,9 +57,6 @@ fun SettingsScreen(
     onEvent: (SettingsScreenEvent) -> Unit,
     onNavigateBack: (destinations: Any) -> Unit
 ) {
-    var isShowingThemeOptions by remember {
-        mutableStateOf(false)
-    }
     LaunchedEffect(
         key1 = state,
         block = {
@@ -68,13 +74,13 @@ fun SettingsScreen(
             Scaffold(
                 topBar = {
                     LargeTopAppBar(
-                        title = { Text(text = "Settings", fontFamily = poppinsFont) },
+                        title = { Text(text = "Pengaturan", fontFamily = poppinsFont) },
                         navigationIcon = {
                             IconButton(
                                 onClick = { onNavigateBack(DashboardScreen) },
                                 content = {
                                     Icon(
-                                        imageVector = Icons.Default.ArrowBack,
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                         contentDescription = "kembali"
                                     )
                                 }
@@ -85,107 +91,167 @@ fun SettingsScreen(
                 }
             ) {
                 LazyColumn(
-                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                    modifier = Modifier
+                        .nestedScroll(scrollBehavior.nestedScrollConnection)
+                        .fillMaxSize(),
                     contentPadding = it,
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                     content = {
                         item {
-                            Card(
-                                modifier = Modifier.padding(16.dp)
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Akun saya",
+                                fontFamily = poppinsFont,
+                                style = MaterialTheme.typography.labelLarge,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
                             ) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.SpaceBetween,
-                                ) {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 16.dp, vertical = 16.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Text(text = "Nama: ", fontFamily = poppinsFont)
-                                        Text(text = state.name, fontFamily = poppinsFont)
-                                    }
-                                    Divider()
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Text(text = "Email: ", fontFamily = poppinsFont)
-                                        Text(
-                                            text = state.email,
-                                            fontFamily = poppinsFont,
-                                            textAlign = TextAlign.End
-                                        )
-                                    }
-                                    Divider()
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                                            .clickable {
-                                                isShowingThemeOptions = !isShowingThemeOptions
-                                            },
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Text(text = "Tema Aplikasi: ", fontFamily = poppinsFont)
-                                    }
-                                    Row(
-                                        horizontalArrangement = Arrangement.SpaceEvenly,
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = "akun",
+                                    modifier = Modifier.size(48.dp)
+                                )
+                                Column(modifier = Modifier.weight(1f).padding(start = 8.dp)) {
+                                    Text(
+                                        text = state.name,
+                                        fontFamily = poppinsFont,
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                    Text(
+                                        text = state.email,
+                                        fontFamily = poppinsFont,
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+                            }
+                        }
+                        item {
+                            Text(
+                                text = "Preferensi",
+                                fontFamily = poppinsFont,
+                                style = MaterialTheme.typography.labelLarge,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = "Mode Cepat",
+                                        fontFamily = poppinsFont,
+                                        fontSize = 18.sp
+                                    )
+                                    Text(
+                                        text = "Ketika aktif, pengguna akan langsung diarahkan untuk Scan QR tanpa melalui Dashboard.",
+                                        fontFamily = poppinsFont,
+                                        style = MaterialTheme.typography.bodyMedium,
                                         modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        AppTheme.entries.forEach { theme ->
-                                            InputChip(
-                                                selected = theme == state.theme,
-                                                onClick = { onEvent(SettingsScreenEvent.OnThemeChanged(theme)) },
-                                                label = {
-                                                    Text(
-                                                        modifier = Modifier
-                                                            .padding(
-                                                                vertical = 4.dp,
-                                                                horizontal = 8.dp
-                                                            ),
-                                                        text = theme.name,
-                                                        fontFamily = poppinsFont
-                                                    )
-                                                },
-                                                colors = InputChipDefaults.inputChipColors(
-                                                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                                                    labelColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                                                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
-                                                )
+                                    )
+                                }
+                                VerticalDivider(modifier = Modifier.height(32.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Switch(
+                                    checked = state.rapidMode,
+                                    onCheckedChange = {
+                                        onEvent(SettingsScreenEvent.OnRapidModeChanged(!state.rapidMode))
+                                    },
+                                    thumbContent = {
+                                        if (state.rapidMode) {
+                                            Icon(
+                                                imageVector = Icons.Default.Bolt,
+                                                contentDescription = "Mode cepat"
                                             )
                                         }
                                     }
-                                    Divider()
-                                    Button(
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = MaterialTheme.colorScheme.error,
-                                            contentColor = MaterialTheme.colorScheme.onError,
-                                        ),
-                                        onClick = { onEvent(SettingsScreenEvent.OnLogout) },
-                                        content = {
-                                            Text(
-                                                text = "Logout",
-                                                fontFamily = poppinsFont
-                                            )
-                                        },
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = "Tema Aplikasi",
+                                        fontFamily = poppinsFont,
+                                        fontSize = 18.sp
+                                    )
+                                    Text(
+                                        text = "Menyesuaikan tema aplikasi dengan sistem, atau menentukan sendiri tema Gelap/Terang.",
+                                        fontFamily = poppinsFont,
+                                        style = MaterialTheme.typography.bodyMedium,
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(16.dp)
+                                            .padding(end = 8.dp)
                                     )
+                                }
+                                VerticalDivider(modifier = Modifier.height(32.dp).padding(end = 8.dp))
+                                AnimatedVisibility(
+                                    visible = !state.showingThemeOptions,
+                                    enter = fadeIn(),
+                                    exit = fadeOut(),
+                                ) {
+                                    AssistChip(
+                                        onClick = {
+                                            onEvent(
+                                                SettingsScreenEvent.OnShowThemeOptionsChanged(
+                                                    !state.showingThemeOptions
+                                                )
+                                            )
+                                        },
+                                        label = { Text(text = state.theme.name) }
+                                    )
+                                }
+                            }
+                        }
+                        item {
+                            AnimatedVisibility(
+                                visible = state.showingThemeOptions,
+                                enter = expandVertically(),
+                                exit = shrinkVertically()
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    AppTheme.entries.forEach { theme ->
+                                        InputChip(
+                                            selected = state.theme == theme,
+                                            onClick = {
+                                                onEvent(SettingsScreenEvent.OnShowThemeOptionsChanged(!state.showingThemeOptions))
+                                                onEvent(SettingsScreenEvent.OnThemeChanged(theme))
+                                            },
+                                            label = {
+                                                Text(
+                                                    text = theme.name,
+                                                    fontFamily = poppinsFont,
+                                                    textAlign = TextAlign.Center,
+                                                    modifier = Modifier.fillMaxWidth()
+                                                )
+                                            },
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    }
                                 }
                             }
                         }
                         item {
                             val uriHandler = LocalUriHandler.current
                             Text(
-                                text = "v1.36r",
+                                text = "v1.39r",
                                 fontFamily = poppinsFont,
                                 modifier = Modifier
                                     .padding(16.dp)
@@ -200,4 +266,22 @@ fun SettingsScreen(
         }
     )
 
+}
+
+@Preview
+@Composable
+private fun SettingsScreenPrev() {
+    HasilKaryaTheme(
+        darkTheme = true
+    ) {
+        SettingsScreen(
+            state = SettingsScreenState(
+                name = "Rizky Sendiko",
+                email = "fuel_operator1@hasikarya.co.id",
+                rapidMode = true
+            ),
+            onEvent = {},
+            onNavigateBack = {}
+        )
+    }
 }

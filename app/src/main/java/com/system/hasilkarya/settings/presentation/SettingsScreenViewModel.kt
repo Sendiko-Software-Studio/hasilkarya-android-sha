@@ -28,10 +28,14 @@ class SettingsScreenViewModel @Inject constructor(
     private val _token = repository.getToken()
     private val _email = repository.getEmail()
     private val _theme = repository.getTheme()
+    private val _rapidMode = repository.getRapidMode()
+    private val _options = combine(_theme, _rapidMode, _state) { theme, rapidMode, state ->
+        state.copy(theme = theme, rapidMode = rapidMode)
+    }
     val state = combine(
-        _name, _token, _email, _theme, _state
-    ) { name, token, email, theme, state ->
-        state.copy(name = name, token = token, email = email, theme = theme)
+        _name, _token, _email, _options, _state
+    ) { name, token, email, options, state ->
+        state.copy(name = name, token = token, email = email, theme = options.theme, rapidMode = options.rapidMode)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), SettingsScreenState())
 
     private fun logout() {
@@ -92,10 +96,24 @@ class SettingsScreenViewModel @Inject constructor(
         }
     }
 
+    private fun changeRapidMode(rapidMode: Boolean) {
+        viewModelScope.launch {
+            repository.setRapidMode(rapidMode)
+        }
+    }
+
+    private fun changeShowingThemeOptions(isShowing: Boolean) {
+        _state.update {
+            it.copy(showingThemeOptions = isShowing)
+        }
+    }
+
     fun onEvent(event: SettingsScreenEvent) {
         when(event) {
             SettingsScreenEvent.OnLogout -> logout()
             is SettingsScreenEvent.OnThemeChanged -> changeTheme(event.theme)
+            is SettingsScreenEvent.OnRapidModeChanged -> changeRapidMode(event.rapidMode)
+            is SettingsScreenEvent.OnShowThemeOptionsChanged -> changeShowingThemeOptions(event.isShowing)
         }
     }
 

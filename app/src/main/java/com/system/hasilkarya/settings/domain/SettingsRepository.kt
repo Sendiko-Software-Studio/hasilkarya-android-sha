@@ -14,6 +14,8 @@ class SettingsRepository @Inject constructor(
     fun getToken() = preferences.getToken()
     fun getEmail() = preferences.getEmail()
     fun getTheme() = preferences.getTheme()
+    fun getRapidMode() = preferences.getRapidMode()
+    suspend fun setRapidMode(rapidMode: Boolean) = preferences.setRapidMode(rapidMode)
     suspend fun setTheme(theme: AppTheme) = preferences.setTheme(theme)
     suspend fun clearData() = preferences.clearData()
     fun logout(token: String) = apiServices.logout(token)

@@ -11,5 +11,7 @@ data class SettingsScreenState(
     val isRequestFailed: FailedRequest = FailedRequest(),
     val notificationMessage: String = "",
     val token: String = "",
+    val rapidMode: Boolean = false,
+    val showingThemeOptions: Boolean = false,
     val theme: AppTheme = AppTheme.Default
 )
