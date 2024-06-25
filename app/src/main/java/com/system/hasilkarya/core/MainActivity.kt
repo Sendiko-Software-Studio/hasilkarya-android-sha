@@ -33,8 +33,8 @@ import com.system.hasilkarya.login.presentation.LoginScreen
 import com.system.hasilkarya.login.presentation.LoginScreenViewModel
 import com.system.hasilkarya.material.presentation.MaterialQrScreen
 import com.system.hasilkarya.material.presentation.MaterialQrScreenViewModel
-import com.system.hasilkarya.profile.presentation.ProfileScreen
-import com.system.hasilkarya.profile.presentation.ProfileScreenViewModel
+import com.system.hasilkarya.settings.presentation.SettingsScreen
+import com.system.hasilkarya.settings.presentation.SettingsScreenViewModel
 import com.system.hasilkarya.splash.presentation.SplashScreen
 import com.system.hasilkarya.splash.presentation.SplashScreenViewModel
 import com.system.hasilkarya.station.presentation.StationQrScreen
@@ -129,8 +129,8 @@ class MainActivity : ComponentActivity() {
                         )
                         composable<ProfileScreen>(
                             content = {
-                                val viewModel = hiltViewModel<ProfileScreenViewModel>()
-                                ProfileScreen(
+                                val viewModel = hiltViewModel<SettingsScreenViewModel>()
+                                SettingsScreen(
                                     state = viewModel.state.collectAsState().value,
                                     onEvent = viewModel::onEvent,
                                     onNavigateBack = { destination ->

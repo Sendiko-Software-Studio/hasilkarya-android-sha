@@ -27,7 +27,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -52,13 +51,18 @@ fun MaterialQrScreen(
     onEvent: (MaterialQrScreenEvent) -> Unit,
     onNavigateBack: (destination: Any) -> Unit,
 ) {
-    val context = LocalContext.current
     LaunchedEffect(
         key1 = state,
         block = {
             if (state.isPostSuccessful) {
-                delay(1000)
-                onNavigateBack(DashboardScreen)
+                if (state.rapidMode){
+                    delay(1000)
+                    onEvent(MaterialQrScreenEvent.ClearState)
+                    onEvent(MaterialQrScreenEvent.OnNavigateForm(Truck))
+                } else {
+                    delay(1000)
+                    onNavigateBack(DashboardScreen)
+                }
             }
 
             if (state.notificationMessage.isNotBlank()) {

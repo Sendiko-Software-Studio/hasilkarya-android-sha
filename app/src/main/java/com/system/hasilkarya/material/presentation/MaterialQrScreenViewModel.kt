@@ -1,28 +1,18 @@
 package com.system.hasilkarya.material.presentation
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.system.hasilkarya.core.entities.MaterialEntity
-import com.system.hasilkarya.core.network.NetworkConnectivityObserver
-import com.system.hasilkarya.core.network.Status
 import com.system.hasilkarya.core.preferences.AppPreferences
 import com.system.hasilkarya.core.repositories.material.MaterialRepository
 import com.system.hasilkarya.core.repositories.station.StationRepository
 import com.system.hasilkarya.core.ui.utils.ErrorTextField
 import com.system.hasilkarya.core.ui.utils.FailedRequest
 import com.system.hasilkarya.core.utils.commaToPeriod
-import com.system.hasilkarya.dashboard.data.CheckDriverIdResponse
-import com.system.hasilkarya.dashboard.data.CheckStationIdResponse
-import com.system.hasilkarya.dashboard.data.CheckTruckIdResponse
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions
-import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.Driver
 import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.None
-import com.system.hasilkarya.dashboard.presentation.component.ScanOptions.Pos
-import com.system.hasilkarya.material.data.PostMaterialRequest
-import com.system.hasilkarya.material.data.PostMaterialResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,9 +21,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -49,14 +36,16 @@ class MaterialQrScreenViewModel @Inject constructor(
     private val _token = preferences.getToken()
     private val _userId = preferences.getUserId()
     private val _station = stationRepository.getAllStations()
+    private val _rapidMode = preferences.getRapidMode()
     val state = combine(
-        _token, _userId, _station, _state
-    ) { token, userId, station, state ->
+        _token, _userId, _station, _rapidMode, _state
+    ) { token, userId, station, rapidMode, state ->
         state.copy(
             token = token,
             userId = userId,
             stationId = station.first().stationId,
-            stationName = station.first().name
+            stationName = station.first().name,
+            rapidMode = rapidMode
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), MaterialQrScreenState())
 
@@ -114,6 +103,20 @@ class MaterialQrScreenViewModel @Inject constructor(
         }
     }
 
+    private fun clearState() {
+        _state.update {
+            it.copy(
+                truckId = "",
+                isLoading = false,
+                notificationMessage = "",
+                remarks = "",
+                materialVolume = "",
+                materialVolumeErrorState = ErrorTextField(),
+                isPostSuccessful = false
+            )
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun onSaveMaterial() {
         if (state.value.materialVolume.isBlank()) {
@@ -155,6 +158,8 @@ class MaterialQrScreenViewModel @Inject constructor(
             is MaterialQrScreenEvent.OnClearRemarks -> onClearRemarks()
 
             is MaterialQrScreenEvent.OnNavigateForm -> onNavigateForm(event.scanOptions)
+
+            MaterialQrScreenEvent.ClearState -> clearState()
         }
     }
 }

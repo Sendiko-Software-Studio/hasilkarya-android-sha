@@ -2,6 +2,7 @@ package com.system.hasilkarya.core.preferences
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.system.hasilkarya.core.ui.theme.AppTheme
@@ -17,7 +18,20 @@ class AppPreferences @Inject constructor(private val dataStore: DataStore<Prefer
     private val emailKey = stringPreferencesKey("email")
     private val passwordKey = stringPreferencesKey("pass")
     private val roleKey = stringPreferencesKey("role")
+    private val rapidModeKey = booleanPreferencesKey("rapid_mode")
     private val themeKey = stringPreferencesKey(AppTheme.Default.name)
+
+    fun getRapidMode(): Flow<Boolean> {
+        return dataStore.data.map {
+            it[rapidModeKey]?:false
+        }
+    }
+
+    suspend fun setRapidMode(rapidMode: Boolean) {
+        dataStore.edit {
+            it[rapidModeKey] = rapidMode
+        }
+    }
 
     suspend fun setPassword(password: String) {
         dataStore.edit {

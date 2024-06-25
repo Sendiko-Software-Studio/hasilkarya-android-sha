@@ -15,7 +15,7 @@ import com.system.hasilkarya.material.data.PostMaterialLogRequest
 import com.system.hasilkarya.material.data.PostMaterialRequest
 import com.system.hasilkarya.material.data.PostMaterialResponse
 import com.system.hasilkarya.material.data.PostToLogResponse
-import com.system.hasilkarya.profile.data.LogoutResponse
+import com.system.hasilkarya.settings.data.LogoutResponse
 import com.system.hasilkarya.station.data.GetStationResponse
 import com.system.hasilkarya.truck_fuel.data.TruckFuelLogRequest
 import com.system.hasilkarya.truck_fuel.data.TruckFuelLogResponse
