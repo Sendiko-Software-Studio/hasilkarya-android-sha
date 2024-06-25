@@ -19,9 +19,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -116,7 +119,9 @@ fun SettingsScreen(
                                     contentDescription = "akun",
                                     modifier = Modifier.size(48.dp)
                                 )
-                                Column(modifier = Modifier.weight(1f).padding(start = 8.dp)) {
+                                Column(modifier = Modifier
+                                    .weight(1f)
+                                    .padding(start = 8.dp)) {
                                     Text(
                                         text = state.name,
                                         fontFamily = poppinsFont,
@@ -196,7 +201,9 @@ fun SettingsScreen(
                                             .padding(end = 8.dp)
                                     )
                                 }
-                                VerticalDivider(modifier = Modifier.height(32.dp).padding(end = 8.dp))
+                                VerticalDivider(modifier = Modifier
+                                    .height(32.dp)
+                                    .padding(end = 8.dp))
                                 AnimatedVisibility(
                                     visible = !state.showingThemeOptions,
                                     enter = fadeIn(),
@@ -247,6 +254,27 @@ fun SettingsScreen(
                                     }
                                 }
                             }
+                        }
+                        item {
+                            TextButton(
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                                colors = ButtonDefaults.textButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.error
+                                ),
+                                onClick = { onEvent(SettingsScreenEvent.OnLogout) },
+                                content = {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(text = "Logout", fontFamily = poppinsFont)
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.Logout,
+                                            contentDescription = "Logout"
+                                        )
+                                    }
+                                }
+                            )
                         }
                         item {
                             val uriHandler = LocalUriHandler.current
