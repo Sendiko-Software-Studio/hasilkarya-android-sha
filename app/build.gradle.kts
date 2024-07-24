@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.system.hasilkarya"
+    namespace = "com.system.shailendra"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.system.hasilkarya"
+        applicationId = "com.system.shailendra"
         minSdk = 24
         targetSdk = 34
         versionCode = 9
