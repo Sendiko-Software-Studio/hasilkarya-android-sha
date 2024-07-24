@@ -2,6 +2,7 @@ package com.system.shailendra.core.ui.components
 
 import android.util.Log
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -12,8 +13,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -25,14 +29,17 @@ fun PasswordTextField(
     modifier: Modifier = Modifier,
     value: String,
     onNewValue: (String) -> Unit,
+    onDone: () -> Unit,
     leadingIcon: ImageVector,
     hint: String = "",
     isVisible: Boolean = false,
-    onVisibiltyToggle: (Boolean) -> Unit,
-    errorState: ErrorTextField = ErrorTextField()
+    onVisibilityToggle: (Boolean) -> Unit,
+    errorState: ErrorTextField = ErrorTextField(),
+    focusRequester: FocusRequester
 ) {
     OutlinedTextField(
-        modifier = modifier,
+        modifier = modifier
+            .focusRequester(focusRequester),
         value = value,
         textStyle = TextStyle(fontFamily = poppinsFont),
         onValueChange = { onNewValue(it) },
@@ -47,8 +54,8 @@ fun PasswordTextField(
             IconButton(
                 onClick = {
                     Log.i("PASSWORD_VISIBILIY", "PasswordTextField: ${!isVisible}")
-                    onVisibiltyToggle(!isVisible)
-                          },
+                    onVisibilityToggle(!isVisible)
+                },
                 content = {
                     Icon(
                         imageVector = if (isVisible)
@@ -64,6 +71,17 @@ fun PasswordTextField(
             Text(text = errorState.errorMessage, fontFamily = poppinsFont)
         },
         isError = errorState.isError,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done
+        ),
+        singleLine = true,
+        keyboardActions = KeyboardActions(
+            onDone = {
+                focusRequester.freeFocus()
+                onDone()
+            }
+        ),
+
     )
 }
