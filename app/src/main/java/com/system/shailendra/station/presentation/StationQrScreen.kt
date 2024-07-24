@@ -36,7 +36,7 @@ fun StationQrScreen(
                     onResult = {
                         onEvent(StationQrScreenEvent.OnQrCodeScanned(it, connectionStatus))
                     },
-                    navigateBack = { onNavigateBack() },
+                    onNavigateBack = { onNavigateBack() },
                     title = "Pos",
                     isValid = state.stationId.isNotBlank()
                 )

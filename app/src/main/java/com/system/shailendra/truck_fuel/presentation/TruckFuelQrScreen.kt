@@ -65,7 +65,7 @@ fun TruckFuelQrScreen(
                                     )
                                 )
                             },
-                            navigateBack = { onNavigateBack(DashboardScreen) },
+                            onNavigateBack = { onNavigateBack(DashboardScreen) },
                             title = "Truck",
                             isValid = state.truckId.isNotBlank()
                         )
@@ -84,7 +84,7 @@ fun TruckFuelQrScreen(
                                     )
                                 )
                             },
-                            navigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Truck)) },
+                            onNavigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Truck)) },
                             title = "Driver",
                             isValid = state.driverId.isNotBlank()
                         )
@@ -103,7 +103,7 @@ fun TruckFuelQrScreen(
                                     )
                                 )
                             },
-                            navigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Driver)) },
+                            onNavigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Driver)) },
                             title = "Pos",
                             isValid = state.stationId.isNotBlank()
                         )
@@ -115,7 +115,7 @@ fun TruckFuelQrScreen(
                     ) {
                         QrScanComponent(
                             onResult = { onEvent(TruckFuelQrScreenEvent.OnVolumeRegistered(it.toDoubleOrNull())) },
-                            navigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Pos)) },
+                            onNavigateBack = { onEvent(TruckFuelQrScreenEvent.OnNavigateForm(ScanOptions.Pos)) },
                             title = "Jumlah BBM",
                             isValid = state.volume != 0.0
                         )

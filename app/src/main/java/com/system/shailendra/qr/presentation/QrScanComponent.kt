@@ -41,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -49,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
 import com.system.shailendra.R
 import com.system.shailendra.core.ui.theme.poppinsFont
@@ -60,7 +60,7 @@ import java.util.concurrent.Executors
 @Composable
 fun QrScanComponent(
     onResult: (String) -> Unit,
-    navigateBack: () -> Unit,
+    onNavigateBack: () -> Unit,
     title: String,
     isValid: Boolean,
 ) {
@@ -166,7 +166,7 @@ fun QrScanComponent(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     IconButton(
-                        onClick = { navigateBack() },
+                        onClick = { onNavigateBack() },
                         content = {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
