@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -37,6 +38,7 @@ fun PasswordTextField(
     errorState: ErrorTextField = ErrorTextField(),
     focusRequester: FocusRequester
 ) {
+    val focusManager = LocalFocusManager.current
     OutlinedTextField(
         modifier = modifier
             .focusRequester(focusRequester),
@@ -78,6 +80,7 @@ fun PasswordTextField(
         singleLine = true,
         keyboardActions = KeyboardActions(
             onDone = {
+                focusManager.clearFocus()
                 focusRequester.freeFocus()
                 onDone()
             }
