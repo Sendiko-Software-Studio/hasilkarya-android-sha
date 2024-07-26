@@ -26,7 +26,6 @@ fun HeavyVehicleFuelQrScreen(
     onNavigateBack: (destination: Any) -> Unit,
     connectionStatus: Status
 ) {
-    val context = LocalContext.current
     LaunchedEffect(
         key1 = state.notificationMessage,
         key2 = state.isPostSuccessful,
@@ -66,7 +65,7 @@ fun HeavyVehicleFuelQrScreen(
                                     )
                                 )
                             },
-                            navigateBack = { onNavigateBack(DashboardScreen) },
+                            onNavigateBack = { onNavigateBack(DashboardScreen) },
                             title = "Alat Berat",
                             isValid = state.heavyVehicleId.isNotBlank()
                         )
@@ -85,7 +84,7 @@ fun HeavyVehicleFuelQrScreen(
                                     )
                                 )
                             },
-                            navigateBack = {
+                            onNavigateBack = {
                                 onEvent(
                                     HeavyVehicleFuelQrScreenEvent.OnNavigateForm(
                                         ScanOptions.HeavyVehicle
@@ -110,7 +109,7 @@ fun HeavyVehicleFuelQrScreen(
                                     )
                                 )
                             },
-                            navigateBack = {
+                            onNavigateBack = {
                                 onEvent(
                                     HeavyVehicleFuelQrScreenEvent.OnNavigateForm(
                                         ScanOptions.Driver
@@ -132,7 +131,7 @@ fun HeavyVehicleFuelQrScreen(
                                     HeavyVehicleFuelQrScreenEvent.OnVolumeRegistered(it.toDoubleOrNull())
                                 )
                             },
-                            navigateBack = {
+                            onNavigateBack = {
                                 onEvent(
                                     HeavyVehicleFuelQrScreenEvent.OnNavigateForm(
                                         ScanOptions.Pos

@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.system.shailendra.core.ui.theme.poppinsFont
 import com.system.shailendra.core.ui.utils.ErrorTextField
@@ -32,6 +34,7 @@ fun NormalTextField(
     keyboardType: KeyboardType = KeyboardType.Text,
     shape: Shape = CircleShape,
     singleLine: Boolean = true,
+    keyboardActions: KeyboardActions = KeyboardActions()
 ) {
     OutlinedTextField(
         modifier = modifier,
@@ -64,7 +67,8 @@ fun NormalTextField(
             if (errorState.isError) Text(text = errorState.errorMessage, fontFamily = poppinsFont)
         },
         isError = errorState.isError,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        singleLine = singleLine
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = ImeAction.Next),
+        singleLine = singleLine,
+        keyboardActions = keyboardActions
     )
 }

@@ -233,8 +233,12 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
                             }
 
                             else -> viewModelScope.launch {
-                                repository.storeHeavyVehicleFuel(heavyVehicleEntity)
-                                _state.update { it.copy(notificationMessage = "Data berhasil disimpan!") }
+                                _state.update {
+                                    it.copy(
+                                        notificationMessage = "Ups terjadi kesalahan.",
+                                        isRequestFailed = FailedRequest(isFailed = true)
+                                    )
+                                }
                             }
                         }
                     }
@@ -266,6 +270,14 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
 
     // state related methods
     private fun onNavigateForm(scanOptions: ScanOptions) {
+        when (scanOptions) {
+            ScanOptions.HeavyVehicle -> _state.update { it.copy(heavyVehicleId = "") }
+            ScanOptions.Driver -> _state.update { it.copy(driverId = "") }
+            ScanOptions.Pos -> _state.update { it.copy(stationId = "") }
+            ScanOptions.Volume -> _state.update { it.copy(volume = 0.0) }
+            ScanOptions.Truck -> TODO()
+            ScanOptions.None -> TODO()
+        }
         _state.update { it.copy(currentlyScanning = scanOptions) }
     }
 
@@ -372,11 +384,20 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
         when (event) {
             is HeavyVehicleFuelQrScreenEvent.OnNavigateForm -> onNavigateForm(event.scanOptions)
 
-            is HeavyVehicleFuelQrScreenEvent.OnHeavyVehicleIdRegistered -> onHeavyVehicleIdRegistered(event.vHId, event.connectionStatus)
+            is HeavyVehicleFuelQrScreenEvent.OnHeavyVehicleIdRegistered -> onHeavyVehicleIdRegistered(
+                event.vHId,
+                event.connectionStatus
+            )
 
-            is HeavyVehicleFuelQrScreenEvent.OnDriverIdRegistered -> onDriverIdRegistered(event.driverId, event.connectionStatus)
+            is HeavyVehicleFuelQrScreenEvent.OnDriverIdRegistered -> onDriverIdRegistered(
+                event.driverId,
+                event.connectionStatus
+            )
 
-            is HeavyVehicleFuelQrScreenEvent.OnStationIdRegistered -> onStationIdRegistered(event.stationId, event.connectionStatus)
+            is HeavyVehicleFuelQrScreenEvent.OnStationIdRegistered -> onStationIdRegistered(
+                event.stationId,
+                event.connectionStatus
+            )
 
             is HeavyVehicleFuelQrScreenEvent.OnVolumeRegistered -> onVolumeRegistered(event.volume)
 
@@ -390,7 +411,9 @@ class HeavyVehicleFuelQrScreenViewModel @Inject constructor(
 
             HeavyVehicleFuelQrScreenEvent.NotificationClear -> onNotificationClear()
 
-            is HeavyVehicleFuelQrScreenEvent.SaveHeavyVehicleFuelTransaction -> saveHeavyVehicleFuelTransaction(event.connectionStatus)
+            is HeavyVehicleFuelQrScreenEvent.SaveHeavyVehicleFuelTransaction -> saveHeavyVehicleFuelTransaction(
+                event.connectionStatus
+            )
         }
     }
 

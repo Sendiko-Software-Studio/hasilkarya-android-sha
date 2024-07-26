@@ -279,7 +279,7 @@ fun SettingsScreen(
                         item {
                             val uriHandler = LocalUriHandler.current
                             Text(
-                                text = "version: 1.4.1",
+                                text = "version: 1.4.4",
                                 fontFamily = poppinsFont,
                                 modifier = Modifier
                                     .padding(16.dp)

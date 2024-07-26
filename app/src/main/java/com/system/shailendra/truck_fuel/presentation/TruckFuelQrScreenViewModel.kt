@@ -251,6 +251,14 @@ class TruckFuelQrScreenViewModel @Inject constructor(
 
     // state related methods
     private fun onNavigateForm(scanOptions: ScanOptions) {
+        when (scanOptions) {
+            ScanOptions.Truck -> _state.update { it.copy(truckId = "") }
+            ScanOptions.Driver -> _state.update { it.copy(driverId = "") }
+            ScanOptions.Pos -> _state.update { it.copy(stationId = "") }
+            ScanOptions.Volume -> _state.update { it.copy(volume = 0.0) }
+            ScanOptions.HeavyVehicle -> {}
+            ScanOptions.None -> TODO()
+        }
         _state.update {
             it.copy(currentlyScanning = scanOptions)
         }

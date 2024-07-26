@@ -90,7 +90,7 @@ fun MaterialQrScreen(
                                 onResult = {
                                     onEvent(MaterialQrScreenEvent.OnTruckIdRegistered(it))
                                 },
-                                navigateBack = {
+                                onNavigateBack = {
                                     onNavigateBack(DashboardScreen)
                                 },
                                 title = "Truck",
